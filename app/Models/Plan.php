@@ -1,0 +1,24 @@
+<?php
+
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class Plan extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'name', 
+        'price', 
+        'duration_days', 
+        'features'
+    ];
+
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
+}

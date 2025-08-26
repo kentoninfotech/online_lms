@@ -23,13 +23,17 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $user_type = ['admin', 'parent', 'student', 'instructor'];
+
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'name' => $this->faker->name,
+            'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => static::$password ??= Hash::make('12345'), // default
+            'user_type' => $this->faker->randomElement($user_type),
             'remember_token' => Str::random(10),
         ];
+        
     }
 
     /**

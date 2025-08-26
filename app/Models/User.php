@@ -20,6 +20,8 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone',
+        'user_type',
         'password',
     ];
 
@@ -44,5 +46,42 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // relationships
+    // Parent → Students
+    public function children()
+    {
+        return $this->belongsToMany(User::class, 'parent_student', 'parent_id', 'student_id');
+    }
+
+    // Student → Parent(s)
+    public function parents()
+    {
+        return $this->belongsToMany(User::class, 'parent_student', 'student_id', 'parent_id');
+    }
+
+    // Instructor → Lessons
+    public function lessons()
+    {
+        return $this->hasMany(Lesson::class, 'instructor_id');
+    }
+
+    // Student → Subscriptions
+    public function subscriptions()
+    {
+        return $this->hasMany(StudentSubscription::class, 'student_id');
+    }
+
+    // Parent → Payments
+    public function payments()
+    {
+        return $this->hasMany(Payment::class, 'parent_id');
+    }
+
+    // Attendance records (for both students & instructors)
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class, 'user_id');
     }
 }
