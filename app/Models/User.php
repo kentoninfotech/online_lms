@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
@@ -20,7 +21,6 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'phone',
         'user_type',
         'password',
     ];
@@ -48,35 +48,20 @@ class User extends Authenticatable
         ];
     }
 
-    // relationships
-    // Parent → Students
-    public function children()
+    // Eloquent relationships
+    public function parent(): HasOne
     {
-        return $this->belongsToMany(User::class, 'parent_student', 'parent_id', 'student_id');
+        return $this->hasOne(ParentModel::class, 'user_id');
     }
 
-    // Student → Parent(s)
-    public function parents()
+    public function student(): HasOne
     {
-        return $this->belongsToMany(User::class, 'parent_student', 'student_id', 'parent_id');
+        return $this->hasOne(Student::class, 'user_id');
     }
 
-    // Instructor → Lessons
-    public function lessons()
+    public function instructor(): HasOne
     {
-        return $this->hasMany(Lesson::class, 'instructor_id');
-    }
-
-    // Student → Subscriptions
-    public function subscriptions()
-    {
-        return $this->hasMany(StudentSubscription::class, 'student_id');
-    }
-
-    // Parent → Payments
-    public function payments()
-    {
-        return $this->hasMany(Payment::class, 'parent_id');
+        return $this->hasOne(Instructor::class, 'user_id');
     }
 
     // Attendance records (for both students & instructors)
