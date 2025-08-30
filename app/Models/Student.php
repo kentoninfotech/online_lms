@@ -26,6 +26,7 @@ class Student extends Model
         return $this->belongsTo(User::class);
     }
 
+    // Student → Parents (Many-to-Many)
     public function parents(): BelongsToMany
     {
         return $this->belongsToMany(ParentModel::class, 'parent_student', 'student_id', 'parent_id');
@@ -35,5 +36,20 @@ class Student extends Model
     public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class, 'student_id');
+    }
+
+    // Get the active subscription if any
+    public function activeSubscription()
+    {
+        return $this->subscriptions()
+            ->where('status', 'active')
+            ->latest('end_date')
+            ->first();
+    }
+
+    // Check if student has an active subscription
+    public function hasActiveSubscription()
+    {
+        return optional($this->activeSubscription())->end_date >= now();
     }
 }

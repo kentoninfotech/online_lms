@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // Settings & Business Rules
-        Setting::updateOrCreate(['key' => 'reschedule_limit'], ['value' => 3]);
+        Setting::updateOrCreate(['key' => 'reschedule_limit'], ['value' => 4]);
         Setting::updateOrCreate(['key' => 'reschedule_guard_time_minutes'], ['value' => 120]);
         Setting::updateOrCreate(['key' => 'attendance_grace_period_minutes'], ['value' => 10]);
         Setting::updateOrCreate(['key' => 'billing_grace_period_days'], ['value' => 7]);

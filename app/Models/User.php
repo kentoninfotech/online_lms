@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
@@ -65,8 +66,29 @@ class User extends Authenticatable
     }
 
     // Attendance records (for both students & instructors)
-    public function attendances()
+    public function attendances(): HasMany
     {
         return $this->hasMany(Attendance::class, 'user_id');
+    }
+
+    // User → Subscriptions (if student)
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class, 'student_id');
+    }
+
+    // 🔧 Helpers
+    public function isAdmin() { return $this->role === 'admin'; }
+    public function isInstructor() { return $this->role === 'instructor'; }
+    public function isParent() { return $this->role === 'parent'; }
+    public function isStudent() { return $this->role === 'student'; }
+    
+    // Get the active subscription if any
+    public function activeSubscription()
+    {
+        return $this->subscriptions()
+            ->where('status', 'active')
+            ->latest()
+            ->first();
     }
 }

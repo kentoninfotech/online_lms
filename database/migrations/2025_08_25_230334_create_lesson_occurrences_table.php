@@ -18,6 +18,11 @@ return new class extends Migration
             $table->integer('duration_minutes');
             $table->string('status')->default('scheduled'); //'scheduled', 'completed', 'cancelled'
             $table->timestamps();
+            
+            $table->index(['lesson_id', 'scheduled_start']);
+            
+            $table->unique(['lesson_id', 'scheduled_start', 'scheduled_end'], 'lesson_occurrence_unique');
+            
         });
     }
 

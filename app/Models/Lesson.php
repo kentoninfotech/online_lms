@@ -5,6 +5,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Lesson extends Model
 {
@@ -20,17 +22,20 @@ class Lesson extends Model
         'recurrence_meta',
     ];
 
-    public function instructor()
+    // Lesson → Instructor
+    public function instructor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'instructor_id');
     }
 
-    public function student()
+    // Lesson → Student
+    public function student(): BelongsTo
     {
         return $this->belongsTo(User::class, 'student_id');
     }
 
-    public function occurrences()
+    // Lesson → LessonOccurrences
+    public function occurrences(): HasMany
     {
         return $this->hasMany(LessonOccurrence::class);
     }

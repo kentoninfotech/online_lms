@@ -5,6 +5,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class LessonOccurrence extends Model
 {
@@ -17,22 +20,26 @@ class LessonOccurrence extends Model
         'status',
     ];
 
-    public function lesson()
+    // LessonOccurrence → Lesson
+    public function lesson(): BelongsTo
     {
         return $this->belongsTo(Lesson::class);
     }
 
-    public function zoomSession()
+    // Zoom Session
+    public function zoomSession(): HasOne
     {
         return $this->hasOne(ZoomSession::class);
     }
 
-    public function attendances()
+    // Attendance Records
+    public function attendances(): HasMany
     {
         return $this->hasMany(Attendance::class);
     }
 
-    public function rescheduleRequests()
+    // Reschedule Requests
+    public function rescheduleRequests(): HasMany
     {
         return $this->hasMany(RescheduleRequest::class);
     }

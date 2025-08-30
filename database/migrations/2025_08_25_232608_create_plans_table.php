@@ -15,7 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->decimal('price', 10, 2);
-            $table->integer('duration_days'); // e.g. 30 days, 90 days
+            $table->string('duration_type'); // e.g. daily, weekly, monthly
+            $table->integer('duration_count')->default(1); // e.g., 1 week, 1 month
+        
+            // Overrideable rules (null = use global settings)
+            $table->integer('reschedule_limit')->nullable(); // max reschedules in billing cycle
+            $table->integer('payment_grace_days')->nullable(); // days before auto-suspension
+            
             $table->text('features')->nullable();
             $table->timestamps();
         });

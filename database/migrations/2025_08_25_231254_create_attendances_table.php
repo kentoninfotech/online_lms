@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('status')->default('absent'); // 'present', 'absent', 'late'
             $table->string('zoom_user_id')->nullable(); // from Zoom API
             $table->timestamps();
+
+            $table->index(['lesson_occurrence_id', 'user_id']);
         });
     }
 

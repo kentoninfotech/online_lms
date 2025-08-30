@@ -20,13 +20,16 @@ class Attendance extends Model
         'zoom_user_id'
     ];
 
+    // Attendance → LessonOccurrence
     public function occurrence()
     {
         return $this->belongsTo(LessonOccurrence::class);
     }
 
+    // Attendance → User (Student or Instructor)
     public function user()
     {
         return $this->belongsTo(User::class);
     }
+    
 }

@@ -16,12 +16,37 @@ class PlanFactory extends Factory
      */
     public function definition(): array
     {
+        $plans = [
+            [
+                'name' => 'Daily Plan',
+                'duration_type' => 'daily',
+                'price' => 1000,
+                'duration_count' => 1,
+            ],
+            [
+                'name' => 'Weekly Plan',
+                'duration_type' => 'weekly',
+                'price' => 5000,
+                'duration_count' => 7,
+            ],
+            [
+                'name' => 'Monthly Plan',
+                'duration_type' => 'monthly',
+                'price' => 15000,
+                'duration_count' => 30,
+            ],
+        ];
+
+        $plan = $this->faker->randomElement($plans);
+
         return [
-            'name' => $this->faker->randomElement(['Daily Plan','Weekly Plan','Monthly Plan']),
-            'price' => $this->faker->randomFloat(2, 1000, 20000),
-            'duration_days' => $this->faker->randomElement([1,7,30]),
+            'name' => $plan['name'],
+            'price' => $plan['price'],
+            'duration_type' => $plan['duration_type'],
+            'duration_count' => $plan['duration_count'],
+            'reschedule_limit' => $this->faker->numberBetween(0,5),
+            'payment_grace_days' => $this->faker->randomElement([null,3,5,7]),
             'features' => json_encode(['Zoom Access','Reports','Attendance']),
-            // 'features' => $this->faker->randomElement(['Zoom Access','Reports','Attendance']),
         ];
     }
 }

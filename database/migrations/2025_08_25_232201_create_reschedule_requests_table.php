@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('lesson_occurrence_id')->constrained('lesson_occurrences')->onDelete('cascade');
             $table->foreignId('requested_by')->constrained('users')->onDelete('cascade'); // parent or student
             $table->dateTime('proposed_start');
+            $table->text('reason')->nullable();
             $table->string('status')->default('pending');  // 'pending', 'approved', 'rejected'
             $table->foreignId('approved_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
