@@ -18,7 +18,12 @@ return new class extends Migration
             $table->string('topic')->nullable();
             $table->string('join_url')->nullable();
             $table->string('start_url')->nullable();
+            $table->enum('status', ['scheduled', 'started', 'ended', 'cancelled'])->default('scheduled');
+            $table->json('raw')->nullable(); // store Zoom API JSON payload
             $table->timestamps();
+
+            $table->unique('lesson_occurrence_id'); // one session per occurrence
+            
         });
     }
 

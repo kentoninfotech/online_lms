@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('number')->nullable();
             $table->string('address')->nullable();
-            $table->string('profile')->nullable();
+            $table->string('profile')->nullable()->default('profile.png');
             $table->timestamps();
         });
     }

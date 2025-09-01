@@ -5,6 +5,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ZoomSession extends Model
 {
@@ -15,11 +16,17 @@ class ZoomSession extends Model
         'zoom_meeting_id', 
         'topic', 
         'join_url', 
-        'start_url'
+        'start_url',
+        'status',
+        'raw'
     ];
 
-    public function occurrence()
+    protected $casts = [
+        'raw' => 'array',
+    ];
+
+    public function occurrence(): BelongsTo
     {
-        return $this->belongsTo(LessonOccurrence::class);
+        return $this->belongsTo(LessonOccurrence::class, 'lesson_occurrence_id');
     }
 }

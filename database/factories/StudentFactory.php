@@ -17,11 +17,12 @@ class StudentFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id'  => null,
-            'name'     => $this->faker->name,
-            'email'    => $this->faker->unique()->safeEmail(),
-            'number'   => $this->faker->phoneNumber,
-            'address'  => $this->faker->address,
+            'user_id'       => null,
+            'name'          => $this->faker->name,
+            'email'         => $this->faker->unique()->safeEmail(),
+            'number'        => $this->faker->phoneNumber,
+            'address'       => $this->faker->address,
+            'zoom_user_id'  => $this->faker->uuid,
         ];
     }
 }

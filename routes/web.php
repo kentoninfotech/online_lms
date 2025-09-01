@@ -2,7 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\ZoomWebhookController;
 
+
+// public endpoint for Zoom to POST webhooks to
+Route::post('/webhooks/zoom', [ZoomWebhookController::class, 'handle']);
 
 Route::middleware(['auth', 'can:isAdmin'])->group(function () {
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');

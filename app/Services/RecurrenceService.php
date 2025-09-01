@@ -72,7 +72,7 @@ class RecurrenceService
                 $cursor->addDays($interval);
 
             } elseif ($type === 'weekly') {
-                $days = $meta['days'] ?? ['MO'];
+                $days = $meta['days'] ?? ['Monday'];
                 foreach ($days as $day) {
                     $next = $cursor->copy()->next($day);
                     if ($next->lte($horizon)) {

@@ -19,8 +19,17 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// Schedule the lesson occurrences generation command to run daily
-// protected function schedule(Schedule $schedule)
-// {
-//     $schedule->command('lessons:generate-occurrences')->daily();
-// }
+
+/*|--------------------------------------------------------------------------
+| Schedule Commands
+|--------------------------------------------------------------------------
+|
+| Here you may define the scheduled commands for your application. These
+| commands will be run on the schedule you specify in your console
+| kernel. You may use the 'schedule' method to define them.
+|
+*/
+// Called in bootstrap/app.php
+// Schedule::command('lessons:generate-occurrences')->daily();
+// Schedule::command('lessons:create-zoom-sessions')->daily();
+// Schedule::command('zoom:sync-participants')->dailyAt('02:00');

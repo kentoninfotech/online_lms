@@ -21,7 +21,7 @@ return new class extends Migration
             
             $table->index(['lesson_id', 'scheduled_start']);
             
-            $table->unique(['lesson_id', 'scheduled_start', 'scheduled_end'], 'lesson_occurrence_unique');
+            $table->unique(['lesson_id', 'scheduled_start'], 'lesson_occurrence_unique');
             
         });
     }

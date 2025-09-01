@@ -18,10 +18,10 @@ class LessonOccurrenceFactory extends Factory
     public function definition(): array
     {
         return [
-            'lesson_id' => Lesson::factory(),
-            'scheduled_start' => $this->faker->dateTimeBetween('now', '+1 week'),
-            'duration_minutes' => 60,
-            'status' => 'scheduled',
+            'lesson_id'          => Lesson::factory(),
+            'scheduled_start'    => $this->faker->dateTimeBetween('now', '+1 week'),
+            'duration_minutes'   => 60,
+            'status'             => 'scheduled',
         ];
     }
 }

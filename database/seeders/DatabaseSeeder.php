@@ -16,6 +16,8 @@ use App\Models\Setting;
 use App\Models\ParentModel;
 use App\Models\Student;
 use App\Models\Instructor;
+// use App\Notifications\PaymentApproved;
+// use App\Notifications\ClassReminder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -27,6 +29,7 @@ class DatabaseSeeder extends Seeder
         Setting::updateOrCreate(['key' => 'attendance_grace_period_minutes'], ['value' => 10]);
         Setting::updateOrCreate(['key' => 'billing_grace_period_days'], ['value' => 7]);
         Setting::updateOrCreate(['key' => 'recurrence_horizon_days'], ['value' => 30]);
+        Setting::updateOrCreate(['key' => 'zoom_meeting_horizon_days'], ['value' => 1]);
 
         // Admin
         User::factory()->create([
@@ -94,24 +97,38 @@ class DatabaseSeeder extends Seeder
         }
 
         // Lessons + Occurrences + Zoom + Attendance
-        Lesson::factory(10)->create()->each(function ($lesson) use ($students, $instructors) {
-            $occurrence = LessonOccurrence::factory()->create(['lesson_id' => $lesson->id]);
-            $zoom = ZoomSession::factory()->create(['lesson_occurrence_id' => $occurrence->id]);
+        $lesson = Lesson::factory(10)->create([
+            'student_id' => $students->random()->id,
+            'instructor_id' => $instructors->random()->id,
+        ])->each(function($lesson) use ($students, $instructors) {
+            $occurrence = LessonOccurrence::factory()->create([
+                'lesson_id'       => $lesson->id,
+                'scheduled_start' => now()->addDays(rand(1,7))->setTime(rand(8,17), 0),
+            ]);
 
-            // random attendance (student + instructor)
+            // Dev convenience: create a fake ZoomSession immediately
+            ZoomSession::factory()->create(['lesson_occurrence_id' => $occurrence->id]);
+
+            // Fake attendance
+            $att_status = ['present', 'late'];
             Attendance::factory()->create([
                 'lesson_occurrence_id' => $occurrence->id,
-                'user_id' => $lesson->student_id,
+                'attendable_type' => Student::class,
+                'attendable_id'   => $lesson->student_id,
+                'status'         => $att_status[array_rand($att_status)],
             ]);
             Attendance::factory()->create([
                 'lesson_occurrence_id' => $occurrence->id,
-                'user_id' => $lesson->instructor_id,
+                'attendable_type' => Instructor::class,
+                'attendable_id'   => $lesson->instructor_id,
+                'status'         => $att_status[array_rand($att_status)],
             ]);
 
             // Notify Student: Class Reminder
             // $student = User::find($lesson->student_id);
             // $student->notify(new ClassReminder($occurrence));
         });
+
     }
 }
 

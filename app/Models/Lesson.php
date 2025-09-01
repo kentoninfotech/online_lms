@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Instructor;
+use App\Models\Student;
+use App\Models\LessonOccurrence;
 
 class Lesson extends Model
 {
@@ -25,13 +28,13 @@ class Lesson extends Model
     // Lesson → Instructor
     public function instructor(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'instructor_id');
+        return $this->belongsTo(Instructor::class, 'instructor_id');
     }
 
     // Lesson → Student
     public function student(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'student_id');
+        return $this->belongsTo(Student::class, 'student_id');
     }
 
     // Lesson → LessonOccurrences

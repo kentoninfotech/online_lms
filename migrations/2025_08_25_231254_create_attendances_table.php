@@ -14,13 +14,17 @@ return new class extends Migration
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('lesson_occurrence_id')->constrained('lesson_occurrences')->onDelete('cascade');
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // student or instructor
+
+            $table->nullableMorphs('attendable'); // attendable_id + attendable_type (nullable)
             $table->timestamp('join_time')->nullable();
             $table->timestamp('leave_time')->nullable();
             $table->integer('duration_minutes')->nullable();
             $table->string('status')->default('absent'); // 'present', 'absent', 'late'
             $table->string('zoom_user_id')->nullable(); // from Zoom API
             $table->timestamps();
+
+            $table->unique(['lesson_occurrence_id', 'attendable_type', 'attendable_id', 'zoom_user_id'], 'attendance_unique');
+            
         });
     }
 
