@@ -36,11 +36,13 @@ return [
     ],
 
     'zoom' => [
-        'account_id'      => env('ZOOM_ACCOUNT_ID'),
-        'client_id'       => env('ZOOM_CLIENT_ID'),
-        'client_secret'   => env('ZOOM_CLIENT_SECRET'),
-        'webhook_secret'  => env('ZOOM_WEBHOOK_SECRET'),
-        'default_timezone'=> env('ZOOM_DEFAULT_TIMEZONE', 'UTC'),
+        'account_id'        => env('ZOOM_ACCOUNT_ID'),
+        'client_id'         => env('ZOOM_CLIENT_ID'),
+        'client_secret'     => env('ZOOM_CLIENT_SECRET'),
+        'webhook_secret'    => env('ZOOM_WEBHOOK_SECRET'),
+        'base_url'          => env('ZOOM_BASE_URL', 'https://api.zoom.us/v2'),
+        'auth_url'          => env('ZOOM_AUTH_URL', 'https://zoom.us/oauth/token'),
+        'default_timezone'  => env('ZOOM_DEFAULT_TIMEZONE', 'UTC'),
     ],
 
 ];

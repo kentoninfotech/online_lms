@@ -17,9 +17,11 @@ class LessonOccurrenceFactory extends Factory
      */
     public function definition(): array
     {
+        static $increment = 0; // increments with each factory call
+        
         return [
             'lesson_id'          => Lesson::factory(),
-            'scheduled_start'    => $this->faker->dateTimeBetween('now', '+1 week'),
+            'scheduled_start'    => now()->addDays(++$increment),
             'duration_minutes'   => 60,
             'status'             => 'scheduled',
         ];

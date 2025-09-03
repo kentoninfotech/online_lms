@@ -25,5 +25,6 @@ class AppServiceProvider extends ServiceProvider
     {
         Lesson::observe(LessonObserver::class);
         LessonOccurrence::observe(LessonOccurrenceObserver::class);
+
     }
 }

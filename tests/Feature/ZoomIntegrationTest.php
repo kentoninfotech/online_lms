@@ -9,13 +9,15 @@ use App\Models\User;
 use App\Models\Student;
 use App\Models\Instructor;
 use App\Models\ZoomSession;
-use App\Models\Attendance;
 use App\Jobs\SyncZoomParticipantsJob;
-use Illuminate\Support\Carbon;
+use App\Models\Setting;
 
 beforeEach(function () {
     parent::setUp();
-    $this->artisan('migrate');
+
+    $this->artisan('migrate:fresh');
+    $this->artisan('db:seed', ['--class' => \Database\Seeders\SettingsSeeder::class]);
+    
     Queue::fake();
     Http::preventStrayRequests();
 });
@@ -24,12 +26,19 @@ beforeEach(function () {
  * Test CreateZoomSessions command with Http::fake()
  */
 it('creates a ZoomSession when CreateZoomSessions command runs', function () {
-    // Setup fake instructor with zoom_user_id
+
+    // Setting::updateOrCreate(['key' => 'zoom_meeting_horizon_days'], ['value' => 7]);
+
+    $instructorUser = User::factory()->create(['user_type' => 'instructor']);
+    $studentUser    = User::factory()->create(['user_type' => 'student']);
+
     $instructor = Instructor::factory()->create([
-        'zoom_user_id' => 'host123', 
-        'user_id' => User::factory()->create(['user_type' => 'instructor'])->id
+        'zoom_user_id' => 'host123',
+        'user_id' => $instructorUser->id,
     ]);
-    $student = Student::factory()->create(['user_id' => User::factory()->create(['user_type' => 'student'])->id]);
+    $student = Student::factory()->create([
+        'user_id' => $studentUser->id,
+    ]);
 
     $lesson = Lesson::factory()->create([
         'subject' => 'Math',
@@ -41,27 +50,29 @@ it('creates a ZoomSession when CreateZoomSessions command runs', function () {
 
     $occurrence = LessonOccurrence::factory()->create([
         'lesson_id' => $lesson->id,
+        'scheduled_start' => now()->addHours(2), // safely inside horizon
+        'duration_minutes' => 60,
         // 'scheduled_start' => now()->addDay()->setTime(10, 0),
-        // 'duration_minutes' => 60,
     ]);
 
-    // $occurrence = LessonOccurrence::where('lesson_id', $lesson->id)->first();
+    // $occurrence = $lesson->occurrences()->first();
+    // $occurrence->update([
+    //     'scheduled_start' => now()->addHours(2), // safely inside horizon
+    //     // 'scheduled_start' => now()->addDay()->setTime(10, 0),
+    //     'duration_minutes' => 60,
+    // ]);
 
-    // Fake Zoom OAuth + meeting creation response
     Http::fake([
-        'https://zoom.us/oauth/token*' => Http::response([
-            'access_token' => 'fake-token',
-            // 'expires_in' => 3600,
-        ], 200),
-        'https://api.zoom.us/v2/users/*/meetings' => Http::response([
+        'https://zoom.us/oauth/token*' => Http::response(['access_token' => 'fake-token'], 200),
+        'https://api.zoom.us/v2/users/.*/meetings' => Http::response([
             'id' => '9876543210',
             'join_url' => 'https://zoom.us/j/9876543210',
             'start_url' => 'https://zoom.us/s/9876543210',
-            // 'password' => 'abc123',
         ], 201),
     ]);
 
     Artisan::call('lessons:create-zoom-sessions');
+
 
     $this->assertDatabaseHas('zoom_sessions', [
         'lesson_occurrence_id' => $occurrence->id,
@@ -73,12 +84,30 @@ it('creates a ZoomSession when CreateZoomSessions command runs', function () {
  * Test SyncZoomParticipantsJob with Http::fake()
  */
 it('syncs participants and creates attendance records', function () {
-    $usr_instructor = User::factory()->create(['user_type' => 'instructor']);
-    $usr_student = User::factory()->create(['user_type' => 'student']);
-    $instructor = Instructor::factory()->create(['zoom_user_id' => 'host123', 'user_id' => $usr_instructor->id]);
-    $student = Student::factory()->create(['zoom_user_id' => 'stu123', 'user_id' => $usr_student->id]);
-    $lesson = Lesson::factory()->create(['student_id' => $student->id, 'instructor_id' => $instructor->id]);
-    $occurrence = LessonOccurrence::factory()->create(['lesson_id' => $lesson->id]);
+    $instructorUser = User::factory()->create(['user_type' => 'instructor']);
+    $studentUser    = User::factory()->create(['user_type' => 'student']);
+
+    $instructor = Instructor::factory()->create([
+        'zoom_user_id' => 'host123',
+        'user_id' => $instructorUser->id,
+    ]);
+    $student = Student::factory()->create([
+        'zoom_user_id' => 'stu123',
+        'user_id' => $studentUser->id,
+    ]);
+
+    $lesson = Lesson::factory()->create([
+        'student_id' => $student->id,
+        'instructor_id' => $instructor->id,
+        'start_time' => now()->subDay()->setTime(14, 0),
+        'duration_minutes' => 60,
+    ]);
+
+    $occurrence = $lesson->occurrences()->first();
+    $occurrence->update([
+        'scheduled_start' => now()->subDay()->setTime(14, 0),
+        'duration_minutes' => 60,
+    ]);
 
     $session = ZoomSession::factory()->create([
         'lesson_occurrence_id' => $occurrence->id,
@@ -86,7 +115,6 @@ it('syncs participants and creates attendance records', function () {
         'status' => 'started',
     ]);
 
-    // Fake Zoom token + participants response
     Http::fake([
         'https://zoom.us/oauth/token' => Http::response(['access_token' => 'fake-token'], 200),
         'https://api.zoom.us/v2/report/meetings/*/participants*' => Http::response([
@@ -102,8 +130,8 @@ it('syncs participants and creates attendance records', function () {
         ], 200),
     ]);
 
-    // Dispatch job synchronously
-    (new SyncZoomParticipantsJob($session))->handle(app(\App\Services\ZoomService::class));
+    (new SyncZoomParticipantsJob($session))
+        ->handle(app(\App\Services\ZoomService::class));
 
     $this->assertDatabaseHas('attendances', [
         'lesson_occurrence_id' => $occurrence->id,
@@ -114,4 +142,60 @@ it('syncs participants and creates attendance records', function () {
     ]);
 
     expect($session->fresh()->status)->toBe('ended');
+});
+
+/**
+ * Test that command does not create duplicate ZoomSessions
+ */
+it('does not create duplicate ZoomSessions if one already exists', function () {
+    $instructorUser = User::factory()->create(['user_type' => 'instructor']);
+    $studentUser    = User::factory()->create(['user_type' => 'student']);
+
+    $instructor = Instructor::factory()->create([
+        'zoom_user_id' => 'host123',
+        'user_id' => $instructorUser->id,
+    ]);
+    $student = Student::factory()->create([
+        'user_id' => $studentUser->id,
+    ]);
+
+    $lesson = Lesson::factory()->create([
+        'subject' => 'Science',
+        'instructor_id' => $instructor->id,
+        'student_id' => $student->id,
+        'start_time' => now()->addDay()->setTime(11, 0),
+        'duration_minutes' => 45,
+    ]);
+
+    $occurrence = $lesson->occurrences()->first();
+    $occurrence->update([
+        'scheduled_start' => now()->addDay()->setTime(11, 0),
+        'duration_minutes' => 45,
+    ]);
+
+    // Pre-create a ZoomSession for this occurrence
+    ZoomSession::factory()->create([
+        'lesson_occurrence_id' => $occurrence->id,
+        'zoom_meeting_id' => '1111111111',
+        'status' => 'scheduled',
+    ]);
+
+    Http::fake([
+        'https://zoom.us/oauth/token*' => Http::response(['access_token' => 'fake-token'], 200),
+        'https://api.zoom.us/v2/users/*/meetings' => Http::response([
+            'id' => '2222222222',
+            'join_url' => 'https://zoom.us/j/2222222222',
+            'start_url' => 'https://zoom.us/s/2222222222',
+        ], 201),
+    ]);
+
+    Artisan::call('lessons:create-zoom-sessions');
+
+    // Still only one ZoomSession should exist for this occurrence
+    $this->assertDatabaseCount('zoom_sessions', 1);
+
+    $this->assertDatabaseHas('zoom_sessions', [
+        'lesson_occurrence_id' => $occurrence->id,
+        'zoom_meeting_id' => '1111111111',
+    ]);
 });

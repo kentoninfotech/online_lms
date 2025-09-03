@@ -24,12 +24,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // Settings & Business Rules
-        Setting::updateOrCreate(['key' => 'reschedule_limit'], ['value' => 4]);
-        Setting::updateOrCreate(['key' => 'reschedule_guard_time_minutes'], ['value' => 120]);
-        Setting::updateOrCreate(['key' => 'attendance_grace_period_minutes'], ['value' => 10]);
-        Setting::updateOrCreate(['key' => 'billing_grace_period_days'], ['value' => 7]);
-        Setting::updateOrCreate(['key' => 'recurrence_horizon_days'], ['value' => 30]);
-        Setting::updateOrCreate(['key' => 'zoom_meeting_horizon_days'], ['value' => 1]);
+        $this->call(SettingsSeeder::class);
 
         // Admin
         User::factory()->create([
@@ -98,8 +93,8 @@ class DatabaseSeeder extends Seeder
 
         // Lessons + Occurrences + Zoom + Attendance
         $lesson = Lesson::factory(10)->create([
-            'student_id' => $students->random()->id,
-            'instructor_id' => $instructors->random()->id,
+            'student_id'     => $students->random()->id,
+            'instructor_id'  => $instructors->random()->id,
         ])->each(function($lesson) use ($students, $instructors) {
             $occurrence = LessonOccurrence::factory()->create([
                 'lesson_id'       => $lesson->id,
@@ -113,15 +108,15 @@ class DatabaseSeeder extends Seeder
             $att_status = ['present', 'late'];
             Attendance::factory()->create([
                 'lesson_occurrence_id' => $occurrence->id,
-                'attendable_type' => Student::class,
-                'attendable_id'   => $lesson->student_id,
-                'status'         => $att_status[array_rand($att_status)],
+                'attendable_type'      => Student::class,
+                'attendable_id'        => $lesson->student_id,
+                'status'               => $att_status[array_rand($att_status)],
             ]);
             Attendance::factory()->create([
                 'lesson_occurrence_id' => $occurrence->id,
-                'attendable_type' => Instructor::class,
-                'attendable_id'   => $lesson->instructor_id,
-                'status'         => $att_status[array_rand($att_status)],
+                'attendable_type'      => Instructor::class,
+                'attendable_id'        => $lesson->instructor_id,
+                'status'               => $att_status[array_rand($att_status)],
             ]);
 
             // Notify Student: Class Reminder

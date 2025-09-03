@@ -10,7 +10,14 @@ use Illuminate\Support\Str;
 
 class ZoomService
 {
-    private string $base = 'https://api.zoom.us/v2';
+    private string $base;
+    private string $auth;
+
+    public function __construct()
+    {
+        $this->base = config('services.zoom.base_url');
+        $this->auth = config('services.zoom.auth_url');
+    }
 
     /**
      * Get / cache access token for S2S OAuth (account_credentials).
@@ -18,12 +25,13 @@ class ZoomService
     public function getAccessToken(): string
     {
         return Cache::remember('zoom_s2s_token', 3300, function () {
-            $resp = Http::asForm()
-                ->withBasicAuth(config('services.zoom.client_id'), config('services.zoom.client_secret'))
-                ->post('https://zoom.us/oauth/token', [
-                    'grant_type' => 'account_credentials',
-                    'account_id' => config('services.zoom.account_id'),
-                ]);
+            $resp = Http::asForm()->withBasicAuth(
+                config('services.zoom.client_id'), 
+                config('services.zoom.client_secret')
+            )->post($this->auth, [
+                'grant_type' => 'account_credentials',
+                'account_id' => config('services.zoom.account_id'),
+            ]);
 
             if ($resp->failed()) {
                 throw new \RuntimeException('Zoom token fetch failed: ' . $resp->body());
@@ -34,11 +42,32 @@ class ZoomService
     }
 
     /**
-     * Shortcut for Http client with token
+     * Shortcut for Http client with auto-refresh token.
      */
     private function client()
     {
-        return Http::withToken($this->getAccessToken())->baseUrl($this->base)->acceptJson();
+        $base = $this->base;
+
+        return Http::baseUrl($base)
+            ->acceptJson()
+            ->withToken($this->getAccessToken())
+            ->tap(function ($pendingRequest) use ($base) {
+                $pendingRequest->withMiddleware(function ($handler) use ($base) {
+                    return function ($request, $options) use ($handler) {
+                        return $handler($request, $options)->then(function ($response) use ($request, $handler, $options) {
+                            if ($response->getStatusCode() === 401) {
+                                // Token invalid/expired → refresh
+                                Cache::forget('zoom_access_token');
+                                $newToken = app(self::class)->getAccessToken();
+
+                                $request = $request->withHeader('Authorization', "Bearer {$newToken}");
+                                return $handler($request, $options);
+                            }
+                            return $response;
+                        });
+                    };
+                });
+            });
     }
 
     /**
@@ -72,7 +101,16 @@ class ZoomService
             throw new \RuntimeException('Zoom create meeting failed: ' . $resp->body());
         }
 
-        return $resp->json();
+        $json = $resp->json();
+
+        return [
+            'id'        => (string) ($json['id'] ?? ''),
+            'join_url'  => $json['join_url'] ?? null,
+            'start_url' => $json['start_url'] ?? null,
+            'password'  => $json['password'] ?? null,
+            'raw'       => $json, // keep raw for debugging
+        ];
+
     }
 
     /**

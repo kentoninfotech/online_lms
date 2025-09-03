@@ -20,6 +20,10 @@ class LessonOccurrence extends Model
         'status',
     ];
 
+    protected $casts = [
+        'scheduled_start' => 'datetime',
+    ];
+
     // LessonOccurrence → Lesson
     public function lesson(): BelongsTo
     {

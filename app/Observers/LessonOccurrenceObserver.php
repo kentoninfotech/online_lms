@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\LessonOccurrence;
 use App\Services\ZoomService;
+use App\Jobs\CreateZoomSession;
 
 class LessonOccurrenceObserver
 {
@@ -11,10 +12,6 @@ class LessonOccurrenceObserver
     {
         // Intentionally empty: Zoom sessions are created by CreateZoomSessions command (rolling horizon).
         // If you want immediate creation for dev, you can call ZoomService here.
-        
-        // Only create meeting if not already has one
-        // if (!$occurrence->zoomSession) {
-        //     app(ZoomService::class)->createMeeting($occurrence);
-        // }
+        dispatch(new CreateZoomSession($occurrence));
     }
 }

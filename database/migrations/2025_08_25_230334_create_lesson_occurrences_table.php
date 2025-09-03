@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('lesson_occurrences', function (Blueprint $table) {
             $table->id();
             $table->foreignId('lesson_id')->constrained('lessons')->onDelete('cascade');
-            $table->dateTime('scheduled_start');
+            $table->datetime('scheduled_start');
             $table->integer('duration_minutes');
             $table->string('status')->default('scheduled'); //'scheduled', 'completed', 'cancelled'
             $table->timestamps();
