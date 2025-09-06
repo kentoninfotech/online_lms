@@ -16,12 +16,12 @@ class RescheduleRequest extends Model
         'proposed_start', 
         'reason',
         'status', 
-        'approved_by'
+        'approved_by',
+        'decision_reason'
     ];
 
     protected $casts = [
-        'new_start_time' => 'datetime',
-        'new_end_time'   => 'datetime',
+        'proposed_start' => 'datetime',
     ];
 
     // RescheduleRequest → LessonOccurrence
@@ -41,4 +41,5 @@ class RescheduleRequest extends Model
     {
         return $this->belongsTo(User::class, 'approved_by');
     }
+    
 }
