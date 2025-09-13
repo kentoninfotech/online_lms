@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('amount', 10, 2);
             $table->string('file_path')->nullable(); // upload receipt
             $table->string('status')->default('pending'); // 'pending', 'verified', 'rejected'
+            $table->text('decision_reason')->nullable(); // reason for approval/rejection
             $table->timestamps();
         });
     }

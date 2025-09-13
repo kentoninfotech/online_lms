@@ -4,6 +4,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Console\Scheduling\Schedule;
+use App\Jobs\SendSubscriptionExpiryWarnings;
+use App\Jobs\SendBillingOverdueReminders;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -23,6 +25,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('lessons:generate-occurrences')->daily();
         $schedule->command('lessons:create-zoom-sessions')->daily();
         $schedule->command('zoom:sync-participants')->dailyAt('02:00');
+        $schedule->command('reminders:classes')->everyFiveMinutes();
+        $schedule->job(new SendSubscriptionExpiryWarnings)->daily();
+        $schedule->job(new SendBillingOverdueReminders)->daily();
     })
     
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -17,13 +17,21 @@ class PaymentService
     {
         $path = $file->store('payments', 'public');
 
-        return Payment::create([
+        $payment = Payment::create([
             'subscription_id' => $subscription->id,
             'parent_id'       => $parent->id,
             'amount'          => $amount,
             'file_path'       => $path,
             'status'          => 'pending',
         ]);
+
+        // Notify admin of new payment
+        $admin = User::where('user_type', 'admin')->first();
+        if ($admin) {
+            $admin->notify(new PaymentSubmitted($payment));
+        }
+
+        return $payment;
     }
 
     /**
@@ -36,17 +44,30 @@ class PaymentService
         ]);
 
         $subs->activate($payment->subscription);
+
+        // Notify parent of approval
+        $parent = $payment->parent;
+        if ($parent) {
+            $parent->notify(new PaymentApproved($payment));
+        }
     }
 
     /**
      * Reject payment with reason.
      */
-    public function reject(Payment $payment, SubscriptionService $subs): void
+    public function reject(Payment $payment, SubscriptionService $subs, string $reason): void
     {
         $payment->update([
-            'status'         => 'rejected',
+            'status'          => 'rejected',
+            'decision_reason' => $reason,
         ]);
 
         $subs->reject($payment->subscription);
+        
+        // Notify parent of rejection
+        $parent = $payment->parent;
+        if ($parent) {
+            $parent->notify(new PaymentRejected($payment, $reason));
+        }
     }
 }

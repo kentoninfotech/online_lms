@@ -30,8 +30,10 @@ class RescheduleService
     {
         return DB::transaction(function () use ($occurrence, $requester, $proposedStart, $reason) {
             // Guard time check
-            $guardMinutes = (int) Setting::where('key', 'reschedule_guard_time_minutes')->value('value') ?? 120;
-            if ($occurrence->scheduled_start->diffInMinutes(now()) < $guardMinutes) {
+            $guardMinutes = (int) (Setting::where('key', 'reschedule_guard_time_minutes')->value('value') ?? 120);
+            // Use diffInMinutes with signed value (negative if scheduled_start < now)
+            $minutesUntilStart = now()->diffInMinutes($occurrence->scheduled_start, false);
+            if ($minutesUntilStart < $guardMinutes) {
                 throw new \Exception("Cannot reschedule within {$guardMinutes} minutes of start time");
             }
 
@@ -52,6 +54,9 @@ class RescheduleService
                 'reason' => $reason,
                 'status' => 'pending',
             ]);
+
+            // Load relations for notifications
+            $request->load(['occurrence.lesson', 'requester']);
 
             // If within limit → auto approve
             if ($usage->reschedule_count < $limit) {
@@ -89,7 +94,14 @@ class RescheduleService
 
         // Update occurrence time
         $occurrence = $request->occurrence;
-        $occurrence->update(['scheduled_start' => $request->proposed_start]);
+        // Double check occurrence exists
+        if (! $occurrence) {
+            return;
+        }
+        // Update scheduled start time
+        $occurrence->update([
+            'scheduled_start' => $request->proposed_start,
+        ]);
 
         // Recreate Zoom meeting
         if ($occurrence->zoomSession) {
@@ -167,14 +179,18 @@ class RescheduleService
             default     => [$now->copy()->startOfMonth(), $now->copy()->endOfMonth()],
         };
 
-        return RescheduleUsage::firstOrCreate(
-            [
-                'student_id'    => $studentId,
-                'plan_id'       => $planId,
-                'period_start'  => $periodStart,
-                'period_end'    => $periodEnd,
-            ],
-            ['reschedule_count' => 0]
-        );
+        return RescheduleUsage::query()
+        ->where('student_id', $studentId)
+        ->where('plan_id', $planId)
+        ->where('period_start', $periodStart)
+        ->where('period_end', $periodEnd)
+        ->first()
+        ?? RescheduleUsage::create([
+            'student_id'       => $studentId,
+            'plan_id'          => $planId,
+            'period_start'     => $periodStart,
+            'period_end'       => $periodEnd,
+            'reschedule_count' => 0,
+        ]);
     }
 }

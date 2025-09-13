@@ -30,11 +30,14 @@ class AdminRescheduleApprovalRequired extends Notification
      */
     public function toMail($notifiable)
     {
+        $occurrence = $this->request->occurrence;
+        $lessonId = $occurrence->lesson_id ?? 'N/A';
+
         return (new MailMessage)
             ->subject('Reschedule Request Requires Approval')
-            ->line("A reschedule request was submitted for Lesson #{$this->request->occurrence->lesson_id}.")
-            ->line("Requested by: {$this->request->requester->name}")
-            ->line("Proposed new time: {$this->request->proposed_start->format('d M Y H:i')}")
+            ->line("A reschedule request was submitted for Lesson #{$lessonId}.")
+            ->line("Requested by: {$this->request->requester?->name}")
+            ->line("Proposed new time: {$this->request->proposed_start?->format('d M Y H:i')}")
             ->action('Review Request', url("/admin/reschedules/{$this->request->id}"))
             ->line('Please review and approve/reject.');
     }
@@ -46,7 +49,7 @@ class AdminRescheduleApprovalRequired extends Notification
     {
         return [
             'request_id' => $this->request->id,
-            'lesson_id' => $this->request->occurrence->lesson_id,
+            'lesson_id' => $this->request->occurrence?->lesson_id,
             'proposed_start' => $this->request->proposed_start,
             'requested_by' => $this->request->requester->id,
         ];

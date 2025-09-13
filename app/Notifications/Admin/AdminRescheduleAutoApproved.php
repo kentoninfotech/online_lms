@@ -32,7 +32,7 @@ class AdminRescheduleAutoApproved extends Notification
             ->greeting('Hello Admin,')
             ->line("A reschedule request for lesson occurrence #{$this->request->lesson_occurrence_id} was auto-approved.")
             ->line("Reason: {$this->request->reason}")
-            ->line("New date/time: {$this->request->proposed_start->format('d M Y H:i')}")
+            ->line("New date/time: {$this->request->proposed_start?->format('d M Y H:i')}")
             ->line('No manual action is required.');
     }
 

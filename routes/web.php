@@ -12,6 +12,7 @@ use App\Http\Controllers\SubscriptionController;
 // public endpoint for Zoom to POST webhooks to
 Route::post('/webhooks/zoom', [ZoomWebhookController::class, 'handle']);
 
+// ADMIN ROUTES
 Route::middleware(['auth', 'can:isAdmin'])->group(function () {
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
@@ -29,6 +30,9 @@ Route::post('/reschedules/{reschedule}/reject', [RescheduleController::class, 'r
 // Subscription and Payment routes
 Route::post('/subscriptions', [SubscriptionController::class, 'store'])->name('subscriptions.store');
 Route::post('/payments/upload', [PaymentController::class, 'uploadEvidence'])->name('payments.upload');
+
+
+
 
 
 Route::get('/', function () {

@@ -16,7 +16,8 @@ class Payment extends Model
         'parent_id', 
         'amount', 
         'file_path', 
-        'status'
+        'status',
+        'decision_reason'
     ];
 
     // Payment → Subscription

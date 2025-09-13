@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Student extends Model
 {
@@ -26,6 +27,12 @@ class Student extends Model
         return $this->belongsTo(User::class);
     }
 
+    // Student → Lessons
+    public function lessons(): HasMany
+    {
+        return $this->hasMany(Lesson::class, 'student_id');
+    }
+
     // Student → Parents (Many-to-Many)
     public function parents(): BelongsToMany
     {
@@ -33,15 +40,15 @@ class Student extends Model
     }
 
     // Student → Subscriptions
-    public function subscriptions(): HasMany
+    public function subscription(): HasOne
     {
-        return $this->hasMany(Subscription::class, 'student_id');
+        return $this->hasOne(Subscription::class, 'student_id');
     }
 
     // Get the active subscription if any
     public function activeSubscription()
     {
-        return $this->subscriptions()
+        return $this->subscription()
             ->where('status', 'active')
             ->latest('end_date')
             ->first();

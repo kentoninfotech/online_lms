@@ -19,11 +19,12 @@ class PaymentFactory extends Factory
     public function definition(): array
     {
         return [
-            'subscription_id' => Subscription::factory(),
-            'parent_id' => User::factory()->create(['user_type' => 'parent'])->id,
-            'amount' => $this->faker->randomFloat(2, 1000, 20000),
-            'file_path' => null,
-            'status' => 'verified',
+            'subscription_id'  => Subscription::factory(),
+            'parent_id'        => User::factory()->create(['user_type' => 'parent'])->id,
+            'amount'           => $this->faker->randomFloat(2, 1000, 20000),
+            'file_path'        => 'payments/' . $this->faker->uuid() . '.jpg',
+            'status'           => 'verified',
+            'decision_reason'  => $this->faker->sentence(),
         ];
     }
 }

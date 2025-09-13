@@ -32,7 +32,7 @@ class InstructorDecisionNoticeToAdmin extends Notification
             ->greeting('Hello Admin,')
             ->line("Instructor **{$this->actorName}** has {$this->decision} a reschedule request.")
             ->line("Occurrence ID: #{$this->request->lesson_occurrence_id}")
-            ->line("Original: ".$this->request->occurrence->scheduled_start->format('d M Y H:i'))
+            ->line("Original: ".$this->request->occurrence->scheduled_start?->format('d M Y H:i'))
             ->line("Proposed: ".$this->request->proposed_start->format('d M Y H:i'))
             ->line("Student/Parent Reason: {$this->request->reason}");
 
