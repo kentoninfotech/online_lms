@@ -7,6 +7,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\RescheduleController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\Dashboard\StudentDashboardController;
 
 
 // public endpoint for Zoom to POST webhooks to
@@ -31,12 +32,23 @@ Route::post('/reschedules/{reschedule}/reject', [RescheduleController::class, 'r
 Route::post('/subscriptions', [SubscriptionController::class, 'store'])->name('subscriptions.store');
 Route::post('/payments/upload', [PaymentController::class, 'uploadEvidence'])->name('payments.upload');
 
-
+// STUDENT ROUTES
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard/student', [StudentDashboardController::class, 'index'])->name('student.dashboard');
+});
 
 
 
 Route::get('/', function () {
     return view('home');
+});
+
+Route::get('/', function () {
+    return view('layouts.app');
+});
+
+Route::get('/tem', function () {
+    return view('pages.tem');
 });
 
 Auth::routes();

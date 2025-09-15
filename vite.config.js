@@ -17,21 +17,21 @@ export default defineConfig({
             '@': path.resolve(__dirname, 'resources'), // allows @/css, @/js, @/images usage
         },
     },
-    build: {
-        rollupOptions: {
-            output: {
-                assetFileNames: (assetInfo) => {
-                    let ext = assetInfo.name.split('.').pop();
-                    if (/ttf|woff|woff2|eot/.test(ext)) {
-                        return 'fonts/[name][extname]';
-                    }
-                    if (/png|jpe?g|svg|gif|webp/.test(ext)) {
-                        return 'images/[name][extname]';
-                    }
-                    return 'assets/[name][extname]';
-                },
-            },
-        },
-    },
+    // build: {
+    //     rollupOptions: {
+    //         output: {
+    //             assetFileNames: (assetInfo) => {
+    //                 let ext = assetInfo.name.split('.').pop();
+    //                 if (/ttf|woff|woff2|eot/.test(ext)) {
+    //                     return 'fonts/[name][extname]';
+    //                 }
+    //                 if (/png|jpe?g|svg|gif|webp/.test(ext)) {
+    //                     return 'images/[name][extname]';
+    //                 }
+    //                 return 'assets/[name][extname]';
+    //             },
+    //         },
+    //     },
+    // },
 });
 

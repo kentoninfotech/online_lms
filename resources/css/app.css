@@ -1,5 +1,21 @@
 @import 'tailwindcss';
 
+/* Template CSS Files */
+@import "theme/style-preset.css";
+@import "theme/style.css";
+@import "theme/landing.css";
+
+@import "theme/plugins/bootstrap.min.css";
+/* map-vector css */
+@import "theme/plugins/jsvectormap.min.css";
+
+/* Font Icons */
+@import "../fonts/tabler-icons.min.css";
+@import "../fonts/fontawesome.css";
+@import "../fonts/material.css";
+@import "../fonts/feather.css";
+
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
