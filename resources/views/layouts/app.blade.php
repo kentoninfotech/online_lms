@@ -75,14 +75,7 @@
             @endif
         @endauth
         {{-- End Sidebar List --}}
-
-        <div class="card nav-action-card bg-brand-color-1">
-            <div class="card-body" style="background-image: url('../assets/images/layout/nav-card-bg.svg')">
-              <h5 class="text-white">Next Lesson</h5>
-              <p class="text-white text-opacity-75">Lesson Starting in</p>
-              <a href="#" class="btn btn-light" target="_blank">Start Now</a>
-            </div>
-        </div>
+        
         </div>
     </div>
     </nav>
@@ -98,11 +91,11 @@
 
         <!-- [ Main Content ] start -->
         <div class="pc-container">
-        <div class="pc-content">
-            <!-- [ Main Content ] start -->
-            @yield('content')
-            <!-- [ Main Content ] end -->
-        </div>
+            <div class="pc-content">
+                <!-- [ Main Content ] start -->
+                @yield('content')
+                <!-- [ Main Content ] end -->
+            </div>
         </div>
       <!-- [ Main Content ] end -->
 

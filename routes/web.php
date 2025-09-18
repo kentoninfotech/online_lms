@@ -8,6 +8,9 @@ use App\Http\Controllers\RescheduleController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\Dashboard\StudentDashboardController;
+use App\Http\Controllers\Student\StudentLessonController;
+use App\Http\Controllers\Student\StudentAttendanceController;
+use App\Http\Controllers\Student\StudentNotificationController;
 
 
 // public endpoint for Zoom to POST webhooks to
@@ -35,22 +38,14 @@ Route::post('/payments/upload', [PaymentController::class, 'uploadEvidence'])->n
 // STUDENT ROUTES
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/student', [StudentDashboardController::class, 'index'])->name('student.dashboard');
+    Route::get('/student/lessons', [StudentLessonController::class, 'lessons'])->name('student.lessons');
+    Route::get('/student/attendance', [StudentAttendanceController::class, 'attendance'])->name('student.attendance');
+    // FIX/CREATE ROUTE CONTROLLER METHOD
+    Route::get('/student/settings', [StudentLessonController::class, 'settings'])->name('student.settings');
+    Route::get('/student/notifications', [StudentNotificationController::class, 'notifications'])->name('student.notifications');
+    Route::post('/student/notifications/{id}/read', [StudentNotificationController::class, 'markAsRead'])->name('student.notifications.read');
+    Route::post('notifications/read-all', [StudentNotificationController::class, 'markAllRead'])->name('student.notifications.readAll');
 });
 
-
-
-Route::get('/', function () {
-    return view('home');
-});
-
-Route::get('/', function () {
-    return view('layouts.app');
-});
-
-Route::get('/tem', function () {
-    return view('pages.tem');
-});
 
 Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

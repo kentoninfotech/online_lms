@@ -74,35 +74,27 @@
         </a>
         </div>
         <div class="navbar-content">
-        <ul class="pc-navbar">
-            <li class="pc-item pc-caption">
-            <label>Navigation</label>
-            </li>
-            <li class="pc-item">
-            <a href="../dashboard/index.html" class="pc-link"
-                ><span class="pc-micon"> <i class="ph ph-gauge"></i></span><span class="pc-mtext">Dashboard</span>
-            </a>
-            </li>
-            @auth
-                @if(auth()->user()->user_type === 'admin')
-                    @include('layouts.partials.sidebars.admin')
-                @elseif(auth()->user()->user_type === 'instructor')
-                    @include('layouts.partials.sidebars.instructor')
-                @elseif(auth()->user()->user_type === 'parent')
-                    @include('layouts.partials.sidebars.parent')
-                @elseif(auth()->user()->user_type === 'student')
-                    @include('layouts.partials.sidebars.student')
-                @endif
-            @endauth
-
-        </ul>
-        <div class="card nav-action-card bg-brand-color-1">
-            <div class="card-body" style="background-image: url('../assets/images/layout/nav-card-bg.svg')">
-              <h5 class="text-white">Next Lesson</h5>
-              <p class="text-white text-opacity-75">Lesson Starting in</p>
-              <a href="#" class="btn btn-light" target="_blank">Start Now</a>
-            </div>
-        </div>
+            <ul class="pc-navbar">
+                <li class="pc-item pc-caption">
+                <label>Navigation</label>
+                </li>
+                <li class="pc-item">
+                <a href="../dashboard/index.html" class="pc-link"
+                    ><span class="pc-micon"> <i class="ph ph-gauge"></i></span><span class="pc-mtext">Dashboard</span>
+                </a>
+                </li>
+                @auth
+                    @if(auth()->user()->user_type === 'admin')
+                        @include('layouts.partials.sidebars.admin')
+                    @elseif(auth()->user()->user_type === 'instructor')
+                        @include('layouts.partials.sidebars.instructor')
+                    @elseif(auth()->user()->user_type === 'parent')
+                        @include('layouts.partials.sidebars.parent')
+                    @elseif(auth()->user()->user_type === 'student')
+                        @include('layouts.partials.sidebars.student')
+                    @endif
+                @endauth
+            </ul>
         </div>
     </div>
     </nav>

@@ -19,6 +19,9 @@
 <script src="{{ asset('assets/js/plugins/world.js') }}"></script>
 <script src="{{ asset('assets/js/plugins/world-merc.js') }}"></script>
 <script src="{{ asset('assets/js/pages/dashboard-sales.js') }}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
 <!-- [Page Specific JS] end -->
 
 <!-- Required Js -->

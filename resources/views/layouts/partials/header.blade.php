@@ -66,12 +66,57 @@
                         <span>Edit profile</span>
                     </span>
                     </a>
-                    <a href="#" class="dropdown-item">
-                    <span class="d-flex align-items-center">
-                        <i class="ph ph-bell"></i>
-                        <span>Notifications</span>
-                    </span>
+                    {{-- For Student --}}
+                    @role('student')
+                    <a href="{{ route('student.notifications') }}" class="dropdown-item">
+                        <span class="d-flex align-items-center">
+                            <i class="ph ph-bell"></i>
+                            <span>Notifications</span>
+                            @if(auth()->user()->unreadNotifications->count() > 0)
+                                <span class="badge bg-danger">{{ auth()->user()->unreadNotifications->count() }}</span>
+                            @endif
+                        </span>
                     </a>
+                    @endrole
+
+                    {{-- For Instructor --}}
+                    @role('instructor')
+                    <a href="{{-- route('instructor.notifications') --}}" class="dropdown-item">
+                        <span class="d-flex align-items-center">
+                            <i class="ph ph-bell"></i>
+                            <span>Notifications</span>
+                            @if(auth()->user()->unreadNotifications->count() > 0)
+                                <span class="badge bg-danger">{{ auth()->user()->unreadNotifications->count() }}</span>
+                            @endif
+                        </span>
+                    </a>
+                    @endrole
+
+                    {{-- For Parent --}}
+                    @role('parent')
+                    <a href="{{-- route('parent.notifications') --}}" class="dropdown-item">
+                        <span class="d-flex align-items-center">
+                            <i class="ph ph-bell"></i>
+                            <span>Notifications</span>
+                            @if(auth()->user()->unreadNotifications->count() > 0)
+                                <span class="badge bg-danger">{{ auth()->user()->unreadNotifications->count() }}</span>
+                            @endif
+                        </span>
+                    </a>
+                    @endrole
+
+                    {{-- For Admin --}}
+                    @role('admin')
+                    <a href="{{-- route('admin.notifications') --}}" class="dropdown-item">
+                        <span class="d-flex align-items-center">
+                            <i class="ph ph-bell"></i>
+                            <span>Notifications</span>
+                            @if(auth()->user()->unreadNotifications->count() > 0)
+                                <span class="badge bg-danger">{{ auth()->user()->unreadNotifications->count() }}</span>
+                            @endif
+                        </span>
+                    </a>
+                    @endrole
                     <a href="#" class="dropdown-item">
                     <span class="d-flex align-items-center">
                         <i class="ph ph-gear-six"></i>
@@ -80,15 +125,13 @@
                     </a>
                 </li>
                 <li class="list-group-item">
-                    <a href="{{ route('logout') }}" class="dropdown-item">
                     <span class="d-flex align-items-center">
                         <i class="ph ph-power"></i>
                         <form action="{{ route('logout') }}" method="post">
                             @csrf
-                           <button type="submit" class="btn-basic">Logout</button>
+                           <button type="submit" class="btn btn-basic">Logout</button>
                         </form>
                     </span>
-                    </a>
                 </li>
                 </ul>
             </div>
