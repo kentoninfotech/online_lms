@@ -34,18 +34,25 @@ class DatabaseSeeder extends Seeder
     {
         // Settings & Business Rules
         $this->call(SettingsSeeder::class);
+        // Roles and Permissions
+        $this->call(RoleSeeder::class);
 
         // Admin
-        User::factory()->create([
+        $admin = User::factory()->create([
             'name' => 'System Admin',
             'email' => 'admin@example.com',
             'password' => bcrypt('12345'),
             'user_type' => 'admin',
         ]);
+        // Assign Admin role
+        $admin->assignRole('admin');
 
         // Create Parents (User + ParentModel)
         $parentUsers = User::factory(5)->create(['user_type' => 'parent']);
         $parents = $parentUsers->map(function ($user) {
+            // Assign parent role
+            $user->assignRole('parent');
+
             return ParentModel::factory()->create([
                 'user_id' => $user->id,
                 'name' => $user->name,
@@ -58,6 +65,9 @@ class DatabaseSeeder extends Seeder
         // Create Students (User + Student)
         $studentUsers = User::factory(10)->create(['user_type' => 'student']);
         $students = $studentUsers->map(function ($user) {
+            // Assign student role
+            $user->assignRole('student');
+
             return Student::factory()->create([
                 'user_id' => $user->id,
                 'name' => $user->name,
@@ -73,6 +83,9 @@ class DatabaseSeeder extends Seeder
         // Create Instructors (User + Instructor)
         $instructorUsers = User::factory(5)->create(['user_type' => 'instructor']);
         $instructors = $instructorUsers->map(function ($user) {
+            // Assign instructor role
+            $user->assignRole('instructor');
+            
             return Instructor::factory()->create([
                 'user_id' => $user->id,
                 'name' => $user->name,
