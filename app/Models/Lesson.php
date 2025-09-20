@@ -25,6 +25,10 @@ class Lesson extends Model
         'recurrence_meta',
     ];
 
+    protected $casts = [
+        'recurrence_meta' => 'array',
+    ];
+
     // Lesson → Instructor
     public function instructor(): BelongsTo
     {

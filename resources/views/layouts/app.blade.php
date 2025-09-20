@@ -92,6 +92,11 @@
         <!-- [ Main Content ] start -->
         <div class="pc-container">
             <div class="pc-content">
+
+            @if(session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+
                 <!-- [ Main Content ] start -->
                 @yield('content')
                 <!-- [ Main Content ] end -->

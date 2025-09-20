@@ -49,7 +49,7 @@ class RescheduleController extends Controller
         $this->service->approveRequest($reschedule, auto: false, approver: $request->user());
 
         return redirect()
-            ->route('reschedule.requests') // REMEMBER TO UPDATE ROUTE (MSD) TO SELF
+            ->back() 
             ->with('success', 'Reschedule approved successfully');
     }
 
@@ -59,13 +59,13 @@ class RescheduleController extends Controller
     public function reject(Request $request, RescheduleRequest $reschedule)
     {
         $validated = $request->validate([
-            'reason' => ['nullable', 'string', 'max:500'],
+            'decision_reason' => ['nullable', 'string', 'max:500'],
         ]);
 
         $this->service->rejectRequest($reschedule, approver: $request->user(), reason: $validated['reason'] ?? null);
 
         return redirect()
-            ->route('reschedule.requests') // REMEMBER TO UPDATE ROUTE (MSD) TO SELF
+            ->back() 
             ->with('success', 'Reschedule rejected successfully');
     }
 }

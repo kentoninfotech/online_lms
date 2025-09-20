@@ -27,7 +27,7 @@ class RescheduleRequest extends Model
     // RescheduleRequest → LessonOccurrence
     public function occurrence()
     {
-        return $this->belongsTo(LessonOccurrence::class);
+        return $this->belongsTo(LessonOccurrence::class, 'lesson_occurrence_id');
     }
 
     // RescheduleRequest → Requester (User)

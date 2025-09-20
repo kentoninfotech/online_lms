@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Plan;
 use App\Models\Student;
 use App\Services\SubscriptionService;
+use App\Http\Requests\StoreSubscriptionRequest;
 use Illuminate\Http\Request;
 
 class SubscriptionController extends Controller

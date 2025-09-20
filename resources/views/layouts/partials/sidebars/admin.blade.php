@@ -3,21 +3,48 @@
     <label>Navigation</label>
     </li>
     <li class="pc-item">
-        <a href="{{ route('student.dashboard') }}" class="pc-link">
+        <a href="{{ route('admin.dashboard') }}" class="pc-link">
             <span class="pc-micon"> <i class="ph ph-gauge"></i></span><span class="pc-mtext">Dashboard</span>
         </a>
     </li>
 
     <li class="pc-item">
-        <a href="{{ route('student.lessons') }}" class="pc-link">
+        <a href="{{ route('admin.students') }}" class="pc-link">
             <span class="pc-micon"><i class="ph ph-text-aa"></i></span>
-            <span class="pc-mtext">My Lessons</span>
+            <span class="pc-mtext">Students</span>
+        </a>
+    </li>
+
+    <li class="pc-item">
+        <a href="{{ route('admin.instructors') }}" class="pc-link">
+            <span class="pc-micon"><i class="ph ph-text-aa"></i></span>
+            <span class="pc-mtext">Instructors</span>
+        </a>
+    </li>
+
+    <li class="pc-item">
+        <a href="{{ route('admin.parents') }}" class="pc-link">
+            <span class="pc-micon"><i class="ph ph-text-aa"></i></span>
+            <span class="pc-mtext">Parents/Guardian</span>
         </a>
     </li>
     <li class="pc-item">
-        <a href="{{ route('student.attendance') }}" class="pc-link">
+        <a href="{{ route('admin.reschedules') }}" class="pc-link">
             <span class="pc-micon"><i class="ph ph-palette"></i></span>
-            <span class="pc-mtext">Attendance</span>
+            <span class="pc-mtext">Reschedule Request</span>
+        </a>
+    </li>
+    <li class="pc-item">
+        <a href="{{ route('admin.subscriptions') }}" class="pc-link">
+            <span class="pc-micon"><i class="ph ph-palette"></i></span>
+            <span class="pc-mtext">Subscriptions</span>
+        </a>
+    </li>
+
+    <li class="pc-item">
+        <a href="{{ route('admin.payments') }}" class="pc-link">
+            <span class="pc-micon"><i class="ph ph-palette"></i></span>
+            <span class="pc-mtext">Payments</span>
         </a>
     </li>
 
@@ -26,7 +53,7 @@
     <i class="ph ph-devices"></i>
     </li>
     <li class="pc-item">
-        <a href="{{ route('student.notifications') }}" target="_blank" class="pc-link">
+        <a href="{{ route('admin.notifications') }}" target="_blank" class="pc-link">
             <span class="pc-micon"><i class="ph ph-bell"></i></span>
             <span class="pc-mtext">Notification</span>
             @if(auth()->user()->unreadNotifications->count() > 0)
@@ -35,7 +62,7 @@
         </a>
     </li>
     <li class="pc-item">
-    <a href="{{ route('student.settings') }}" target="_blank" class="pc-link">
+    <a href="{{ route('admin.settings') }}" target="_blank" class="pc-link">
         <span class="pc-micon"><i class="ph ph-user-circle-plus"></i></span>
         <span class="pc-mtext">Settings</span>
     </a>

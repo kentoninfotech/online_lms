@@ -15,9 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         // Register route middleware aliases
-        $middleware->alias([
-            'isAdmin' => App\Http\Middleware\IsAdmin::class,
-        ]);
+        // $middleware->alias([
+        //     'isAdmin' => App\Http\Middleware\IsAdmin::class,
+        // ]);
     })
 
     ->withSchedule(function (Schedule $schedule): void {
