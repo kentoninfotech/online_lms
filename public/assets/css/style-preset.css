@@ -2112,7 +2112,8 @@ body {
 }
 
 [data-pc-header=header-1] {
-  --pc-header-background: linear-gradient(to right, #4099ff, #73b4ff);
+  --pc-header-background: linear-gradient(to right, #8A2BE2, #9932CC);
+  /* --pc-header-background: linear-gradient(to right, #4099ff, #73b4ff); */
 }
 
 [data-pc-header=header-2] {

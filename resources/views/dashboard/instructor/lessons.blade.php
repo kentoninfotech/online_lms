@@ -61,6 +61,7 @@
                     <th>Next Class</th>
                     <th>Status</th>
                     <th>Start</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -88,11 +89,102 @@
                         <td>
                             @if(isset($nextOccurrence->zoomSession))
                                 <a href="{{ $nextOccurrence->zoomSession->start_url }}" target="_blank" class="btn btn-sm btn-primary">
-                                    Start Class
+                                    Start Class ({{$nextOccurrence->id}})
                                 </a>
                             @else
                                 <span class="text-muted">Zoom link not ready</span>
                             @endif
+                        </td>
+                        <td>
+                            @if(! isset($nextOccurrence->zoomSession))
+                              <!-- Add zoom button opens modal -->
+                              <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#addZoomModal{{ $nextOccurrence->lesson_occurrence_id }}">
+                                    Add Zoom Meeting ({{$nextOccurrence->id}})
+                                </button>
+                            @endif
+
+                            <!-- Create Lesson Modal -->
+                            <div class="modal fade" id="addZoomModal" tabindex="-1" aria-labelledby="createMeetingLabel" aria-hidden="true">
+                              <div class="modal-dialog modal-lg">
+                                <form action="{{ route('add.zoom', $nextOccurrence) }}" method="POST">
+                                  @csrf
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h5 class="modal-title" id="createMeetingLabel">Add Zoom Meeting</h5>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+
+                                    <!-- lesson_occurrence_id -->
+                                    <input type="hidden" name="lesson_occurrence_id" value="{{ $nextOccurrence->id }}" >
+
+                                    <div class="modal-body row g-3">
+                                      <!-- Subject -->
+                                      <div class="col-md-6">
+                                        <label class="form-label">Topic</label>
+                                        <input type="text" name="topic" class="form-control @error('topic') is-invalid @enderror" required>
+                                        @error('topic')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                      </div>
+
+                                      <div class="col-md-6">
+                                        <label class="form-label">Zoom Meeting ID</label>
+                                        <input type="text" name="zoom_meeting_id" class="form-control @error('zoom_meeting_id') is-invalid @enderror" required>
+                                        @error('zoom_meeting_id')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                      </div>
+
+                                      <div class="col-md-6">
+                                        <label class="form-label">Start Url</label>
+                                        <input type="text" name="start_url" class="form-control @error('start_url') is-invalid @enderror" required>
+                                        <p class="muted-text">Start Meeting URL for Instructor</p>
+                                        @error('start_url')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                      </div>
+
+                                      <div class="col-md-6">
+                                        <label class="form-label">Join Url</label>
+                                        <input type="text" name="join_url" class="form-control @error('join_url') is-invalid @enderror" required>
+                                        <p class="muted-text">Join Meeting URL for Student</p>
+                                        @error('join_url')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                      </div>
+
+                                      <!-- Recurrence Type
+                                      <div class="col-md-6">
+                                          <label class="form-label">Recurrence</label>
+                                          <select name="recurrence_type" id="recurrence_type" class="form-select">
+                                            <option value="none">None (One-time)</option>
+                                            <option value="daily">Daily</option>
+                                            <option value="weekly">Weekly</option>
+                                            <option value="monthly">Monthly</option>
+                                          </select>
+                                        </div> -->
+
+                                    </div> <!-- modal-body -->
+
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                      <button type="submit" class="btn btn-primary">Add Meeting</button>
+                                    </div>
+                                  </div>
+                                </form>
+                              </div>
+                            </div>
+
+
+
                         </td>
                     </tr>
                 @empty

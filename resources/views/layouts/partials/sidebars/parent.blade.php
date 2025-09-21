@@ -3,15 +3,29 @@
     <label>Navigation</label>
     </li>
     <li class="pc-item">
-        <a href="{{-- route('student.dashboard') --}}" class="pc-link">
+        <a href="{{ route('parent.dashboard') }}" class="pc-link">
             <span class="pc-micon"> <i class="ph ph-gauge"></i></span><span class="pc-mtext">Dashboard</span>
         </a>
     </li>
 
     <li class="pc-item">
-    <a href="{{-- route('student.lessons') --}}" class="pc-link">
+    <a href="{{ route('parent.students') }}" class="pc-link">
         <span class="pc-micon"><i class="ph ph-text-aa"></i></span>
         <span class="pc-mtext">My Children</span>
+    </a>
+    </li>
+
+    <li class="pc-item">
+    <a href="{{ route('parent.reschedules') }}" class="pc-link">
+        <span class="pc-micon"><i class="ph ph-text-aa"></i></span>
+        <span class="pc-mtext">Reschedule Request</span>
+    </a>
+    </li>
+
+    <li class="pc-item">
+    <a href="{{ route('parent.payments') }}" class="pc-link">
+        <span class="pc-micon"><i class="ph ph-text-aa"></i></span>
+        <span class="pc-mtext">Payments</span>
     </a>
     </li>
 
@@ -20,7 +34,7 @@
     <i class="ph ph-devices"></i>
     </li>
     <li class="pc-item">
-    <a href="{{-- route('student.notifications') --}}" target="_blank" class="pc-link">
+    <a href="{{ route('parent.notifications') }}" target="_blank" class="pc-link">
         <span class="pc-micon"><i class="ph ph-bell"></i></span>
         <span class="pc-mtext">Notification</span>
         @if(auth()->user()->unreadNotifications->count() > 0)
@@ -28,11 +42,11 @@
         @endif
     </a>
     </li>
-    <li class="pc-item">
+    <!-- <li class="pc-item">
     <a href="{{-- route('student.settings') --}}" target="_blank" class="pc-link">
         <span class="pc-micon"><i class="ph ph-user-circle-plus"></i></span>
         <span class="pc-mtext">Settings</span>
     </a>
-    </li>
+    </li> -->
 
 </ul>

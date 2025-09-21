@@ -8,6 +8,7 @@ use App\Http\Controllers\RescheduleController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\LessonController;
+use App\Http\Controllers\ZoomController;
 use App\Http\Controllers\Dashboard\AdminDashboardController;
 use App\Http\Controllers\Dashboard\StudentDashboardController;
 use App\Http\Controllers\Student\StudentLessonController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\Dashboard\InstructorDashboardController;
 use App\Http\Controllers\Instructor\InstructorLessonController;
 use App\Http\Controllers\Instructor\InstructorNotificationController;
 use App\Http\Controllers\Instructor\InstructorStudentController;
+use App\Http\Controllers\Dashboard\ParentDashboardController;
 
 
 // public endpoint for Zoom to POST webhooks to
@@ -47,6 +49,8 @@ Route::middleware(['auth'])->group(function () {
 
 // LESSON ROUTE
 Route::post('/lesson', [LessonController::class, 'store'])->name('lesson.store');
+// ZOOM MEETING
+Route::post('/zoom/{occurrence}/add', [ZoomController::class, 'addZoom'])->name('add.zoom');
 
 // Reschedule routes
 Route::post('/occurrences/{occurrence}/reschedule', [RescheduleController::class, 'store'])->name('reschedule.store');
@@ -79,6 +83,20 @@ Route::middleware(['auth'])->group(function () {
     Route::post('notifications/read-all', [InstructorNotificationController::class, 'markAllRead'])->name('instructor.notifications.readAll');
     // FIX/CREATE ROUTE CONTROLLER METHOD
     Route::get('/instructor/settings', [InstructorLessonController::class, 'settings'])->name('instructor.settings');
+});
+
+// INSTRUCTOR ROUTES
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard/parent', [ParentDashboardController::class, 'index'])->name('parent.dashboard');
+    Route::get('/parent/students', [ParentDashboardController::class, 'students'])->name('parent.students');
+    Route::get('/parent/reschedules', [ParentDashboardController::class, 'reschedules'])->name('parent.reschedules');
+    Route::get('/parent/payments', [ParentDashboardController::class, 'payments'])->name('parent.payments');
+    // Route::get('/parent/lessons', [InstructorLessonController::class, 'lessons'])->name('parent.lessons');
+    Route::get('/parent/notifications', [InstructorNotificationController::class, 'notifications'])->name('parent.notifications');
+    Route::post('/parent/notifications/{id}/read', [InstructorNotificationController::class, 'markAsRead'])->name('parent.notifications.read');
+    Route::post('notifications/read-all', [InstructorNotificationController::class, 'markAllRead'])->name('parent.notifications.readAll');
+    // FIX/CREATE ROUTE CONTROLLER METHOD
+    // Route::get('/parent/settings', [InstructorLessonController::class, 'settings'])->name('parent.settings');
 });
 
 
