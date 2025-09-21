@@ -62,7 +62,7 @@
         </a>
     </li>
     <li class="pc-item">
-    <a href="{{ route('admin.settings') }}" target="_blank" class="pc-link">
+    <a href="{{ route('settings.index') }}" target="_blank" class="pc-link">
         <span class="pc-micon"><i class="ph ph-user-circle-plus"></i></span>
         <span class="pc-mtext">Settings</span>
     </a>

@@ -8,6 +8,7 @@ use App\Http\Controllers\RescheduleController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\LessonController;
+use App\Http\Controllers\Dashboard\AdminDashboardController;
 use App\Http\Controllers\Dashboard\StudentDashboardController;
 use App\Http\Controllers\Student\StudentLessonController;
 use App\Http\Controllers\Student\StudentAttendanceController;
@@ -22,7 +23,19 @@ use App\Http\Controllers\Instructor\InstructorStudentController;
 Route::post('/webhooks/zoom', [ZoomWebhookController::class, 'handle']);
 
 // ADMIN ROUTES
-Route::middleware(['auth', 'role:admin'])->group(function () {
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard/admin', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/students', [AdminDashboardController::class, 'students'])->name('admin.students');
+    Route::get('/admin/instructors', [AdminDashboardController::class, 'instructors'])->name('admin.instructors');
+    Route::get('/admin/parents', [AdminDashboardController::class, 'parents'])->name('admin.parents');
+    Route::get('/admin/subscriptions', [AdminDashboardController::class, 'subscriptions'])->name('admin.subscriptions');
+    Route::get('/admin/payments', [AdminDashboardController::class, 'payments'])->name('admin.payments');
+    Route::get('/admin/reschedules', [AdminDashboardController::class, 'reschedules'])->name('admin.reschedules');
+    // REMEMBER TO CHANGE/MAKE NOTIFICATION DRY
+    Route::get('/admin/notifications', [InstructorNotificationController::class, 'notifications'])->name('admin.notifications');
+    Route::post('/admin/notifications/{id}/read', [InstructorNotificationController::class, 'markAsRead'])->name('admin.notifications.read');
+    Route::post('notifications/read-all', [InstructorNotificationController::class, 'markAllRead'])->name('admin.notifications.readAll');
+    Route::get('/admin/settings', [InstructorLessonController::class, 'settings'])->name('admin.settings');
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
     // manual finalize attendance for occurrence

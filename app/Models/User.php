@@ -79,10 +79,10 @@ class User extends Authenticatable
     }
 
     // 🔧 Helpers
-    public function isAdmin() { return $this->role === 'admin'; }
-    public function isInstructor() { return $this->role === 'instructor'; }
-    public function isParent() { return $this->role === 'parent'; }
-    public function isStudent() { return $this->role === 'student'; }
+    // public function isAdmin() { return $this->role === 'admin'; }
+    // public function isInstructor() { return $this->role === 'instructor'; }
+    // public function isParent() { return $this->role === 'parent'; }
+    // public function isStudent() { return $this->role === 'student'; }
     
     // Get the active subscription if any
     public function activeSubscription()

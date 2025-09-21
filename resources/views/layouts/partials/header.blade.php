@@ -1,7 +1,8 @@
 ﻿<div class="m-header">
         <a href="../dashboard/index.html" class="b-brand text-primary">
         <!-- ========   Change your logo from here   ============ -->
-        <img src="../assets/images/logo-white.svg" alt="logo image" class="logo-lg" />
+        <img src="../assets/images/logo.png" width="120" alt="logo image" class="logo-lg" />
+        <!-- <img src="../assets/images/logo-white.svg" alt="logo image" class="logo-lg" /> -->
         </a>
     </div>
     <div class="header-wrapper"> <!-- [Mobile Media Block] start -->

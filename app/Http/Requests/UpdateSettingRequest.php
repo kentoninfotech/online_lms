@@ -22,8 +22,8 @@ class UpdateSettingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'key' => 'required|string|exists:settings,key',
-            'value' => 'required|integer|min:0',
+            'settings' => 'required|array',
+            'settings.*' => 'required', // each value must be present
         ];
     }
 }
