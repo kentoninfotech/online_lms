@@ -13,10 +13,10 @@
 
            <div class="row">
                <div class="col-md-6 col-xl-6">
-                    <div class="card bg-grd-success order-card">
+                    <div class="card bg-virtual order-card">
                     <div class="card-body">
                         <h6 class="text-white">Total Courses</h6>
-                        <h2 class="text-end text-white"><i class="feather icon-tag float-start"></i>
+                        <h2 class="text-end text-white"><i class="feather icon-book float-start"></i>
                              <span>{{ $student->lessons->count() }}</span> 
                         </h2>
                         <p class="m-b-0">Lessons this month<span class="float-end">{{ $lessonsThisMonth }}</span></p>
@@ -110,7 +110,7 @@
                                     <div class="media-body ms-2">
                                         <p class="mb-0 text-muted">Expires</p>
                                         <h6 class="mb-0">
-                                            {{ $subscription->ends_at?->format('d M Y') ?? 'N/A' }}
+                                            {{ $subscription->end_date?->format('d M Y') ?? 'N/A' }}
                                         </h6>
                                     </div>
                                 </div>

@@ -53,7 +53,7 @@ Route::post('/lesson', [LessonController::class, 'store'])->name('lesson.store')
 Route::post('/zoom/{occurrence}/add', [ZoomController::class, 'addZoom'])->name('add.zoom');
 
 // Reschedule routes
-Route::post('/occurrences/{occurrence}/reschedule', [RescheduleController::class, 'store'])->name('reschedule.store');
+Route::post('/reschedules/{occurrence}/request', [RescheduleController::class, 'store'])->name('reschedule.store');
 Route::post('/reschedules/{reschedule}/approve', [RescheduleController::class, 'approve'])->name('reschedule.approve');
 Route::post('/reschedules/{reschedule}/reject', [RescheduleController::class, 'reject'])->name('reschedule.reject');
 // Subscription and Payment routes
@@ -80,15 +80,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/instructor/reschedules', [InstructorStudentController::class, 'reschedules'])->name('instructor.reschedules');
     Route::get('/instructor/notifications', [InstructorNotificationController::class, 'notifications'])->name('instructor.notifications');
     Route::post('/instructor/notifications/{id}/read', [InstructorNotificationController::class, 'markAsRead'])->name('instructor.notifications.read');
-    Route::post('notifications/read-all', [InstructorNotificationController::class, 'markAllRead'])->name('instructor.notifications.readAll');
+    Route::post('notifications/read-all', [InstructorNotificationController::class, 'markAllRead'])->name('instructor.notifications.read.all');
     // FIX/CREATE ROUTE CONTROLLER METHOD
     Route::get('/instructor/settings', [InstructorLessonController::class, 'settings'])->name('instructor.settings');
 });
 
-// INSTRUCTOR ROUTES
+// PARENT ROUTES
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/parent', [ParentDashboardController::class, 'index'])->name('parent.dashboard');
-    Route::get('/parent/students', [ParentDashboardController::class, 'students'])->name('parent.students');
+    Route::get('/parent/children', [ParentDashboardController::class, 'children'])->name('parent.children');
+    Route::get('/parent/lessons', [ParentDashboardController::class, 'upcoming'])->name('parent.lessons');
     Route::get('/parent/reschedules', [ParentDashboardController::class, 'reschedules'])->name('parent.reschedules');
     Route::get('/parent/payments', [ParentDashboardController::class, 'payments'])->name('parent.payments');
     // Route::get('/parent/lessons', [InstructorLessonController::class, 'lessons'])->name('parent.lessons');

@@ -31,11 +31,21 @@ class RescheduleService
         return DB::transaction(function () use ($occurrence, $requester, $proposedStart, $reason) {
             // Guard time check
             $guardMinutes = (int) (Setting::where('key', 'reschedule_guard_time_minutes')->value('value') ?? 120);
+            
+            // ADD MORE REFLEXIBLE GUARD LOGIC THAT ALLOWS RESCHEDULE EVEN IF
+            // minutesUntilStart IS LESS THAN guardMinutes BUT WILL REQUIRE MANUAL APPROVAL
             // Use diffInMinutes with signed value (negative if scheduled_start < now)
             $minutesUntilStart = now()->diffInMinutes($occurrence->scheduled_start, false);
             if ($minutesUntilStart < $guardMinutes) {
                 throw new \Exception("Cannot reschedule within {$guardMinutes} minutes of start time");
             }
+
+            // Use diffInMinutes with signed value (negative if scheduled_start < now)
+            // $minutesUntilStart = now()->diffInMinutes($occurrence->scheduled_start, false);
+            // // Check if the event is in the future AND within the guard time window
+            // if ($minutesUntilStart >= 0 && $minutesUntilStart < $guardMinutes) {
+            //     throw new \Exception("Cannot reschedule within {$minutesUntilStart} minutes of start time");
+            // }
 
             // Get Student - subscription plan (assume lesson belongs to student)
             $student = $occurrence->lesson->student;

@@ -97,6 +97,10 @@
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
 
+            @if(session('error'))
+                <div class="alert alert-danger">{{ session('success') }}</div>
+            @endif
+
                 <!-- [ Main Content ] start -->
                 @yield('content')
                 <!-- [ Main Content ] end -->

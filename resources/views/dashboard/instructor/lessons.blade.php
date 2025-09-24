@@ -89,7 +89,7 @@
                         <td>
                             @if(isset($nextOccurrence->zoomSession))
                                 <a href="{{ $nextOccurrence->zoomSession->start_url }}" target="_blank" class="btn btn-sm btn-primary">
-                                    Start Class ({{$nextOccurrence->id}})
+                                    Start Class
                                 </a>
                             @else
                                 <span class="text-muted">Zoom link not ready</span>
@@ -99,7 +99,7 @@
                             @if(! isset($nextOccurrence->zoomSession))
                               <!-- Add zoom button opens modal -->
                               <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#addZoomModal{{ $nextOccurrence->lesson_occurrence_id }}">
-                                    Add Zoom Meeting ({{$nextOccurrence->id}})
+                                    Add Zoom Meeting 
                                 </button>
                             @endif
 

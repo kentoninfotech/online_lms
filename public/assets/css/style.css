@@ -7,13 +7,6 @@ Support: https://codedthemes.authordesk.app
 File: style.css
 =========================================================================
 =================================================================================== */
-
-.btn-primary {
-  background-color: #990479 !important;
-}
-
-
-
 @import url("../fonts/phosphor/duotone/style.css");
 :root {
   --bs-body-bg: #fff;
@@ -44,6 +37,15 @@ File: style.css
   --pc-sidebar-color-rgb: 255, 255, 255;
   --pc-sidebar-submenu-border-color: var(--bs-gray-600);
   --pc-sidebar-caption-color: #748892;
+}
+
+ /* OVERWRITE BOOTSTRAP PRIMARY COLOR */
+.btn-primary {
+  background-color: #990479 !important;
+}
+
+.bg-virtual {
+  background-color: #990479 !important;
 }
 
 body {

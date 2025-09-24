@@ -9,16 +9,23 @@
     </li>
 
     <li class="pc-item">
-    <a href="{{ route('parent.students') }}" class="pc-link">
+    <a href="{{ route('parent.children') }}" class="pc-link">
         <span class="pc-micon"><i class="ph ph-text-aa"></i></span>
         <span class="pc-mtext">My Children</span>
     </a>
     </li>
 
     <li class="pc-item">
+    <a href="{{ route('parent.lessons') }}" class="pc-link">
+        <span class="pc-micon"><i class="ph ph-text-aa"></i></span>
+        <span class="pc-mtext">Upcoming Lessons</span>
+    </a>
+    </li>
+
+    <li class="pc-item">
     <a href="{{ route('parent.reschedules') }}" class="pc-link">
         <span class="pc-micon"><i class="ph ph-text-aa"></i></span>
-        <span class="pc-mtext">Reschedule Request</span>
+        <span class="pc-mtext">Reschedule Requests</span>
     </a>
     </li>
 
@@ -34,7 +41,7 @@
     <i class="ph ph-devices"></i>
     </li>
     <li class="pc-item">
-    <a href="{{ route('parent.notifications') }}" target="_blank" class="pc-link">
+    <a href="{{ route('parent.notifications') }}" class="pc-link">
         <span class="pc-micon"><i class="ph ph-bell"></i></span>
         <span class="pc-mtext">Notification</span>
         @if(auth()->user()->unreadNotifications->count() > 0)

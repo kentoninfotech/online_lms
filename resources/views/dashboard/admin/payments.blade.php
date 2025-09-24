@@ -49,7 +49,7 @@
                 <tr>
                     <td>{{ $pay->subscription->student->name ?? '-' }}</td>
                     <td>{{ $pay->parent->name ?? '-' }}</td>
-                    <td>{{ number_format($pay->amount, 2) }}</td>
+                    <td>₦ {{ number_format($pay->amount, 2) }}</td>
                     <td>
                         <span class="badge bg-{{ $pay->status === 'approved' ? 'success' : ($pay->status === 'pending' ? 'warning' : 'danger') }}">
                             {{ ucfirst($pay->status) }}

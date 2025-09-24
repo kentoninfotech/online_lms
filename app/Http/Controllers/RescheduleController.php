@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use App\Models\LessonOccurrence;
 use App\Models\RescheduleRequest;
 use App\Services\RescheduleService;
+use App\Http\Requests\StoreRescheduleRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -15,12 +17,26 @@ class RescheduleController extends Controller
     /**
      * Student/Parent requests reschedule
      */
-    public function store(Request $request, LessonOccurrence $occurrence)
+    public function store(StoreRescheduleRequest $request, LessonOccurrence $occurrence)
     {
-        $validated = $request->validate([
-            'proposed_start' => ['required', 'date', 'after:now'],
-            'reason'         => ['nullable', 'string', 'max:500'],
-        ]);
+        $user = Auth::user();
+        if ($user->user_type === 'parent') {
+            $parent = $user;
+        }
+
+        // Guard: prevent duplicate requests
+        $existing = RescheduleRequest::where('lesson_occurrence_id', $occurrence->id)
+            ->where('requested_by', $parent->id)
+            ->where('status', 'pending')
+            ->first();
+
+        if ($existing) {
+            return redirect()
+                ->back()
+                ->with('error', 'You already have a pending reschedule request for this lesson.');
+        }
+
+        $validated = $request->validated();
 
         $reschedule = $this->service->requestReschedule(
             $occurrence,
@@ -31,11 +47,11 @@ class RescheduleController extends Controller
 
         if ($reschedule->status === 'approved') {
             return redirect()
-                ->route('lessons.schedule') // REMEMBER TO UPDATE ROUTE (MSD) TO SELF
+                ->back()
                 ->with('success', 'Reschedule auto-approved');
         }else{
             return redirect()
-                ->route('lessons.schedule') // REMEMBER TO UPDATE ROUTE (MSD) TO SELF
+                ->back() 
                 ->with('success', 'Reschedule request submitted, pending approval');
         }
 
