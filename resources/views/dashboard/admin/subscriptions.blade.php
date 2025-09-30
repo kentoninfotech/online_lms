@@ -53,8 +53,8 @@
                             {{ ucfirst($sub->status) }}
                         </span>
                     </td>
-                    <td>{{ $sub->created_at->format('d M Y') }}</td>
-                    <td>{{ $sub->ends_at?->format('d M Y') ?? '-' }}</td>
+                    <td>{{ $sub->start_date->format('d M Y') }}</td>
+                    <td>{{ $sub->end_date?->format('d M Y') ?? '-' }}</td>
                 </tr>
             @empty
                 <tr><td colspan="5" class="text-center text-muted">No subscriptions found.</td></tr>

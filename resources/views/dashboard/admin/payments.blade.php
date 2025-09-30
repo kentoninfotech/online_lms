@@ -40,22 +40,28 @@
                 <th>Parent</th>
                 <th>Amount</th>
                 <th>Status</th>
-                <th>Reference</th>
                 <th>Date</th>
             </tr>
         </thead>
         <tbody>
             @forelse($payments as $pay)
                 <tr>
-                    <td>{{ $pay->subscription->student->name ?? '-' }}</td>
-                    <td>{{ $pay->parent->name ?? '-' }}</td>
+                    <td>
+                        <!-- <a href="{{ route('show.student', $pay->subscription->student) }}" class="text-decoration-none"> -->
+                            {{ $pay->subscription->student->name ?? '-' }}
+                        <!-- </a> -->
+                    </td>
+                    <td>
+                        <!-- <a href="{{ route('show.parent', $pay->parent) }}" class="text-decoration-none"> -->
+                            {{ $pay->parent->name ?? '-' }}
+                        <!-- </a> -->
+                    </td>
                     <td>₦ {{ number_format($pay->amount, 2) }}</td>
                     <td>
                         <span class="badge bg-{{ $pay->status === 'approved' ? 'success' : ($pay->status === 'pending' ? 'warning' : 'danger') }}">
                             {{ ucfirst($pay->status) }}
                         </span>
                     </td>
-                    <td>{{ $pay->reference }}</td>
                     <td>{{ $pay->created_at->format('d M Y h:i A') }}</td>
                 </tr>
             @empty

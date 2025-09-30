@@ -29,6 +29,12 @@
         </a>
     </li>
     <li class="pc-item">
+        <a href="{{ route('admin.lessons') }}" class="pc-link">
+            <span class="pc-micon"><i class="ph ph-text-aa"></i></span>
+            <span class="pc-mtext">Lessons</span>
+        </a>
+    </li>
+    <li class="pc-item">
         <a href="{{ route('admin.reschedules') }}" class="pc-link">
             <span class="pc-micon"><i class="ph ph-palette"></i></span>
             <span class="pc-mtext">Reschedule Request</span>
@@ -62,9 +68,16 @@
         </a>
     </li>
     <li class="pc-item">
+        <a href="{{ route('users.edit', ['user' => auth()->user(), 'role' => auth()->user()->user_type]) }}" 
+            target="_blank" class="pc-link">
+            <span class="pc-micon"><i class="ph ph-user-circle-plus"></i></span>
+            <span class="pc-mtext">Settings</span>
+        </a>
+    </li>
+    <li class="pc-item">
     <a href="{{ route('settings.index') }}" target="_blank" class="pc-link">
         <span class="pc-micon"><i class="ph ph-user-circle-plus"></i></span>
-        <span class="pc-mtext">Settings</span>
+        <span class="pc-mtext">System Settings</span>
     </a>
     </li>
 

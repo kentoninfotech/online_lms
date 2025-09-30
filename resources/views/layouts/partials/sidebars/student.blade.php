@@ -34,11 +34,12 @@
             @endif
         </a>
     </li>
-    <!-- <li class="pc-item">
-        <a href="{{ route('student.settings') }}" target="_blank" class="pc-link">
+    <li class="pc-item">
+        <a href="{{ route('users.edit', ['user' => auth()->user(), 'role' => auth()->user()->user_type]) }}" 
+            target="_blank" class="pc-link">
             <span class="pc-micon"><i class="ph ph-user-circle-plus"></i></span>
             <span class="pc-mtext">Settings</span>
         </a>
-    </li> -->
+    </li>
 
 </ul>

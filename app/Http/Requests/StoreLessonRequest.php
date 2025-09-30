@@ -24,6 +24,7 @@ class StoreLessonRequest extends FormRequest
         return [
             'subject'          => 'required|string|max:255',
             'student_id'       => 'required|exists:students,id',
+            'instructor_id'    => 'required|exists:instructors,id',
             'start_time'       => 'required|date',
             'duration_minutes' => 'required|integer|min:15',
             'recurrence_type'  => 'required|in:none,daily,weekly,monthly',

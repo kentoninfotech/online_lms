@@ -10,6 +10,11 @@ use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\ZoomController;
 use App\Http\Controllers\Dashboard\AdminDashboardController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StudentController;
+use App\Http\Controllers\ParentController;
+use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\Dashboard\StudentDashboardController;
 use App\Http\Controllers\Student\StudentLessonController;
 use App\Http\Controllers\Student\StudentAttendanceController;
@@ -30,6 +35,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/students', [AdminDashboardController::class, 'students'])->name('admin.students');
     Route::get('/admin/instructors', [AdminDashboardController::class, 'instructors'])->name('admin.instructors');
     Route::get('/admin/parents', [AdminDashboardController::class, 'parents'])->name('admin.parents');
+    Route::get('/admin/lessons', [LessonController::class, 'lessons'])->name('admin.lessons');
     Route::get('/admin/subscriptions', [AdminDashboardController::class, 'subscriptions'])->name('admin.subscriptions');
     Route::get('/admin/payments', [AdminDashboardController::class, 'payments'])->name('admin.payments');
     Route::get('/admin/reschedules', [AdminDashboardController::class, 'reschedules'])->name('admin.reschedules');
@@ -47,25 +53,45 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/payments/{payment}/reject', [PaymentController::class, 'reject'])->name('payments.reject');
 });
 
-// LESSON ROUTE
-Route::post('/lesson', [LessonController::class, 'store'])->name('lesson.store');
-// ZOOM MEETING
-Route::post('/zoom/{occurrence}/add', [ZoomController::class, 'addZoom'])->name('add.zoom');
 
-// Reschedule routes
-Route::post('/reschedules/{occurrence}/request', [RescheduleController::class, 'store'])->name('reschedule.store');
-Route::post('/reschedules/{reschedule}/approve', [RescheduleController::class, 'approve'])->name('reschedule.approve');
-Route::post('/reschedules/{reschedule}/reject', [RescheduleController::class, 'reject'])->name('reschedule.reject');
-// Subscription and Payment routes
-Route::post('/subscriptions', [SubscriptionController::class, 'store'])->name('subscriptions.store');
-Route::post('/payments/upload', [PaymentController::class, 'uploadEvidence'])->name('payments.upload');
+Route::middleware(['auth'])->group(function () {
+    // GLOBAL ROUTES
+    Route:: get('/student/{student}', [StudentController::class, 'show'])->name('show.student');
+    Route:: get('/parent/{parent}', [ParentController::class, 'show'])->name('show.parent');
+    Route:: get('/instructor/{instructor}', [InstructorController::class, 'show'])->name('show.instructor');
+    // USER ROUTE
+    Route::get('/users/{user}/edit/{role}', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{user}/update/{role}', [UserController::class, 'update'])->name('users.update');
+    // My Profile
+    Route::get('/my-profile', [ProfileController::class, 'show'])->name('my.profile');
+    Route::put('/users/{user}/change-password', [ProfileController::class, 'updatePassword'])->name('profile.change.password');
+    Route::put('/users/{user}/upload-picture', [ProfileController::class, 'updateProfilePicture'])->name('profile.upload.picture');
+
+    // Export routes
+    Route::get('/students/{student}/lessons/export/{format}', [StudentController::class, 'exportLessons'])->name('students.lessons.export');
+    Route::get('/students/{student}/attendance/export/{format}', [StudentController::class, 'exportAttendance'])->name('students.attendance.export');
+
+    // LESSON ROUTE
+    Route::post('/lesson', [LessonController::class, 'store'])->name('lesson.store');
+    // ZOOM MEETING
+    Route::post('/zoom/{occurrence}/add', [ZoomController::class, 'addZoom'])->name('add.zoom');
+
+    // Reschedule routes
+    Route::post('/reschedules/{occurrence}/request', [RescheduleController::class, 'store'])->name('reschedule.store');
+    Route::post('/reschedules/{reschedule}/approve', [RescheduleController::class, 'approve'])->name('reschedule.approve');
+    Route::post('/reschedules/{reschedule}/reject', [RescheduleController::class, 'reject'])->name('reschedule.reject');
+    // Subscription and Payment routes
+    Route::post('/subscriptions', [SubscriptionController::class, 'store'])->name('subscriptions.store');
+    Route::post('/payments/upload', [PaymentController::class, 'uploadEvidence'])->name('payments.upload');
+
+});
 
 // STUDENT ROUTES
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/student', [StudentDashboardController::class, 'index'])->name('student.dashboard');
-    Route::get('/student/lessons', [StudentLessonController::class, 'lessons'])->name('student.lessons');
-    Route::get('/student/attendance', [StudentAttendanceController::class, 'attendance'])->name('student.attendance');
-    Route::get('/student/notifications', [StudentNotificationController::class, 'notifications'])->name('student.notifications');
+    Route::get('/my-lessons', [StudentLessonController::class, 'lessons'])->name('student.lessons');
+    Route::get('/my-attendance', [StudentAttendanceController::class, 'attendance'])->name('student.attendance');
+    Route::get('/my-notifications', [StudentNotificationController::class, 'notifications'])->name('student.notifications');
     Route::post('/student/notifications/{id}/read', [StudentNotificationController::class, 'markAsRead'])->name('student.notifications.read');
     Route::post('notifications/read-all', [StudentNotificationController::class, 'markAllRead'])->name('student.notifications.readAll');
     // FIX/CREATE ROUTE CONTROLLER METHOD

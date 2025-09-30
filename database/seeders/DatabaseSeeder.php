@@ -50,6 +50,7 @@ class DatabaseSeeder extends Seeder
         // Create Parents (User + ParentModel)
         $parentUsers = User::factory(5)->create(['user_type' => 'parent']);
         $parents = $parentUsers->map(function ($user) {
+            $user->profile  = "https://ui-avatars.com/api/?name=" . urlencode($user->name) . "&background=random&size=128";
             // Assign parent role
             $user->assignRole('parent');
 
@@ -57,7 +58,6 @@ class DatabaseSeeder extends Seeder
                 'user_id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'profile'  => "https://ui-avatars.com/api/?name=" . urlencode($user->name) . "&background=random&size=128",
 
             ]);
         });
@@ -65,6 +65,7 @@ class DatabaseSeeder extends Seeder
         // Create Students (User + Student)
         $studentUsers = User::factory(10)->create(['user_type' => 'student']);
         $students = $studentUsers->map(function ($user) {
+            $user->profile  = "https://ui-avatars.com/api/?name=" . urlencode($user->name) . "&background=random&size=128";
             // Assign student role
             $user->assignRole('student');
 
@@ -72,7 +73,6 @@ class DatabaseSeeder extends Seeder
                 'user_id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'profile'  => "https://ui-avatars.com/api/?name=" . urlencode($user->name) . "&background=random&size=128",
             ]);
         });
         // Link Students to Parents
@@ -83,6 +83,7 @@ class DatabaseSeeder extends Seeder
         // Create Instructors (User + Instructor)
         $instructorUsers = User::factory(5)->create(['user_type' => 'instructor']);
         $instructors = $instructorUsers->map(function ($user) {
+            $user->profile  = "https://ui-avatars.com/api/?name=" . urlencode($user->name) . "&background=random&size=128";
             // Assign instructor role
             $user->assignRole('instructor');
             
@@ -90,7 +91,6 @@ class DatabaseSeeder extends Seeder
                 'user_id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'profile'  => "https://ui-avatars.com/api/?name=" . urlencode($user->name) . "&background=random&size=128",
             ]);
         });
 

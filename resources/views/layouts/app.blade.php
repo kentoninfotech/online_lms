@@ -93,13 +93,16 @@
         <div class="pc-container">
             <div class="pc-content">
 
-            @if(session('success'))
+            <!-- @if(session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
 
             @if(session('error'))
                 <div class="alert alert-danger">{{ session('success') }}</div>
-            @endif
+            @endif -->
+            {{-- Toast Notification --}}
+            @include('components.toast')
+            {{-- End Toast Notification --}}
 
                 <!-- [ Main Content ] start -->
                 @yield('content')
@@ -113,7 +116,6 @@
 @include('layouts.partials.footer')
 <!-- [footer] end -->
     
-
 </body>
 <!-- [Body] end -->
 </html>

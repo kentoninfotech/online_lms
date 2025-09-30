@@ -57,16 +57,16 @@
                             </button>
                             <ul class="dropdown-menu text-center">
                                 <li>
-                                    <a class="dropdown-item" href="{{-- route('show.instructor', $instructor) --}}"><i class="ph ph-user"></i> View</a>
+                                    <a class="dropdown-item" href="{{ route('show.instructor', $instructor) }}"><i class="ph ph-user"></i> View</a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="{{-- route('show.instructor', $instructor) --}}"><i class="ph ph-user-circle"></i> Edit</a>
+                                    <a class="dropdown-item" href="{{ route('users.edit', ['user' => $instructor->user, 'role' => 'instructor']) }}"><i class="ph ph-user-circle"></i> Edit</a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="{{-- route('instructor.lessons', $instructor) --}}"><i class="ph ph-book"></i> View Lessons</a>
+                                    <a class="dropdown-item" href="{{ route('show.instructor', $instructor) }}#lessons"><i class="ph ph-book"></i> View Lessons</a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="{{-- route('instructor.attendance', $student['id']) --}}"><i class="ph ph-check-square"></i> View Attendance</a>
+                                    <a class="dropdown-item" href="{{ route('show.instructor', $instructor) }}#attendance"><i class="ph ph-check-square"></i> View Attendance</a>
                                 </li>
                                 <li>
                                     <form class="d-inline" action="{{ '#' }}" method="post">

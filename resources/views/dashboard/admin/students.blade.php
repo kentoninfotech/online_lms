@@ -61,7 +61,9 @@
                     <td>{{ $student->subscription?->plan?->name ?? '-' }}</td>
                     <td>
                         @foreach($student->parents as $parent)
-                            <span class="badge bg-info">{{ $parent->name }}</span>
+                          <a href="{{ route('show.parent', $parent) }}" class="btn btn-sm btn-outline-primary mb-1">
+                              {{ $parent->name }}
+                          </a>
                         @endforeach
                     </td>
                     <td>
@@ -73,16 +75,16 @@
                             </button>
                             <ul class="dropdown-menu text-center">
                                 <li>
-                                    <a class="dropdown-item" href="{{-- route('show.student', $student) --}}"><i class="ph ph-user"></i> View Student</a>
+                                    <a class="dropdown-item" href="{{ route('show.student', $student) }}"><i class="ph ph-user"></i> View Student</a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="{{-- route('show.student', $student) --}}"><i class="ph ph-user-circle"></i> Edit</a>
+                                    <a class="dropdown-item" href="{{ route('users.edit', ['user' => $student->user, 'role' => 'student']) }}"><i class="ph ph-user-circle"></i> Edit</a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="{{-- route('instructor.students.lessons', $student['id']) --}}"><i class="ph ph-book"></i> View Lessons</a>
+                                    <a class="dropdown-item" href="{{ route('show.student', $student) }}#lessons"><i class="ph ph-book"></i> View Lessons</a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="{{-- route('instructor.students.attendance', $student['id']) --}}"><i class="ph ph-check-square"></i> View Attendance</a>
+                                    <a class="dropdown-item" href="{{ route('show.student', $student) }}#attendance"><i class="ph ph-check-square"></i> View Attendance</a>
                                 </li>
                                 <li>
                                     <!-- <div class="dropdown-divider"></div> -->

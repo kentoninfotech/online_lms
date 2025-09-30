@@ -31,7 +31,7 @@
 <!-- [ Main Content ] start -->
 
 <!-- Students -->
-<div class="card">
+<div class="card mt-3">
     <div class="card-body">
         <table class="table table-striped">
             <thead>
@@ -73,13 +73,13 @@
                             </button>
                             <ul class="dropdown-menu text-center">
                                 <li>
-                                    <a class="dropdown-item" href="{{-- route('show.student', $student) --}}"><i class="ph ph-user"></i> View Student</a>
+                                    <a class="dropdown-item" href="{{ route('show.student', $student['id']) }}"><i class="ph ph-user"></i> View Student</a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="{{-- route('instructor.students.lessons', $student['id']) --}}"><i class="ph ph-book"></i> View Lessons</a>
+                                    <a class="dropdown-item" href="{{ route('show.student', $student['id']) }}#lessons"><i class="ph ph-book"></i> View Lessons</a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="{{-- route('instructor.students.attendance', $student['id']) --}}"><i class="ph ph-check-square"></i> View Attendance</a>
+                                    <a class="dropdown-item" href="{{ route('show.student', $student['id']) }}#attendance"><i class="ph ph-check-square"></i> View Attendance</a>
                                 </li>
                             </ul>
                         </div>

@@ -26,12 +26,13 @@ class UserFactory extends Factory
         $user_type = ['admin', 'parent', 'student', 'instructor'];
 
         return [
-            'name' => $this->faker->name,
-            'email' => $this->faker->unique()->safeEmail(),
+            'name'              => $this->faker->name,
+            'email'             => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('12345'), // default
-            'user_type' => $this->faker->randomElement($user_type),
-            'remember_token' => Str::random(10),
+            'profile'           => "profile.png",
+            'password'          => static::$password ??= Hash::make('12345'), // default
+            'user_type'         => $this->faker->randomElement($user_type),
+            'remember_token'    => Str::random(10),
         ];
         
     }

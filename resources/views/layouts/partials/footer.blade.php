@@ -13,6 +13,17 @@
       </div>
     </footer>
 
+<!-- Toast Notification -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let toastEl = document.getElementById('liveToast');
+    if (toastEl) {
+        let toast = new bootstrap.Toast(toastEl, { delay: 4000 });
+        toast.show();
+    }
+});
+</script>
+
     <!-- [Page Specific JS] start -->
 <script src="{{ asset('assets/js/plugins/apexcharts.min.js') }}"></script>
 <script src="{{ asset('assets/js/plugins/jsvectormap.min.js') }}"></script>

@@ -38,7 +38,7 @@
             <tr>
                 <th>Name</th>
                 <th>Email</th>
-                <th>Students</th>
+                <th>Children</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -49,7 +49,11 @@
                     <td>{{ $parent->email }}</td>
                     <td>
                         @foreach($parent->students as $student)
-                            <span class="badge bg-primary">{{ $student->name }}</span>
+                        <a href="{{ route('show.student', $student) }}">
+                            <span class="badge bg-primary">
+                                {{ $student->name }}
+                            </span>
+                        </a>
                         @endforeach
                     </td>
                     <td>
@@ -61,10 +65,10 @@
                             </button>
                             <ul class="dropdown-menu text-center">
                                 <li>
-                                    <a class="dropdown-item" href="{{-- route('show.parent', $parent) --}}"><i class="ph ph-user"></i> View</a>
+                                    <a class="dropdown-item" href="{{ route('show.parent', $parent) }}"><i class="ph ph-user"></i> View Parent</a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="{{-- route('edit.parent', $parent) --}}"><i class="ph ph-user-circle"></i> Edit</a>
+                                    <a class="dropdown-item" href="{{ route('users.edit', ['user' => $parent->user, 'role' => 'parent']) }}"><i class="ph ph-user-circle"></i>Edit</a>
                                 </li>
                                 <li>
                                     <form class="d-inline" action="{{ '#' }}" method="post">
