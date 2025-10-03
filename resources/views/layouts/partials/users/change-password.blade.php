@@ -1,12 +1,13 @@
 <div class="card shadow-sm">
     <div class="card-body">
-        <h5>Change Password</h5>
         <p class="text-muted">
             Use the form below to change your password. Make sure to choose a strong password to keep your account secure.
         </p>
         <form method="POST" action="{{ route('profile.change.password', $user) }}">
             @csrf
             @method('PUT')
+
+            <input type="hidden" name="active_tab" value="password">
 
             @if(!auth()->user()->hasRole('admin') || auth()->id() == $user->id)
                 <!-- Current password only if user is editing their own account -->

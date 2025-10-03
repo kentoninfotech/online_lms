@@ -18,18 +18,19 @@ class UserController extends Controller
 
         // Role-specific updates
         if ($role === 'student' && $user->student) {
-            $user->student->update($request->only('address', 'number'));
+            $user->student->update($request->only('name', 'email', 'address', 'number'));
         }
 
         if ($role === 'parent' && $user->parent) {
-            $user->parent->update($request->only('number', 'occupation', 'address'));
+            $user->parent->update($request->only('name', 'email', 'number', 'occupation', 'address'));
         }
 
         if ($role === 'instructor' && $user->instructor) {
-            $user->instructor->update($request->only('address', 'number', 'specialization', 'bio'));
+            $user->instructor->update($request->only('name', 'email', 'address', 'number', 'specialization', 'bio'));
         }
 
         return redirect()->route('users.edit', [$user, $role])
-                         ->with('success', ucfirst($role) . ' updated successfully.')->with('tab', 'profile');
+                         ->with('success', ucfirst($role) . ' updated successfully.')
+                         ->withFragment('profile');
     }
 }

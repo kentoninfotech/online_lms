@@ -29,7 +29,7 @@ class UserFactory extends Factory
             'name'              => $this->faker->name,
             'email'             => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'profile'           => "profile.png",
+            'profile'           => "profiles/profile.png",
             'password'          => static::$password ??= Hash::make('12345'), // default
             'user_type'         => $this->faker->randomElement($user_type),
             'remember_token'    => Str::random(10),

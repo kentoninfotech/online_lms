@@ -48,6 +48,53 @@ File: style.css
   background-color: #990479 !important;
 }
 
+
+/* Vertical Sidebar Navigation */
+.profile-nav .nav-link {
+    border-radius: 10px;
+    padding: 12px 15px;
+    font-weight: 500;
+    color: #444;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.profile-nav .nav-link:hover {
+    background: #e9ecef;
+    color: #000;
+}
+
+.profile-nav .nav-link.active {
+    color: #fff;
+    background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Card headers for consistency */
+.card-header {
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* Sticky save button at bottom of card */
+.save-btn-wrapper {
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    padding: 12px;
+    border-top: 1px solid #dee2e6;
+    z-index: 10;
+}
+
+.save-btn-wrapper .btn {
+    font-weight: 600;
+    padding: 10px;
+}
+
+
+
 body {
   font-feature-settings: "salt";
 }

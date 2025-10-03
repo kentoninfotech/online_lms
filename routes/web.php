@@ -15,6 +15,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\ParentController;
 use App\Http\Controllers\InstructorController;
+use App\Http\Controllers\LinkStudentParentController;
 use App\Http\Controllers\Dashboard\StudentDashboardController;
 use App\Http\Controllers\Student\StudentLessonController;
 use App\Http\Controllers\Student\StudentAttendanceController;
@@ -89,6 +90,7 @@ Route::middleware(['auth'])->group(function () {
 // STUDENT ROUTES
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/student', [StudentDashboardController::class, 'index'])->name('student.dashboard');
+    Route::post('/student/generate-link-code', [LinkStudentParentController::class, 'generateLinkCode'])->name('generate.link.code');
     Route::get('/my-lessons', [StudentLessonController::class, 'lessons'])->name('student.lessons');
     Route::get('/my-attendance', [StudentAttendanceController::class, 'attendance'])->name('student.attendance');
     Route::get('/my-notifications', [StudentNotificationController::class, 'notifications'])->name('student.notifications');
@@ -118,6 +120,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/parent/lessons', [ParentDashboardController::class, 'upcoming'])->name('parent.lessons');
     Route::get('/parent/reschedules', [ParentDashboardController::class, 'reschedules'])->name('parent.reschedules');
     Route::get('/parent/payments', [ParentDashboardController::class, 'payments'])->name('parent.payments');
+    Route::post('/parent/link-child', [LinkStudentParentController::class, 'linkChild'])->name('parent.link.child');
     // Route::get('/parent/lessons', [InstructorLessonController::class, 'lessons'])->name('parent.lessons');
     Route::get('/parent/notifications', [InstructorNotificationController::class, 'notifications'])->name('parent.notifications');
     Route::post('/parent/notifications/{id}/read', [InstructorNotificationController::class, 'markAsRead'])->name('parent.notifications.read');

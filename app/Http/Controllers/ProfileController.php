@@ -57,7 +57,10 @@ class ProfileController extends Controller
             'password' => bcrypt($request->password),
         ]);
 
-        return back()->with('success', 'Password updated successfully.')->with('tab', 'password');
+        return redirect()
+               ->back()
+               ->with('success', 'Password updated successfully.')
+               ->withFragment('password');
     }
 
     /**
@@ -79,6 +82,9 @@ class ProfileController extends Controller
 
         $user->update(['profile' => $path]);
 
-        return back()->with('success', 'Profile picture updated successfully.')->with('tab', 'picture');
+        return redirect()
+               ->back()
+               ->with('success', 'Profile picture updated successfully.')
+               ->withFragment('picture');
     }
 }

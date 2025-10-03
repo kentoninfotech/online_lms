@@ -3,68 +3,133 @@
 @section('title', 'Edit ' . ucfirst($role) . ' Profile')
 
 @section('content')
-
-<div class="container bg-white mt-4 pt-4 pb-4">
+<div class="container mt-4">
     <div class="row">
+        <!-- Sidebar Tabs -->
         <div class="col-md-3">
-            <!-- Tabs -->
-            <ul class="nav flex-column nav-pills me-3" id="profileTabs" role="tablist">
+            <ul class="nav flex-column nav-pills me-3 profile-nav" id="profileTabs" role="tablist">
                 <li class="nav-item mb-2">
-                    <button class="nav-link {{ request()->get('tab') === 'profile' ? 'active' : '' }}"
+                    <button class="nav-link active"
                             id="profile-tab" data-bs-toggle="pill" data-bs-target="#profile"
                             type="button" role="tab">
                         <i class="ph ph-person me-2"></i> Profile
                     </button>
                 </li>
                 <li class="nav-item mb-2">
-                    <button class="nav-link {{ request()->get('tab') === 'password' ? 'active' : '' }}"
+                    <button class="nav-link"
                             id="password-tab" data-bs-toggle="pill" data-bs-target="#password"
                             type="button" role="tab">
                         <i class="ph ph-lock me-2"></i> Password
                     </button>
                 </li>
                 <li class="nav-item mb-2">
-                    <button class="nav-link {{ request()->get('tab') === 'picture' ? 'active' : '' }}"
+                    <button class="nav-link"
                             id="picture-tab" data-bs-toggle="pill" data-bs-target="#picture"
                             type="button" role="tab">
-                        <i class="ph ph-image me-2"></i> Profile Picture
+                        <i class="ph ph-image me-2"></i> Picture
                     </button>
                 </li>
+
+                @role('parent')
+                <li class="nav-item mb-2">
+                    <button class="nav-link"
+                            id="link-child-tab" data-bs-toggle="pill" data-bs-target="#link-child"
+                            type="button" role="tab">
+                        <i class="ph ph-people me-2"></i> Link a Child
+                    </button>
+                </li>
+                @endrole
+
+                @role('student')
+                <li class="nav-item mb-2">
+                    <button class="nav-link"
+                            id="link-code-tab" data-bs-toggle="pill" data-bs-target="#link-code"
+                            type="button" role="tab">
+                        <i class="ph ph-key me-2"></i> Link Code
+                    </button>
+                </li>
+                @endrole
             </ul>
         </div>
 
+        <!-- Tab Content -->
         <div class="col-md-9">
-            <div class="tab-content mt-3">
-                <!-- Profile Info Tab -->
-                <div class="tab-pane fade {{ request()->get('tab') === 'profile' || !request()->has('tab') ? 'show active' : '' }}" id="profile" role="tabpanel">
-                    @include('layouts.partials.users.edit-profile', ['user' => $user, 'role' => $role])
+            <div class="tab-content">
+
+                <!-- Profile -->
+                <div class="tab-pane fade show active"
+                     id="profile" role="tabpanel">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-light fw-bold">Edit Profile</div>
+                        <div class="card-body">
+                            @include('layouts.partials.users.edit-profile', ['user' => $user, 'role' => $role])
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Change Password Tab -->
-                <div class="tab-pane fade {{ request()->get('tab') === 'password' ? 'show active' : '' }}" id="password" role="tabpanel">
-                    @include('layouts.partials.users.change-password', ['user' => $user])
+                <!-- Password -->
+                <div class="tab-pane fade" id="password" role="tabpanel">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-light fw-bold">Change Password</div>
+                        <div class="card-body">
+                            @include('layouts.partials.users.change-password', ['user' => $user])
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Profile Picture Tab -->
-                <div class="tab-pane fade {{ request()->get('tab') === 'picture' ? 'show active' : '' }}" id="picture" role="tabpanel">
-                    @include('layouts.partials.users.change-picture', ['user' => $user])
+                <!-- Picture -->
+                <div class="tab-pane fade" 
+                     id="picture" role="tabpanel">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-light fw-bold">Update Profile Picture</div>
+                        <div class="card-body">
+                            @include('layouts.partials.users.change-picture', ['user' => $user])
+                        </div>
+                    </div>
                 </div>
+
+                @role('parent')
+                <div class="tab-pane fade" id="link-child" role="tabpanel">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-light fw-bold">Link a Child</div>
+                        <div class="card-body">
+                            @include('layouts.partials.users.link-child')
+                        </div>
+                    </div>
+                </div>
+                @endrole
+
+                @role('student')
+                <div class="tab-pane fade" id="link-code" role="tabpanel">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-light fw-bold">Link Code</div>
+                        <div class="card-body text-center">
+                            @include('layouts.partials.users.link-code', ['user' => $user])
+                        </div>
+                    </div>
+                </div>
+                @endrole
+
             </div>
         </div>
     </div>
 </div>
-
-
 @endsection
+
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    // Preserve active tab in hash
-    const triggerTabList = [].slice.call(document.querySelectorAll('#profileTabs button'))
-    triggerTabList.forEach(function (triggerEl) {
-        triggerEl.addEventListener('shown.bs.tab', function (event) {
-            let tabId = event.target.getAttribute('data-bs-target').substring(1);
-            history.replaceState(null, null, '?tab=' + tabId);
+    // If there's a hash, show that tab
+    let hash = window.location.hash;
+    if (hash) {
+        let trigger = document.querySelector(`button[data-bs-target="${hash}"]`);
+        if (trigger) new bootstrap.Tab(trigger).show();
+    }
+
+    // Update hash when switching tabs
+    document.querySelectorAll('button[data-bs-toggle="pill"]').forEach(btn => {
+        btn.addEventListener('shown.bs.tab', function (e) {
+            history.replaceState(null, null, e.target.dataset.bsTarget);
         });
     });
 
