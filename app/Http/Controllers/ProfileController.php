@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
@@ -54,7 +55,7 @@ class ProfileController extends Controller
         }
 
         $user->update([
-            'password' => bcrypt($request->password),
+            'password' => Hash::make($request->password),
         ]);
 
         return redirect()

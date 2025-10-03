@@ -40,10 +40,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/subscriptions', [AdminDashboardController::class, 'subscriptions'])->name('admin.subscriptions');
     Route::get('/admin/payments', [AdminDashboardController::class, 'payments'])->name('admin.payments');
     Route::get('/admin/reschedules', [AdminDashboardController::class, 'reschedules'])->name('admin.reschedules');
-    // REMEMBER TO CHANGE/MAKE NOTIFICATION DRY
-    // Route::get('/admin/notifications', [InstructorNotificationController::class, 'notifications'])->name('admin.notifications');
-    // Route::post('/admin/notifications/{id}/read', [InstructorNotificationController::class, 'markAsRead'])->name('admin.notifications.read');
-    // Route::post('notifications/read-all', [InstructorNotificationController::class, 'markAllRead'])->name('admin.notifications.readAll');
+    Route::get('create/{role}', [UserController::class, 'create'])->name('admin.users.create');
+    Route::post('store/{role}', [UserController::class, 'store'])->name('admin.users.store');
     Route::get('/admin/settings', [InstructorLessonController::class, 'settings'])->name('admin.settings');
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');

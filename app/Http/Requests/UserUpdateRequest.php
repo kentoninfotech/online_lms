@@ -34,7 +34,7 @@ class UserUpdateRequest extends FormRequest
             $rules += [
                 'address'        => 'nullable|string|max:255',
                 'number'         => 'nullable|string|max:20',
-                'occupation'     => 'nullable|string|max:255',
+                // 'occupation'     => 'nullable|string|max:255',
             ];
         }
 
@@ -42,8 +42,8 @@ class UserUpdateRequest extends FormRequest
             $rules += [
                 'address'        => 'nullable|string|max:255',
                 'number'         => 'nullable|string|max:20',
-                'specialization' => 'nullable|string|max:255',
-                'bio'            => 'nullable|string|max:1000',
+                // 'specialization' => 'nullable|string|max:255',
+                // 'bio'            => 'nullable|string|max:1000',
             ];
         }
 

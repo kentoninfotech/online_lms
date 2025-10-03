@@ -43,10 +43,10 @@
     </div>
     <!-- [Mobile Media Block end] -->
     <div class="ms-auto">
+    @auth
     <ul class="list-unstyled">
         <li class="dropdown pc-h-item header-user-profile">
         
-        @auth
          <a class="pc-head-link dropdown-toggle arrow-none me-0"
             data-bs-toggle="dropdown"
             href="#"
@@ -57,7 +57,7 @@
             <img src="{{ Auth::user()->profile ? asset('storage/'. Auth::user()->profile) : asset('storage/profiles/profile.png') ?? 'https://ui-avatars.com/api/?name='. Auth::user()->name }}" 
                 alt="{{ Auth::user()->name }}" class="user-avtar" />
          </a>
-        @endauth
+    
         <div class="dropdown-menu dropdown-user-profile dropdown-menu-end pc-h-dropdown">
             <div class="dropdown-body">
             <div class="profile-notification-scroll position-relative" style="max-height: calc(100vh - 225px)">
@@ -104,5 +104,6 @@
         </div>
         </li>
     </ul>
+    @endauth
     </div>
 </div>

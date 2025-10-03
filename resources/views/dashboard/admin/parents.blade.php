@@ -11,7 +11,10 @@
         <div class="row align-items-center">
         <div class="col-md-12">
             <div class="page-header-title border-bottom pb-2 mb-2">
-            <h4 class="mb-0">Parents</h4>
+                <a href="{{ route('admin.users.create', 'parent') }}" class="btn btn-sm btn-primary float-end">
+                    <i class="ph ph-plus"></i> Add Parent
+                </a>
+                <h4 class="mb-0">Parents</h4>
             </div>
         </div>
         <div class="col-md-12">

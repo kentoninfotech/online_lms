@@ -3,10 +3,58 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserUpdateRequest;
+use App\Http\Requests\StoreInstructorRequest;
+use App\Http\Requests\StoreParentRequest;
+use App\Http\Requests\StoreStudentRequest;
+use App\Models\ParentModel;
+use App\Models\Instructor;
+use App\Models\Student;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    public function create(string $role)
+    {
+        return view('dashboard.add-user', compact('role'));
+    }
+
+    public function store(string $role)
+    {
+        // pick correct request
+        $request = match($role) {
+            'student'     => app(StoreStudentRequest::class),
+            'parent'      => app(StoreParentRequest::class),
+            'instructor'  => app(StoreInstructorRequest::class),
+            default       => abort(404),
+        };
+
+
+        $user = User::create([
+            'name'        => $request['name'],
+            'email'       => $request['email'],
+            'password'    => Hash::make($request['password'] ?? 'password123'),
+            'user_type'   => $role,
+        ]);
+
+        $user->assignRole($role);
+
+        if ($role === 'student') {
+            $user->student()->create($request->only('name', 'email', 'address', 'number'));
+        } elseif ($role === 'parent') {
+            $user->parent()->create($request->only('name', 'email', 'address', 'number'));
+        } elseif ($role === 'instructor') {
+            $user->instructor()->create($request->only('name', 'email', 'address', 'number'));
+        }
+
+        return redirect()
+                 ->back()
+                 ->with('success', ucfirst($role).' created successfully!');
+    }
+
+    /**
+     * Edit user
+     */
     public function edit(User $user, $role)
     {
         return view('dashboard.edit-user', compact('user', 'role'));
