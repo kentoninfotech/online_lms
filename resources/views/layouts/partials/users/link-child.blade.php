@@ -1,7 +1,18 @@
 <form method="POST" action="{{ route('parent.link.child') }}">
     @csrf
 
-    <input type="hidden" name="active_tab" value="link-child">
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <p><strong>Whoops! Something went wrong.</strong></p>
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <input type="hidden" name="_tab" value="link-child">
 
     <div class="mb-3">
         <label class="form-label">Child Email</label>

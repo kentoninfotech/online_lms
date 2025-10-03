@@ -4,6 +4,6 @@
 </div>
 <form method="POST" action="{{ route('generate.link.code') }}">
     @csrf
-    <input type="hidden" name="active_tab" value="link-code">
+    <input type="hidden" name="_tab" value="link-code">
     <button type="submit" class="btn btn-outline-primary">Generate New Link Code</button>
 </form>

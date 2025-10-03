@@ -190,10 +190,10 @@
                         </div>
                     </form>
                     <!-- Export Buttons -->
-                     <div>
+                    <!-- <div>
                         <a href="{{ route('students.attendance.export', [$student->id, 'format' => 'csv']) }}" class="btn btn-sm btn-outline-secondary">Export CSV</a>
                         <a href="{{ route('students.attendance.export', [$student->id, 'format' => 'pdf']) }}" class="btn btn-sm btn-outline-primary">Export PDF</a>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="card-body">
                     <table class="table table-bordered table-striped">
@@ -201,7 +201,7 @@
                             <tr>
                                 <th>Lesson</th>
                                 <th>Status</th>
-                                <th>Join</th>
+                                <th>Joined</th>
                                 @role('admin|instructor')
                                     <th>Leave</th>
                                     <th>Duration</th>

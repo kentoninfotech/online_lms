@@ -16,13 +16,13 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\ParentController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\LinkStudentParentController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Dashboard\StudentDashboardController;
 use App\Http\Controllers\Student\StudentLessonController;
 use App\Http\Controllers\Student\StudentAttendanceController;
 use App\Http\Controllers\Student\StudentNotificationController;
 use App\Http\Controllers\Dashboard\InstructorDashboardController;
 use App\Http\Controllers\Instructor\InstructorLessonController;
-use App\Http\Controllers\Instructor\InstructorNotificationController;
 use App\Http\Controllers\Instructor\InstructorStudentController;
 use App\Http\Controllers\Dashboard\ParentDashboardController;
 
@@ -41,9 +41,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/payments', [AdminDashboardController::class, 'payments'])->name('admin.payments');
     Route::get('/admin/reschedules', [AdminDashboardController::class, 'reschedules'])->name('admin.reschedules');
     // REMEMBER TO CHANGE/MAKE NOTIFICATION DRY
-    Route::get('/admin/notifications', [InstructorNotificationController::class, 'notifications'])->name('admin.notifications');
-    Route::post('/admin/notifications/{id}/read', [InstructorNotificationController::class, 'markAsRead'])->name('admin.notifications.read');
-    Route::post('notifications/read-all', [InstructorNotificationController::class, 'markAllRead'])->name('admin.notifications.readAll');
+    // Route::get('/admin/notifications', [InstructorNotificationController::class, 'notifications'])->name('admin.notifications');
+    // Route::post('/admin/notifications/{id}/read', [InstructorNotificationController::class, 'markAsRead'])->name('admin.notifications.read');
+    // Route::post('notifications/read-all', [InstructorNotificationController::class, 'markAllRead'])->name('admin.notifications.readAll');
     Route::get('/admin/settings', [InstructorLessonController::class, 'settings'])->name('admin.settings');
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
@@ -68,6 +68,10 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/users/{user}/change-password', [ProfileController::class, 'updatePassword'])->name('profile.change.password');
     Route::put('/users/{user}/upload-picture', [ProfileController::class, 'updateProfilePicture'])->name('profile.upload.picture');
 
+    // NOTIFICATION ROUTES
+    Route::get('/notifications', [NotificationController::class, 'notifications'])->name('notifications');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read.all');
     // Export routes
     Route::get('/students/{student}/lessons/export/{format}', [StudentController::class, 'exportLessons'])->name('students.lessons.export');
     Route::get('/students/{student}/attendance/export/{format}', [StudentController::class, 'exportAttendance'])->name('students.attendance.export');
@@ -90,12 +94,9 @@ Route::middleware(['auth'])->group(function () {
 // STUDENT ROUTES
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/student', [StudentDashboardController::class, 'index'])->name('student.dashboard');
-    Route::post('/student/generate-link-code', [LinkStudentParentController::class, 'generateLinkCode'])->name('generate.link.code');
+    Route::post('/generate-link-code', [LinkStudentParentController::class, 'generateLinkCode'])->name('generate.link.code');
     Route::get('/my-lessons', [StudentLessonController::class, 'lessons'])->name('student.lessons');
     Route::get('/my-attendance', [StudentAttendanceController::class, 'attendance'])->name('student.attendance');
-    Route::get('/my-notifications', [StudentNotificationController::class, 'notifications'])->name('student.notifications');
-    Route::post('/student/notifications/{id}/read', [StudentNotificationController::class, 'markAsRead'])->name('student.notifications.read');
-    Route::post('notifications/read-all', [StudentNotificationController::class, 'markAllRead'])->name('student.notifications.readAll');
     // FIX/CREATE ROUTE CONTROLLER METHOD
     Route::get('/student/settings', [StudentLessonController::class, 'settings'])->name('student.settings');
 });
@@ -106,9 +107,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/instructor/lessons', [InstructorLessonController::class, 'lessons'])->name('instructor.lessons');
     Route::get('/instructor/students', [InstructorStudentController::class, 'students'])->name('instructor.students');
     Route::get('/instructor/reschedules', [InstructorStudentController::class, 'reschedules'])->name('instructor.reschedules');
-    Route::get('/instructor/notifications', [InstructorNotificationController::class, 'notifications'])->name('instructor.notifications');
-    Route::post('/instructor/notifications/{id}/read', [InstructorNotificationController::class, 'markAsRead'])->name('instructor.notifications.read');
-    Route::post('notifications/read-all', [InstructorNotificationController::class, 'markAllRead'])->name('instructor.notifications.read.all');
     // FIX/CREATE ROUTE CONTROLLER METHOD
     Route::get('/instructor/settings', [InstructorLessonController::class, 'settings'])->name('instructor.settings');
 });
@@ -116,15 +114,12 @@ Route::middleware(['auth'])->group(function () {
 // PARENT ROUTES
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/parent', [ParentDashboardController::class, 'index'])->name('parent.dashboard');
-    Route::get('/parent/children', [ParentDashboardController::class, 'children'])->name('parent.children');
-    Route::get('/parent/lessons', [ParentDashboardController::class, 'upcoming'])->name('parent.lessons');
-    Route::get('/parent/reschedules', [ParentDashboardController::class, 'reschedules'])->name('parent.reschedules');
-    Route::get('/parent/payments', [ParentDashboardController::class, 'payments'])->name('parent.payments');
-    Route::post('/parent/link-child', [LinkStudentParentController::class, 'linkChild'])->name('parent.link.child');
+    Route::get('/children', [ParentDashboardController::class, 'children'])->name('parent.children');
+    Route::get('/lessons', [ParentDashboardController::class, 'upcoming'])->name('parent.lessons');
+    Route::get('/reschedules', [ParentDashboardController::class, 'reschedules'])->name('parent.reschedules');
+    Route::get('/payments', [ParentDashboardController::class, 'payments'])->name('parent.payments');
+    Route::post('/link-child', [LinkStudentParentController::class, 'linkChild'])->name('parent.link.child');
     // Route::get('/parent/lessons', [InstructorLessonController::class, 'lessons'])->name('parent.lessons');
-    Route::get('/parent/notifications', [InstructorNotificationController::class, 'notifications'])->name('parent.notifications');
-    Route::post('/parent/notifications/{id}/read', [InstructorNotificationController::class, 'markAsRead'])->name('parent.notifications.read');
-    Route::post('notifications/read-all', [InstructorNotificationController::class, 'markAllRead'])->name('parent.notifications.readAll');
     // FIX/CREATE ROUTE CONTROLLER METHOD
     // Route::get('/parent/settings', [InstructorLessonController::class, 'settings'])->name('parent.settings');
 });

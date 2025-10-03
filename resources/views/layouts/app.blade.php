@@ -98,7 +98,7 @@
             @endif
 
             @if(session('error'))
-                <div class="alert alert-danger">{{ session('success') }}</div>
+                <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
             {{-- Toast Notification --}}
             @include('components.toast')

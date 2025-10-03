@@ -59,7 +59,7 @@
     <i class="ph ph-devices"></i>
     </li>
     <li class="pc-item">
-        <a href="{{ route('admin.notifications') }}" class="pc-link">
+        <a href="{{ route('notifications') }}" class="pc-link">
             <span class="pc-micon"><i class="ph ph-bell"></i></span>
             <span class="pc-mtext">Notification</span>
             @if(auth()->user()->unreadNotifications->count() > 0)

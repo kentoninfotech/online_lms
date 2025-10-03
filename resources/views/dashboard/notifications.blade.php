@@ -32,7 +32,7 @@
 
     <div class="card mt-3 shadow-sm">
         <div class="mt-3 float-end">
-            <form action="{{-- route('instructor.notifications.read.all') --}}" method="POST" class="d-inline">
+            <form action="{{-- route('notifications.read.all') --}}" method="POST" class="d-inline">
                 @csrf
                 <button class="btn btn-sm btn-primary">Mark All as Read</button>
             </form>
@@ -62,7 +62,7 @@
 
                             <div>
                                 @if(!$note->read_at)
-                                    <form action="{{ route('instructor.notifications.read', $note->id) }}" method="POST">
+                                    <form action="{{ route('notifications.read', $note->id) }}" method="POST">
                                         @csrf
                                         <button class="btn btn-sm btn-outline-success">Mark Read</button>
                                     </form>

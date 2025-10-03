@@ -32,7 +32,7 @@
 
     <div class="card mt-3 shadow-sm">
         <div class="mt-3 float-end">
-            <form action="{{ route('student.notifications.readAll') }}" method="POST" class="d-inline">
+            <form action="{{ route('student.notifications.read.all') }}" method="POST" class="d-inline">
                 @csrf
                 <button class="btn btn-sm btn-primary">Mark All as Read</button>
             </form>

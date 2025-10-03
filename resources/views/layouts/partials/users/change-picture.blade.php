@@ -7,13 +7,18 @@
             @csrf
             @method('PUT')
 
-            @if($errors->has('profile'))
+            @if ($errors->any())
                 <div class="alert alert-danger">
-                    {{ $errors->first('profile') }}
+                    <p><strong>Whoops! Something went wrong.</strong></p>
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
             @endif
 
-            <input type="hidden" name="active_tab" value="picture">
+            <input type="hidden" name="_tab" value="picture">
 
             <div class="mb-3 text-center">
                 <img id="profile-preview"

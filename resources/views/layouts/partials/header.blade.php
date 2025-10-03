@@ -69,9 +69,7 @@
                         <span>My profile</span>
                     </span>
                     </a>
-                    {{-- For Student --}}
-                    @role('student')
-                    <a href="{{ route('student.notifications') }}" class="dropdown-item">
+                    <a href="{{ route('notifications') }}" class="dropdown-item">
                         <span class="d-flex align-items-center">
                             <i class="ph ph-bell"></i>
                             <span>Notifications</span>
@@ -80,45 +78,9 @@
                             @endif
                         </span>
                     </a>
-                    @endrole
-
-                    {{-- For Instructor --}}
-                    @role('instructor')
-                    <a href="{{ route('instructor.notifications') }}" class="dropdown-item">
-                        <span class="d-flex align-items-center">
-                            <i class="ph ph-bell"></i>
-                            <span>Notifications</span>
-                            @if(auth()->user()->unreadNotifications->count() > 0)
-                                <span class="badge bg-danger">{{ auth()->user()->unreadNotifications->count() }}</span>
-                            @endif
-                        </span>
-                    </a>
-                    @endrole
-
-                    {{-- For Parent --}}
-                    @role('parent')
-                    <a href="{{ route('parent.notifications') }}" class="dropdown-item">
-                        <span class="d-flex align-items-center">
-                            <i class="ph ph-bell"></i>
-                            <span>Notifications</span>
-                            @if(auth()->user()->unreadNotifications->count() > 0)
-                                <span class="badge bg-danger">{{ auth()->user()->unreadNotifications->count() }}</span>
-                            @endif
-                        </span>
-                    </a>
-                    @endrole
 
                     {{-- For Admin --}}
                     @role('admin')
-                    <a href="{{ route('admin.notifications') }}" class="dropdown-item">
-                        <span class="d-flex align-items-center">
-                            <i class="ph ph-bell"></i>
-                            <span>Notifications</span>
-                            @if(auth()->user()->unreadNotifications->count() > 0)
-                                <span class="badge bg-danger">{{ auth()->user()->unreadNotifications->count() }}</span>
-                            @endif
-                        </span>
-                    </a>
                     <a href="{{ route('settings.index') }}" class="dropdown-item">
                     <span class="d-flex align-items-center">
                         <i class="ph ph-gear-six"></i>

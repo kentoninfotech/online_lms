@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Instructor;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\NotificationService;
 use Illuminate\Support\Facades\Auth;
 
-class InstructorNotificationController extends Controller
+class NotificationController extends Controller
 {
     public function __construct(public NotificationService $service) {}
 
@@ -16,7 +16,7 @@ class InstructorNotificationController extends Controller
         // getGroupedNotifications(user, number per page)
         [$grouped, $notifications] = $this->service->getGroupedNotifications(Auth::user());
 
-        return view('dashboard.instructor.notifications', compact('grouped', 'notifications'));
+        return view('dashboard.notifications', compact('grouped', 'notifications'));
     }
 
     public function markAsRead($id)

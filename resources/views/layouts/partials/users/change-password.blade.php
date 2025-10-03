@@ -7,7 +7,7 @@
             @csrf
             @method('PUT')
 
-            <input type="hidden" name="active_tab" value="password">
+            <input type="hidden" name="_tab" value="password">
 
             @if(!auth()->user()->hasRole('admin') || auth()->id() == $user->id)
                 <!-- Current password only if user is editing their own account -->

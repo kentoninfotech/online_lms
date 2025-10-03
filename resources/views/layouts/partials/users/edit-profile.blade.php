@@ -24,7 +24,19 @@
             @csrf
             @method('PUT')
 
-            <input type="hidden" name="active_tab" value="profile">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <p><strong>Whoops! Something went wrong.</strong></p>
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            
+            <input type="hidden" name="_tab" value="profile">
+
             <!-- Common Fields -->
             <div class="row g-3">
                 <div class="col-md-6">

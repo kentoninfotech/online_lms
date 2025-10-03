@@ -17,7 +17,7 @@ class LinkStudentParentController extends Controller
 
         if (!$user->hasRole('student') || !$user->student) {
             return back()->with('error', 'Only students can generate link codes.')
-                         ->with('tab', $request->input('active_tab', 'link-code'));
+                         ->withFragment('link-code');
         }
 
         $student = $user->student;
@@ -42,14 +42,13 @@ class LinkStudentParentController extends Controller
         $user = Auth::user();
 
         $request->validate([
-            'link_code' => 'required|string',
-            'email'     => 'required|email',
+            'link_code'    => 'required|string',
+            'child_email'  => 'required|email',
         ]);
-dd($request->all());
 
         if (!$user->hasRole('parent') || !$user->parent) {
             return back()->with('error', 'Only parents can link children.')
-                         ->with('tab', $request->input('active_tab', 'link-child'));
+                         ->withFragment('link-child'); 
         }
 
         $parent = $user->parent;
@@ -63,13 +62,13 @@ dd($request->all());
 
         if (!$student) {
             return back()->with('error', 'Invalid email or link code.')
-                         ->with('tab', $request->input('active_tab', 'link-child'));
+                         ->withFragment('link-child');
         }
 
         // Check if already linked
         if ($parent->students()->where('student_id', $student->id)->exists()) {
             return back()->with('error', 'This child is already linked to your account.')
-                         ->with('tab', $request->input('active_tab', 'link-child'));
+                         ->withFragment('link-child');
         }
 
         // Link student to parent
