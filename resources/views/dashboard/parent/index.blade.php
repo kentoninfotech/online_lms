@@ -182,7 +182,7 @@
 <div class="modal fade" id="inviteChildModal" tabindex="-1" aria-labelledby="inviteChildLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form method="POST" action="{{-- route('parent.children.invite') --}}">
+      <form method="POST" action="{{ route('parent.link.child') }}">
         @csrf
         <div class="modal-header">
           <h5 class="modal-title" id="inviteChildLabel">Invite / Link Child</h5>
@@ -194,13 +194,13 @@
             <input type="email" class="form-control" id="child_email" name="child_email" required>
           </div>
           <div class="mb-3">
-            <label for="child_name" class="form-label">Child’s Full Name</label>
-            <input type="text" class="form-control" id="child_name" name="child_name" required>
+            <label for="link_code" class="form-label">Link Code</label>
+            <input type="text" class="form-control" id="link_code" name="link_code" required>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Send Invite</button>
+          <button type="submit" class="btn btn-primary">Link Child</button>
         </div>
       </form>
     </div>

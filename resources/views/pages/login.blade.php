@@ -91,36 +91,6 @@
     </div>
     <!-- [ Main Content ] end -->
 
-       
-    <!-- <script>
-      layout_change('light');
-    </script>
-       
-    <script>
-      layout_sidebar_change('light');
-    </script>
-      
-    <script>
-      change_box_container('false');
-    </script>
-     
-    <script>
-      layout_caption_change('true');
-    </script>
-       
-    <script>
-      layout_rtl_change('false');
-    </script>
-     
-    <script>
-      preset_change('preset-1');
-    </script>
-     
-    <script>
-      header_change('header-1');
-    </script> -->
-    
-
   </body>
   <!-- [Body] end -->
 </html>

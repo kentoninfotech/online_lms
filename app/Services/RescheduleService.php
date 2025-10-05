@@ -36,9 +36,9 @@ class RescheduleService
             // minutesUntilStart IS LESS THAN guardMinutes BUT WILL REQUIRE MANUAL APPROVAL
             // Use diffInMinutes with signed value (negative if scheduled_start < now)
             $minutesUntilStart = now()->diffInMinutes($occurrence->scheduled_start, false);
-            if ($minutesUntilStart < $guardMinutes) {
-                throw new \Exception("Cannot reschedule within {$guardMinutes} minutes of start time");
-            }
+            // if ($minutesUntilStart < $guardMinutes) {
+            //     throw new \Exception("Cannot reschedule within {$guardMinutes} minutes of start time");
+            // }
 
             // Use diffInMinutes with signed value (negative if scheduled_start < now)
             // $minutesUntilStart = now()->diffInMinutes($occurrence->scheduled_start, false);
@@ -69,7 +69,7 @@ class RescheduleService
             $request->load(['occurrence.lesson', 'requester']);
 
             // If within limit → auto approve
-            if ($usage->reschedule_count < $limit) {
+            if ($usage->reschedule_count < $limit && ! ($minutesUntilStart < $guardMinutes)) {
                 $this->approveRequest($request, auto: true);
                 $usage->increment('reschedule_count');
 

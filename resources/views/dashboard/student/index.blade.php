@@ -80,10 +80,10 @@
                 </div>
             </div>
 
+            @if($subscription)
             <div class="card mt-3">
                 <div class="card-body">
                     <div class="row">
-                        @if($subscription)
                            <div class="col-6">
                                 <div class="media align-items-center">
                                     <div class="avtar avtar-s bg-grd-primary flex-shrink-0">
@@ -115,10 +115,10 @@
                                     </div>
                                 </div>
                             </div>
-                        @endif
                     </div>
                 </div>
             </div>
+            @endif
 
             <!-- Upcoming Classes start -->
             <div class="col-sm-12">
@@ -185,9 +185,9 @@
                                 <tr>
                                     <th>Class</th>
                                     <th>Status</th>
-                                    <th>Duration</th>
-                                    <th>Join</th>
-                                    <th>Leave</th>
+                                    <!-- <th>Duration</th> -->
+                                    <th>Joined</th>
+                                    <!-- <th>Leave</th> -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -196,18 +196,18 @@
                                         <td>{{ $a->occurrence->lesson->subject }}</td>
                                         <td>
                                             @if($a->status == 'present')
-                                            <span class="badge bg-success">{{ Str::headline($a->status) }}</span>
+                                            <span class="badge bg-success">{{ Str::headline($a->status) }}</span> was early
                                             @elseif($a->status == 'absent')
                                             <span class="badge bg-danger">{{ Str::headline($a->status) }}</span>
                                             @elseif($a->status == 'late')
-                                            <span class="badge bg-warning">{{ Str::headline($a->status) }}</span>
+                                            <span class="badge bg-warning">{{ Str::headline($a->status) }}</span> was present
                                             @else
                                             <span class="badge bg-info">{{ Str::headline($a->status) }}</span>
                                             @endif
                                         </td>
-                                        <td>{{ $a->duration_minutes ?? '-' }}</td>
+                                        <!-- <td>{{ $a->duration_minutes ?? '-' }}</td> -->
                                         <td>{{ $a->join_time?->format('h:i A') ?? '-' }}</td>
-                                        <td>{{ $a->leave_time?->format('h:i A') ?? '-' }}</td>
+                                        <!-- <td>{{ $a->leave_time?->format('h:i A') ?? '-' }}</td> -->
                                     </tr>
                                 @empty
                                     <tr>
@@ -233,6 +233,7 @@
                <div class="card nav-action-card bg-brand-color-1">
                     <div class="card-body" style="background-image: url('../assets/images/layout/nav-card-bg.svg')">
                         <h5 class="text-white">Next Class</h5>
+                        <h6 class="text-white">Lesson: {{ $nextClass->lesson->subject }}</h6>
                         <p class="text-white text-opacity-75">
                             <strong>Instructor:</strong> {{ $nextClass->lesson->instructor->name }}
                         </p>

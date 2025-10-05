@@ -38,9 +38,9 @@
                     <th>Class</th>
                     <th>Status</th>
                     <th>Date</th>
-                    <th>Duration</th>
-                    <th>Join</th>
-                    <th>Leave</th>
+                    <!-- <th>Duration</th> -->
+                    <th>Joined</th>
+                    <!-- <th>Leave</th> -->
                 </tr>
             </thead>
             <tbody>
@@ -49,19 +49,19 @@
                         <td>{{ $a->occurrence->lesson->subject }}</td>
                         <td>
                             @if($a->status == 'present')
-                            <span class="badge bg-success">{{ Str::headline($a->status) }}</span>
+                            <span class="badge bg-success">{{ Str::headline($a->status) }}</span> was early
                             @elseif($a->status == 'absent')
                             <span class="badge bg-danger">{{ Str::headline($a->status) }}</span>
                             @elseif($a->status == 'late')
-                            <span class="badge bg-warning">{{ Str::headline($a->status) }}</span>
+                            <span class="badge bg-warning">{{ Str::headline($a->status) }}</span> was present
                             @else
                             <span class="badge bg-info">{{ Str::headline($a->status) }}</span>
                             @endif
                         </td>
                         <td>{{ $a->occurrence->scheduled_start->format('d M Y h:i A') ?? '-' }}</td>
-                        <td>{{ $a->duration_minutes ?? '-' }}</td>
+                        <!-- <td>{{ $a->duration_minutes ?? '-' }}</td> -->
                         <td>{{ $a->join_time?->format('h:i A') ?? '-' }}</td>
-                        <td>{{ $a->leave_time?->format('h:i A') ?? '-' }}</td>
+                        <!-- <td>{{ $a->leave_time?->format('h:i A') ?? '-' }}</td> -->
                     </tr>
                 @empty
                     <tr>

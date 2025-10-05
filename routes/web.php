@@ -101,10 +101,10 @@ Route::middleware(['auth'])->group(function () {
 
 // INSTRUCTOR ROUTES
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard/instructor', [InstructorDashboardController::class, 'index'])->name('instructor.dashboard');
-    Route::get('/instructor/lessons', [InstructorLessonController::class, 'lessons'])->name('instructor.lessons');
-    Route::get('/instructor/students', [InstructorStudentController::class, 'students'])->name('instructor.students');
-    Route::get('/instructor/reschedules', [InstructorStudentController::class, 'reschedules'])->name('instructor.reschedules');
+    Route::get('dashboard/instructor', [InstructorDashboardController::class, 'index'])->name('instructor.dashboard');
+    Route::get('instructors/lessons', [InstructorLessonController::class, 'lessons'])->name('instructor.lessons');
+    Route::get('instructors/students', [InstructorStudentController::class, 'students'])->name('instructor.students');
+    Route::get('instructors/reschedules', [InstructorStudentController::class, 'reschedules'])->name('instructor.reschedules');
     // FIX/CREATE ROUTE CONTROLLER METHOD
     Route::get('/instructor/settings', [InstructorLessonController::class, 'settings'])->name('instructor.settings');
 });

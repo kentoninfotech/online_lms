@@ -40,7 +40,7 @@
                     <button class="nav-link @if($activeTab === 'link-child') active @endif"
                             id="link-child-tab" data-bs-toggle="pill" data-bs-target="#link-child"
                             type="button" role="tab">
-                        <i class="ph ph-people me-2"></i> Link a Child
+                        <i class="ph ph-link me-2"></i> Link a Child
                     </button>
                 </li>
                 @endrole

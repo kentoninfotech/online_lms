@@ -68,13 +68,23 @@
             </div>
             <div class="text-center flex-fill p-3 bg-light rounded">
                 <h5 class="mb-0">
-                    <span class="badge 
-                        @if($student->subscription->status === 'active') bg-success 
-                        @elseif($student->subscription->status === 'expired') bg-danger 
-                        @elseif($student->subscription->status === 'pending') bg-warning 
-                        @else bg-info @endif">
-                        {{ Str::headline($student->subscription->status) ?? 'N/A' }} 
-                    </span>
+                    @if($student->subscription?->status === 'active')
+                       <span class="badge bg-success">
+                           {{ Str::headline($student->subscription->status) }} 
+                       </span>
+                    @elseif($student->subscription?->status === 'expired')
+                       <span class="badge bg-danger">
+                           {{ Str::headline($student->subscription->status) }} 
+                       </span>
+                    @elseif($student->subscription?->status === 'pending')
+                       <span class="badge bg-warning">
+                           {{ Str::headline($student->subscription->status) }} 
+                       </span>
+                    @else
+                       <span class="badge bg-info">
+                           {{ $student->subscription->status ?? 'N/A' }} 
+                       </span>
+                    @endif
                 </h5>
                 <small class="text-muted">Subscription</small>
             </div>
@@ -128,10 +138,10 @@
                         </div>
                     </form>
                     <!-- Export Buttons -->
-                    <div>
+                    <!-- <div>
                         <a href="{{ route('students.lessons.export', [$student, 'format' => 'csv']) }}" class="btn btn-sm btn-outline-secondary">Export CSV</a>
                         <a href="{{ route('students.lessons.export', [$student, 'format' => 'pdf']) }}" class="btn btn-sm btn-outline-primary">Export PDF</a>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="card-body">
                     <table class="table table-bordered table-striped">
@@ -149,7 +159,7 @@
                                 <tr>
                                     <td>{{ $lesson->subject }}</td>
                                     <td>{{ $lesson->instructor->name ?? '-' }}</td>
-                                    <td>{{ $occurrence->scheduled_start->format('d M Y h:i A') }}</td>
+                                    <td>{{ $occurrence->scheduled_start?->format('d M Y h:i A') }}</td>
                                     <td>{{ $occurrence->duration_minutes }} mins</td>
                                 </tr>
                                 @endforeach

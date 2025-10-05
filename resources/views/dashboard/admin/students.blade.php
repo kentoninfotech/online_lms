@@ -54,8 +54,8 @@
                     <td>{{ $student->email }}</td>
                     <td>
                         @if($student->subscription)
-                            <span class="badge bg-{{ $student->subscription->status === 'active' ? 'success' : 'warning' }}">
-                                {{ ucfirst($student->subscription->status) }}
+                            <span class="badge bg-{{ $student->subscription?->status === 'active' ? 'success' : 'warning' }}">
+                                {{ ucfirst($student->subscription?->status) }}
                             </span>
                         @else
                             <span class="badge bg-secondary">None</span>
