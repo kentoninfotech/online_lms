@@ -58,10 +58,13 @@
                                 {{ ucfirst($student->subscription?->status) }}
                             </span>
                         @else
-                            <span class="badge bg-secondary">None</span>
+                            <a href="{{ route('subscription.create', $student) }}" class="btn btn-sm btn-primary mb-1">
+                                Add Subscription
+                            </a>
                         @endif
                     </td>
-                    <td>{{ $student->subscription?->plan?->name ?? '-' }}</td>
+                    <td>
+                        {{ $student->subscription?->plan?->name ?? '-' }}</td>
                     <td>
                         @foreach($student->parents as $parent)
                           <a href="{{ route('show.parent', $parent) }}" class="btn btn-sm btn-outline-primary mb-1">

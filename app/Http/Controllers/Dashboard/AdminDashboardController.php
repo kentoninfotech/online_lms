@@ -9,6 +9,7 @@ use App\Models\Instructor;
 use App\Models\ParentModel;
 use App\Models\Subscription;
 use App\Models\Payment;
+use App\Models\plan;
 use App\Models\LessonOccurrence;
 use App\Models\RescheduleRequest;
 

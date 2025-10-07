@@ -38,12 +38,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/instructors', [AdminDashboardController::class, 'instructors'])->name('admin.instructors');
     Route::get('/admin/parents', [AdminDashboardController::class, 'parents'])->name('admin.parents');
     Route::get('/admin/lessons', [LessonController::class, 'lessons'])->name('admin.lessons');
-    Route::get('/admin/subscriptions', [AdminDashboardController::class, 'subscriptions'])->name('admin.subscriptions');
     Route::get('/admin/payments', [AdminDashboardController::class, 'payments'])->name('admin.payments');
     Route::get('/admin/reschedules', [AdminDashboardController::class, 'reschedules'])->name('admin.reschedules');
+    Route::get('/admin/subscriptions', [AdminDashboardController::class, 'subscriptions'])->name('admin.subscriptions');
+    Route::post('/admin/subscriptions/{subscription}/active', [SubscriptionController::class, 'activate'])->name('subscriptions.activate');
+    Route::post('/admin/subscriptions/{subscription}/cancel', [SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
     Route::get('/admin/plans', [PlanController::class, 'plans'])->name('admin.plans');
     Route::post('/admin/plans/create', [PlanController::class, 'create'])->name('plan.create');
-    Route::put('/admin/plans/{plan}/update', [PlanController::class, 'update'])->name('plan.update');
+    Route::put('/admin/plans/{plan}', [PlanController::class, 'update'])->name('plan.update');
     Route::delete('/admin/plans/{plan}/delete', [PlanController::class, 'destroy'])->name('plan.destroy');
     Route::get('create/{role}', [UserController::class, 'create'])->name('admin.users.create');
     Route::post('store/{role}', [UserController::class, 'store'])->name('admin.users.store');
@@ -70,7 +72,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/my-profile', [ProfileController::class, 'show'])->name('my.profile');
     Route::put('/users/{user}/change-password', [ProfileController::class, 'updatePassword'])->name('profile.change.password');
     Route::put('/users/{user}/upload-picture', [ProfileController::class, 'updateProfilePicture'])->name('profile.upload.picture');
-
+    // Add Subscription
+    Route::get('/subscriptions/{student}', [SubscriptionController::class, 'create'])->name('subscription.create');
+    Route::post('/subscriptions/{student}/{plan}/store', [SubscriptionController::class, 'store'])->name('subscription.store');
+   
     // NOTIFICATION ROUTES
     Route::get('/notifications', [NotificationController::class, 'notifications'])->name('notifications');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');

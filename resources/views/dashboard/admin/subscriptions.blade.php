@@ -41,6 +41,7 @@
                 <th>Status</th>
                 <th>Started</th>
                 <th>Ends</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -55,6 +56,34 @@
                     </td>
                     <td>{{ $sub->start_date->format('d M Y') }}</td>
                     <td>{{ $sub->end_date?->format('d M Y') ?? '-' }}</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                                    <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+                                </svg>
+                            </button>
+                            <ul class="dropdown-menu text-center">
+                                <li>
+                                    <!-- <div class="dropdown-divider"></div> -->
+                                    <form class="d-inline" action="{{ route('subscriptions.activate', $sub) }}" method="post">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item text-success" onclick="return confirm('Are you sure you want to activate this subscription, only activate plan with valid and verified payment?');">
+                                          <i class="ph ph-check-square"></i> Activate Subscription
+                                        </button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <form class="d-inline" action="{{ route('subscriptions.cancel', $sub) }}" method="post">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Are you sure you want to cancel this subscription?');">
+                                          <i class="ph ph-x"></i> Deactivate Subscription
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
                 </tr>
             @empty
                 <tr><td colspan="5" class="text-center text-muted">No subscriptions found.</td></tr>

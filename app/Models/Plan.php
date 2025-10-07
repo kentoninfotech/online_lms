@@ -31,9 +31,9 @@ class Plan extends Model
     public function getHorizonDays(): int
     {
         return match ($this->duration_type) {
-            'daily'   => $this->duration_count * 7,
-            'weekly'  => $this->duration_count * 30,
-            'monthly' => $this->duration_count * 90,
+            'daily'   => $this->duration_count * 1,
+            'weekly'  => $this->duration_count * 7,
+            'monthly' => $this->duration_count * 30,
             default   => 30,
         };
     }
@@ -47,5 +47,10 @@ class Plan extends Model
             'monthly' => $this->duration_count * 30,
             default   => 30,
         };
+    }
+
+    public function activeSubscriptions()
+    {
+        return $this->subscriptions()->where('status', 'active');
     }
 }

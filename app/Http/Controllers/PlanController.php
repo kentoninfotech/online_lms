@@ -49,8 +49,13 @@ class PlanController extends Controller
 
     public function destroy(Plan $plan)
     {
+        // Check for active subscriptions using the custom relationship method
+        if ($plan->activeSubscriptions()->exists()) {
+            return redirect()->back()->with('error', 'Cannot delete this plan because it has active subscriptions.');
+        }
+        // No active subscriptions, proceed with deletion
         $plan->delete();
-        
-        return back()->with('success', $plan->name .' Deleted Successfully!');
+
+        return back()->with('success', $plan->name .' deleted Successfully!');
     }
 }

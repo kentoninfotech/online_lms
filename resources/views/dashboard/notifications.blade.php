@@ -17,7 +17,7 @@
             <div class="col-md-12">
                 <ul class="breadcrumb">
                 <li class="breadcrumb-item"
-                    ><a href="{{ route('instructor.dashboard') }}"><i class="ph ph-house"></i></a>
+                    ><a href="{{ route( auth()->user()->user_type .'.dashboard') }}"><i class="ph ph-house"></i></a>
                 </li>
                 <li class="breadcrumb-item" aria-current="page">My Notification</li>
                 </ul>
@@ -32,7 +32,7 @@
 
     <div class="card mt-3 shadow-sm">
         <div class="mt-3 float-end">
-            <form action="{{-- route('notifications.read.all') --}}" method="POST" class="d-inline">
+            <form action="{{ route('notifications.read.all') }}" method="POST" class="d-inline">
                 @csrf
                 <button class="btn btn-sm btn-primary">Mark All as Read</button>
             </form>

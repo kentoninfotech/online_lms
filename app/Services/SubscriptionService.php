@@ -44,7 +44,7 @@ class SubscriptionService
     public function reject(Subscription $subscription): void
     {
         $subscription->update([
-            'status' => 'rejected',
+            'status' => 'cancelled',
         ]);
     }
 }
