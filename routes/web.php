@@ -12,6 +12,7 @@ use App\Http\Controllers\ZoomController;
 use App\Http\Controllers\Dashboard\AdminDashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PlanController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\ParentController;
 use App\Http\Controllers\InstructorController;
@@ -40,6 +41,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/subscriptions', [AdminDashboardController::class, 'subscriptions'])->name('admin.subscriptions');
     Route::get('/admin/payments', [AdminDashboardController::class, 'payments'])->name('admin.payments');
     Route::get('/admin/reschedules', [AdminDashboardController::class, 'reschedules'])->name('admin.reschedules');
+    Route::get('/admin/plans', [PlanController::class, 'plans'])->name('admin.plans');
+    Route::post('/admin/plans/create', [PlanController::class, 'create'])->name('plan.create');
+    Route::put('/admin/plans/{plan}/update', [PlanController::class, 'update'])->name('plan.update');
+    Route::delete('/admin/plans/{plan}/delete', [PlanController::class, 'destroy'])->name('plan.destroy');
     Route::get('create/{role}', [UserController::class, 'create'])->name('admin.users.create');
     Route::post('store/{role}', [UserController::class, 'store'])->name('admin.users.store');
     Route::get('/admin/settings', [InstructorLessonController::class, 'settings'])->name('admin.settings');
