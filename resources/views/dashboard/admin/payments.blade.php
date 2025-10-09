@@ -41,6 +41,7 @@
                 <th>Amount</th>
                 <th>Status</th>
                 <th>Date</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -63,6 +64,11 @@
                         </span>
                     </td>
                     <td>{{ $pay->created_at->format('d M Y h:i A') }}</td>
+                    <td>
+                        <a href="{{ route('payments.show', $pay) }}" class="dropdown-item text-info">
+                            <i class="ph ph-eye"></i> View Payment
+                        </a>
+                    </td>
                 </tr>
             @empty
                 <tr><td colspan="6" class="text-center text-muted">No payments found.</td></tr>

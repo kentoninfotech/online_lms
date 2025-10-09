@@ -5,15 +5,19 @@ namespace App\Services;
 use App\Models\Payment;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Models\ParentModel;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use App\Notifications\Admin\PaymentSubmitted;
+use App\Notifications\Parent\PaymentApproved;
+use App\Notifications\Parent\PaymentRejected;
 
 class PaymentService
 {
     /**
      * Store offline payment evidence.
      */
-    public function uploadEvidence(Subscription $subscription, User $parent, UploadedFile $file, int $amount): Payment
+    public function uploadEvidence(Subscription $subscription, ParentModel $parent, UploadedFile $file, int $amount): Payment
     {
         $path = $file->store('payments', 'public');
 
@@ -46,7 +50,7 @@ class PaymentService
         $subs->activate($payment->subscription);
 
         // Notify parent of approval
-        $parent = $payment->parent;
+        $parent = $payment->parent->user;
         if ($parent) {
             $parent->notify(new PaymentApproved($payment));
         }
@@ -65,7 +69,7 @@ class PaymentService
         $subs->reject($payment->subscription);
         
         // Notify parent of rejection
-        $parent = $payment->parent;
+        $parent = $payment->parent->user;
         if ($parent) {
             $parent->notify(new PaymentRejected($payment, $reason));
         }

@@ -76,6 +76,10 @@
                        <span class="badge bg-danger">
                            {{ Str::headline($student->subscription->status) }} 
                        </span>
+                    @elseif($student->subscription?->status === 'cancelled')
+                       <span class="badge bg-danger">
+                           {{ Str::headline($student->subscription->status) }} 
+                       </span>
                     @elseif($student->subscription?->status === 'pending')
                        <span class="badge bg-warning">
                            {{ Str::headline($student->subscription->status) }} 

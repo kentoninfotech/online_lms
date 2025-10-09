@@ -8,6 +8,7 @@ use App\Services\AttendanceService;
 use App\Models\RescheduleRequest;
 use App\Models\LessonOccurrence;
 use App\Models\Payment;
+use App\Models\Subscription;
 use Carbon\Carbon;
 
 class ParentDashboardController extends Controller
@@ -112,12 +113,23 @@ class ParentDashboardController extends Controller
     public function payments()
     {
         $parent = Auth::user()->parent;
+
         $payments = Payment::with(['subscription.plan', 'parent'])
             ->where('parent_id', $parent->id)
             ->latest()
             ->paginate(10);
 
-        return view('dashboard.parent.payments', compact('payments'));
+        // Get all student IDs linked to this parent
+        $studentIds = $parent->students->pluck('id');
+
+        // Fetch only subscriptions for those students
+        $subscriptions = Subscription::whereIn('student_id', $studentIds)
+            ->select('id', 'student_id', 'plan_id', 'status')
+            ->with(['plan:id,name,price', 'student:id,name'])
+            ->get();
+        
+
+        return view('dashboard.parent.payments', compact('payments', 'subscriptions'));
     }
 
     public function upcoming()

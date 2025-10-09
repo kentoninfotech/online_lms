@@ -95,6 +95,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/reschedules/{reschedule}/reject', [RescheduleController::class, 'reject'])->name('reschedule.reject');
     // Subscription and Payment routes
     Route::post('/subscriptions', [SubscriptionController::class, 'store'])->name('subscriptions.store');
+    Route::get('/payments/{payment}', [PaymentController::class, 'show'])->name('payments.show');
     Route::post('/payments/upload', [PaymentController::class, 'uploadEvidence'])->name('payments.upload');
 
 });
@@ -126,6 +127,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/lessons', [ParentDashboardController::class, 'upcoming'])->name('parent.lessons');
     Route::get('/reschedules', [ParentDashboardController::class, 'reschedules'])->name('parent.reschedules');
     Route::get('/payments', [ParentDashboardController::class, 'payments'])->name('parent.payments');
+    Route::get('/payments/upload', [PaymentController::class, 'uploadEvidence'])->name('payment.upload');
     Route::post('/link-child', [LinkStudentParentController::class, 'linkChild'])->name('parent.link.child');
     // Route::get('/parent/lessons', [InstructorLessonController::class, 'lessons'])->name('parent.lessons');
     // FIX/CREATE ROUTE CONTROLLER METHOD

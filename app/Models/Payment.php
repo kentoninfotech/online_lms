@@ -15,6 +15,7 @@ class Payment extends Model
         'subscription_id', 
         'parent_id', 
         'amount', 
+        // 'method', 
         'file_path', 
         'status',
         'decision_reason'
@@ -29,6 +30,6 @@ class Payment extends Model
     // Payment → Parent 
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'parent_id');
+        return $this->belongsTo(ParentModel::class, 'parent_id');
     }
 }
