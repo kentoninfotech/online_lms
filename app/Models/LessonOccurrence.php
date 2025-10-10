@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Carbon\Carbon;
 
 class LessonOccurrence extends Model
 {
@@ -46,5 +47,13 @@ class LessonOccurrence extends Model
     public function rescheduleRequests(): HasMany
     {
         return $this->hasMany(RescheduleRequest::class);
+    }
+
+    // Accessor for scheduled_end
+    public function getScheduledEndAttribute()
+    {
+        return $this->scheduled_start
+            ? Carbon::parse($this->scheduled_start)->copy()->addMinutes($this->duration_minutes)
+            : null;
     }
 }

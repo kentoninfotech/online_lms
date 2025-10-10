@@ -8,7 +8,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Models\RescheduleRequest;
 
-class AdminRescheduleApprovalRequired extends Notification
+class AdminRescheduleApprovalRequired extends Notification implements ShouldQueue
 {
     use Queueable;
 

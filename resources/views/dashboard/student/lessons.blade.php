@@ -65,11 +65,10 @@
                             @endif
                         </td>
                         <td>
-                            @if(isset($nextOccurrence->zoomSession))
-                                <a href="{{ $nextOccurrence->zoomSession->join_url }}" target="_blank" class="btn btn-sm btn-primary">
-                                    Join
-                                </a>
-                            @else
+                            <a href="{{ route('lesson.join', $nextOccurrence) }}" target="_blank" class="btn btn-sm btn-primary">
+                                Join
+                            </a>
+                            @if(! isset($nextOccurrence->zoomSession))
                                 <span class="text-muted">Zoom link not ready</span>
                             @endif
                         </td>

@@ -155,11 +155,12 @@
                                         @endif
                                     </td>
                                     <td> 
-                                        @if($class->zoomSession)
+                                        <a href="{{ route('lesson.join', $class) }}" target="_blank" class="btn btn-sm btn-primary">Join</a>
+                                        {{-- <!-- @if($class->zoomSession)
                                             <a href="{{ $class->zoomSession->join_url }}" target="_blank" class="btn btn-sm btn-primary">Join</a>
                                         @else
                                             <span class="text-muted">Zoom link not ready</span>
-                                        @endif
+                                        @endif --> --}}
                                     </td>
                                 </tr>
                             @empty
@@ -243,9 +244,11 @@
 
                         <p id="countdown" class="lead text-white text-opacity-75"></p>
 
-                        @if($nextClass->zoomSession)
+                        <a href="{{ route('lesson.join', $nextClass) }}" class="btn btn-light" target="_blank">Join Class</a>
+                        {{-- <!-- @if($nextClass->zoomSession)
                             <a href="{{ $nextClass->zoomSession->join_url }}" class="btn btn-light" target="_blank">Join Class</a>
-                        @endif
+                        @endif --> --}}
+
                     </div>
                 </div>
             @endif

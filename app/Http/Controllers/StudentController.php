@@ -21,8 +21,6 @@ class StudentController extends Controller
         // Instructors dropdown (for lesson filtering)
         $instructors = Instructor::pluck('name', 'id');
 
-        $student->load('user');
-
         // Lessons with filters
         $lessonsQuery = Lesson::with(['instructor.user', 'occurrences'])
             ->where('student_id', $student->id);

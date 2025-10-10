@@ -9,6 +9,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\ZoomController;
+use App\Http\Controllers\JoinClassController;
 use App\Http\Controllers\Dashboard\AdminDashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
@@ -75,6 +76,9 @@ Route::middleware(['auth'])->group(function () {
     // Add Subscription
     Route::get('/subscriptions/{student}', [SubscriptionController::class, 'create'])->name('subscription.create');
     Route::post('/subscriptions/{student}/{plan}/store', [SubscriptionController::class, 'store'])->name('subscription.store');
+    // JOIN CLASS ROUTE
+    Route::get('/lesson/{occurrence}/join', [JoinClassController::class, 'join'])->name('lesson.join');
+    Route::get('/lesson/{occurrence}/waiting', [JoinClassController::class, 'waiting'])->name('lesson.waiting');
    
     // NOTIFICATION ROUTES
     Route::get('/notifications', [NotificationController::class, 'notifications'])->name('notifications');
