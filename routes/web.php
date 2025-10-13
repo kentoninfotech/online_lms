@@ -147,7 +147,18 @@ Route::get('/', function() {
 });
 
 
-Route::get('/run-storage-link', function () {
-    Artisan::call('storage:link');
-    return 'Storage link created!';
+Route::get('/artisan/{secret}/{command}', function ($secret, $command) {
+    // ✅ Set your secret key here
+    $validSecret = 'va12345artisan';
+
+    if ($secret !== $validSecret) {
+        abort(403, 'Unauthorized access');
+    }
+
+    try {
+        Artisan::call($command);
+        return "✅ Command '{$command}' executed successfully: " . Artisan::output();
+    } catch (\Exception $e) {
+        return "❌ Error executing command '{$command}': " . $e->getMessage();
+    }
 });
