@@ -27,6 +27,7 @@ use App\Http\Controllers\Dashboard\InstructorDashboardController;
 use App\Http\Controllers\Instructor\InstructorLessonController;
 use App\Http\Controllers\Instructor\InstructorStudentController;
 use App\Http\Controllers\Dashboard\ParentDashboardController;
+use Illuminate\Support\Facades\Artisan;
 
 
 // public endpoint for Zoom to POST webhooks to
@@ -143,4 +144,10 @@ Auth::routes();
 
 Route::get('/', function() {
     return view('auth.login');
+});
+
+
+Route::get('/run-storage-link', function () {
+    Artisan::call('storage:link');
+    return 'Storage link created!';
 });
