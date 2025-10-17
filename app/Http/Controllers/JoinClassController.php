@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\LessonOccurrence;
 use App\Models\Attendance;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -35,7 +36,7 @@ class JoinClassController extends Controller
         }
 
         // Guard: instructor match
-        if ($user->hasRole('instructor') && $occurrence->lesson->instructor_id !== $user->id) {
+        if ($user->hasRole('instructor') && $occurrence->lesson->instructor_id !== $user->instructor->id) {
             abort(403, 'You are not the instructor for this class.');
         }
 
@@ -58,7 +59,7 @@ class JoinClassController extends Controller
     private function markAttendance(LessonOccurrence $occurrence, $user)
     {
         $now = now();
-        $settingsGraceMinutes = (int) setting('attendance_grace_period_minutes', 10);
+        $settingsGraceMinutes = (int) Setting::where('key','attendance_grace_period_minutes')->first()->value ?? 10;
 
         $attendableType = match (true) {
             $user->hasRole('student') => \App\Models\Student::class,
@@ -80,7 +81,9 @@ class JoinClassController extends Controller
 
         // Calculate duration
         $leaveTime = $occurrence->scheduled_end;
-        $durationMinutes = max(0, $leaveTime->diffInMinutes($now));
+        
+        $durationMinutes = max(0, $now->diffInMinutes($leaveTime, false));
+        // $durationMinutes = max(0, $leaveTime->diffInMinutes($now));
 
         Attendance::updateOrCreate(
             [

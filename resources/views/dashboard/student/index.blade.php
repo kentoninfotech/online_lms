@@ -227,6 +227,33 @@
         <div class="col-lg-4">
             <iframe src="https://calendar.google.com/calendar/embed?height=300&wkst=1&ctz=UTC&showPrint=0&showTabs=0&showCalendars=0&showTz=0" style="border-width:0" width="300" height="300" frameborder="0" scrolling="no"></iframe>
             
+            @if($ongoingClass)
+            <div class="card mt-3 border-0 shadow-sm">
+                <div class="card-header bg-sky-blue text-white">
+                    <h5 class="mb-0">Current Ongoing Class</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="fw-bold">{{ $ongoingClass->lesson->subject }}</h6>
+                    <p>
+                        <strong>Instructor:</strong> {{ $ongoingClass->lesson->instructor->name }}<br>
+                        <strong>Start:</strong> {{ $ongoingClass->scheduled_start->format('d M Y h:i A') }}<br>
+                        <strong>End:</strong> {{ $ongoingClass->scheduled_start->copy()->addMinutes($ongoingClass->duration_minutes)->format('h:i A') }}
+                    </p>
+
+                    <p id="class-countdown" class="fw-bold text-danger"></p>
+
+                    <a href="{{ route('lesson.join', $ongoingClass) }}" class="btn btn-primary" target="_blank">Join Now</a>
+                    <!-- {{-- @if($ongoingClass->zoomSession)
+                        <a href="{{ $ongoingClass->zoomSession->join_url }}" 
+                        target="_blank" 
+                        class="btn btn-primary">Join Now</a>
+                    @else
+                        <span class="text-muted">Zoom link not yet available</span>
+                    @endif --}} -->
+                </div>
+            </div>
+            @endif
+
             <h3 class="mt-3">Next Event</h3>
 
             <!-- Next Class -->
@@ -303,6 +330,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
     updateCountdown();
     setInterval(updateCountdown, 1000);
+
+    // ==============================
+
+    // Ongoing Class countdown
+    const endTime = new Date("{{ $ongoingClass->scheduled_start->copy()->addMinutes($ongoingClass->duration_minutes)->toIso8601String() }}").getTime();
+    const timer = document.getElementById("class-countdown");
+
+    const interval = setInterval(() => {
+        const ongoingNow = new Date().getTime();
+        const ongoingDiff = endTime - ongoingNow;
+
+        if (ongoingDiff <= 0) {
+            clearInterval(interval);
+            timer.innerHTML = "Class ended";
+
+            // Give a short delay, then refresh the dashboard
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+            return;
+        }
+
+        const ongoingMins = Math.floor(ongoingDiff / (1000 * 60));
+        const ongoingSecs = Math.floor((ongoingDiff % (1000 * 60)) / 1000);
+        timer.innerHTML = `Time remaining: ${ongoingMins}m ${ongoingSecs}s`;
+    }, 1000);
 
 
     // ==============================

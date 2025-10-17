@@ -41,9 +41,11 @@
         @forelse($todayLessons as $class)
             <p>
                 {{ $class->scheduled_start->format('h:i A') }} — {{ $class->lesson->student->name }}
-                @if($class->zoomSession)
+                — {{ $class->lesson->subject }}
+                <a href="{{ route('lesson.join', $class) }}" target="_blank" class="btn btn-sm btn-primary">Start class</a>
+                {{-- <!-- @if($class->zoomSession)
                     <a href="{{ $class->zoomSession->start_url }}" target="_blank" class="btn btn-sm btn-primary">Start class</a>
-                @endif
+                @endif --> --}}
             </p>
         @empty
             <p>No classes scheduled today.</p>
@@ -71,8 +73,19 @@
                         <td>{{ $lesson->student->name ?? 'N/A' }}</td>
                         <td>
                             @php
-                                $nextOccurrence = $lesson->occurrences->first();
+                                $nextOccurrence = $lesson->occurrences()
+                                  ->where('scheduled_start', '>=', now())
+                                  ->orderBy('scheduled_start', 'asc')
+                                  ->first();
+
+                                if ($nextOccurrence == null) {
+                                  // if no upcoming, get the latest past occurrence
+                                  $nextOccurrence = $lesson->occurrences()
+                                    ->orderBy('scheduled_start', 'desc')
+                                    ->first();
+                                }
                             @endphp
+
                             @if($nextOccurrence)
                                 {{ $nextOccurrence->scheduled_start->format('d M Y h:i A') }}
                             @else
@@ -80,31 +93,31 @@
                             @endif
                         </td>
                         <td>
-                            @if($nextOccurrence->status === 'scheduled')
-                                <span class="badge bg-success">{{ Str::headline($nextOccurrence->status) }}</span>
+                            @if($nextOccurrence?->status === 'scheduled')
+                                <span class="badge bg-success">{{ Str::headline($nextOccurrence?->status)  ?? 'N/A' }}</span>
                             @else
-                                <span class="badge bg-warning">{{ Str::headline($nextOccurrence->status) }}</span>
+                                <span class="badge bg-warning">{{ Str::headline($nextOccurrence?->status) ?? 'N/A' }}</span>
                             @endif
                         </td>
                         <td>
-                            @if(isset($nextOccurrence->zoomSession))
-                                <a href="{{ $nextOccurrence->zoomSession->start_url }}" target="_blank" class="btn btn-sm btn-primary">
-                                    Start Class
-                                </a>
-                            @else
+                            <a href="{{ route('lesson.join', $nextOccurrence) }}" target="_blank" class="btn btn-sm btn-primary">
+                                Start Class
+                            </a>
+                            
+                            @if(! isset($nextOccurrence->zoomSession))
                                 <span class="text-muted">Zoom link not ready</span>
                             @endif
                         </td>
                         <td>
                             @if(! isset($nextOccurrence->zoomSession))
                               <!-- Add zoom button opens modal -->
-                              <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#addZoomModal{{ $nextOccurrence->lesson_occurrence_id }}">
+                              <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#addZoomModal{{ $nextOccurrence->id }}">
                                     Add Zoom Meeting 
                                 </button>
                             @endif
 
-                            <!-- Create Lesson Modal -->
-                            <div class="modal fade" id="addZoomModal" tabindex="-1" aria-labelledby="createMeetingLabel" aria-hidden="true">
+                            <!-- Add Zoom Modal -->
+                            <div class="modal fade" id="addZoomModal{{ $nextOccurrence->id }}" tabindex="-1" aria-labelledby="createMeetingLabel{{ $nextOccurrence->id }}" aria-hidden="true">
                               <div class="modal-dialog modal-lg">
                                 <form action="{{ route('add.zoom', $nextOccurrence) }}" method="POST">
                                   @csrf
@@ -161,17 +174,6 @@
                                         @enderror
                                       </div>
 
-                                      <!-- Recurrence Type
-                                      <div class="col-md-6">
-                                          <label class="form-label">Recurrence</label>
-                                          <select name="recurrence_type" id="recurrence_type" class="form-select">
-                                            <option value="none">None (One-time)</option>
-                                            <option value="daily">Daily</option>
-                                            <option value="weekly">Weekly</option>
-                                            <option value="monthly">Monthly</option>
-                                          </select>
-                                        </div> -->
-
                                     </div> <!-- modal-body -->
 
                                     <div class="modal-footer">
@@ -182,8 +184,6 @@
                                 </form>
                               </div>
                             </div>
-
-
 
                         </td>
                     </tr>

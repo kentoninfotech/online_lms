@@ -59,6 +59,19 @@
                         <!-- <label class="form-label">Enrollment Number</label>
                         <input type="text" name="enrollment_no" class="form-control" value="{{ old('enrollment_no') }}"> -->
                     </div>
+                    <h5>Student Parent</h5>
+                    <div class="col-md-6 m-3">
+                        <label class="form-label">Student Parent</label>
+                        <select name="parent_id" id="parent_id" class="form-control">
+                            <option value="">Select Parent</option>
+                            @foreach($parent_list as $parent)
+                            <option value="{{ $parent->id }}" 
+                                {{ old('parent_id') == $parent->id ? 'selected' : '' }}>
+                                {{ $parent->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
                 @elseif($role === 'parent')
                     <div class="mb-3">
                         <!-- <label class="form-label">Emergency Contact</label>

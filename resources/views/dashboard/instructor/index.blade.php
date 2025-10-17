@@ -41,9 +41,13 @@
                     @forelse($todayLessons as $class)
                         <p>
                             {{ $class->scheduled_start->format('h:i A') }} — {{ $class->lesson->student->name }}
+                            {{ $class->lesson->subject }}
+
+                            <a href="{{ route('lesson.join', $class) }}" class="btn btn-sm btn-primary" target="_blank">Start class</a>
+                            {{-- <!--
                             @if($class->zoomSession)
                                 <a href="{{ $class->zoomSession->start_url }}" target="_blank" class="btn btn-sm btn-primary">Start class</a>
-                            @endif
+                            @endif --> --}}
                         </p>
                     @empty
                         <p>No classes scheduled today.</p>
@@ -132,11 +136,12 @@
                                         @endif
                                     </td>
                                     <td> 
-                                        @if($class->zoomSession)
+                                        <a href="{{ route('lesson.join', $class) }}" class="btn btn-sm btn-primary" target="_blank">Start Class</a>
+                                        {{-- <!-- @if($class->zoomSession)
                                             <a href="{{ $class->zoomSession->start_url }}" target="_blank" class="btn btn-sm btn-primary">Start Class</a>
                                         @else
                                             <span class="text-muted">Zoom link not ready</span>
-                                        @endif
+                                        @endif --> --}}
                                     </td>
                                 </tr>
                             @empty
@@ -181,7 +186,34 @@
         <!-- [col-4] start -->
         <div class="col-lg-4">
             <iframe src="https://calendar.google.com/calendar/embed?height=300&wkst=1&ctz=UTC&showPrint=0&showTabs=0&showCalendars=0&showTz=0" style="border-width:0" width="300" height="300" frameborder="0" scrolling="no"></iframe>
-            
+                        
+            @if($ongoingClass)
+            <div class="card mt-3 border-0 shadow-sm">
+                <div class="card-header bg-sky-blue text-white">
+                    <h5 class="mb-0">Current Ongoing Class</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="fw-bold">{{ $ongoingClass->lesson->subject }}</h6>
+                    <p>
+                        <strong>Student:</strong> {{ $ongoingClass->lesson->student->name }}<br>
+                        <strong>Start:</strong> {{ $ongoingClass->scheduled_start->format('d M Y h:i A') }}<br>
+                        <strong>End:</strong> {{ $ongoingClass->scheduled_start->copy()->addMinutes($ongoingClass->duration_minutes)->format('h:i A') }}
+                    </p>
+
+                    <p id="class-countdown" class="fw-bold text-danger"></p>
+                    
+                    <a href="{{ route('lesson.join', $ongoingClass) }}" class="btn btn-primary" target="_blank">Join Now</a>
+                    <!-- {{-- @if($ongoingClass->zoomSession)
+                        <a href="{{ $ongoingClass->zoomSession->join_url }}" 
+                        target="_blank" 
+                        class="btn btn-primary">Join Now</a>
+                    @else
+                        <span class="text-muted">Zoom link not yet available</span>
+                    @endif --}} -->
+                </div>
+            </div>
+            @endif
+
             <h3 class="mt-3">Next Event</h3>
 
             <!-- Next Class -->
@@ -198,9 +230,10 @@
 
                         <p id="countdown" class="lead text-white text-opacity-75"></p>
 
-                        @if($nextClass->zoomSession)
+                        <a href="{{ route('lesson.join', $nextClass) }}" class="btn btn-light" target="_blank">Join Class</a>
+                        {{-- <!-- @if($nextClass->zoomSession)
                             <a href="{{ $nextClass->zoomSession->start_url }}" class="btn btn-light" target="_blank">Start Class</a>
-                        @endif
+                        @endif --> --}}
                     </div>
                 </div>
             @endif
@@ -258,96 +291,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ==============================
-    // Attendance Line Chart
-    // ==============================
-    // {{-- const labels = @json($attendanceStats->pluck('month')); --}}
-    // {{-- const data   = @json($attendanceStats->pluck('percent'));  --}}
 
-    // const ctxLine = document.getElementById('attendanceChart');
-    // if (ctxLine) {
-    //     new Chart(ctxLine, {
-    //         type: 'line',
-    //         data: {
-    //             labels: labels,
-    //             datasets: [{
-    //                 label: 'Attendance %',
-    //                 data: data,
-    //                 borderColor: 'rgba(54, 162, 235, 1)',
-    //                 backgroundColor: 'rgba(54, 162, 235, 0.2)',
-    //                 fill: true,
-    //                 tension: 0.3,
-    //                 pointRadius: 5,
-    //             }]
-    //         },
-    //         options: {
-    //             responsive: true,
-    //             scales: {
-    //                 y: {
-    //                     beginAtZero: true,
-    //                     max: 100,
-    //                     ticks: {
-    //                         callback: value => value + "%"
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     });
-    // }
+    // Ongoing Class countdown
+    const endTime = new Date("{{ $ongoingClass->scheduled_start->copy()->addMinutes($ongoingClass->duration_minutes)->toIso8601String() }}").getTime();
+    const timer = document.getElementById("class-countdown");
 
-    // ==============================
-    // Attendance Doughnut Chart
-    // ==============================
-    // {{-- const present = @json($presentCount); --}}
-    // {{-- const late    = @json($lateCount);  --}}
-    // {{-- const absent  = @json($absentCount); --}}
+    const interval = setInterval(() => {
+        const ongoingNow = new Date().getTime();
+        const ongoingDiff = endTime - ongoingNow;
 
-    // const totalAttendance = present + late + absent;
+        if (ongoingDiff <= 0) {
+            clearInterval(interval);
+            timer.innerHTML = "Class ended";
 
-    // const ctxDoughnut = document.getElementById('attendanceDoughnut');
-    // const noDataMsg   = document.getElementById('noAttendanceMessage');
+            // ⏳ Give a short delay, then refresh the dashboard
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+            return;
+        }
 
-    // if (totalAttendance === 0) {
-    //     if (ctxDoughnut) ctxDoughnut.style.display = 'none';
-    //     if (noDataMsg) noDataMsg.style.display = 'block';
-    // } else if (ctxDoughnut) {
-    //     new Chart(ctxDoughnut, {
-    //         type: 'doughnut',
-    //         data: {
-    //             labels: ['Present', 'Late', 'Absent'],
-    //             datasets: [{
-    //                 data: [present, late, absent],
-    //                 backgroundColor: [
-    //                     '#1cc88a',   // Present
-    //                     '#d6b708ff', // Late
-    //                     '#e74a3b'    // Absent
-    //                 ],
-    //                 hoverBackgroundColor: [
-    //                     '#17a673',
-    //                     '#8f7b09ff',
-    //                     '#be2617'
-    //                 ],
-    //                 borderWidth: 1
-    //             }]
-    //         },
-    //         options: {
-    //             responsive: true,
-    //             plugins: {
-    //                 legend: { position: 'bottom' },
-    //                 tooltip: {
-    //                     callbacks: {
-    //                         label: (context) => {
-    //                             let dataset = context.chart.data.datasets[0].data;
-    //                             let total = dataset.reduce((a, b) => a + b, 0);
-    //                             let value = context.raw;
-    //                             let percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-    //                             return `${context.label}: ${value} (${percentage}%)`;
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     });
-    // }
+        const ongoingMins = Math.floor(ongoingDiff / (1000 * 60));
+        const ongoingSecs = Math.floor((ongoingDiff % (1000 * 60)) / 1000);
+        timer.innerHTML = `Time remaining: ${ongoingMins}m ${ongoingSecs}s`;
+    }, 1000);
 
 });
 

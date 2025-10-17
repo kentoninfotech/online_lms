@@ -49,7 +49,17 @@
                         <td>{{ $lesson->instructor->name ?? 'N/A' }}</td>
                         <td>
                             @php
-                                $nextOccurrence = $lesson->occurrences->first();
+                                $nextOccurrence = $lesson->occurrences()
+                                  ->where('scheduled_start', '>=', now())
+                                  ->orderBy('scheduled_start', 'asc')
+                                  ->first();
+
+                                if ($nextOccurrence == null) {
+                                  // if no upcoming, get the latest past occurrence
+                                  $nextOccurrence = $lesson->occurrences()
+                                    ->orderBy('scheduled_start', 'desc')
+                                    ->first();
+                                }
                             @endphp
                             @if($nextOccurrence)
                                 {{ $nextOccurrence->scheduled_start->format('d M Y h:i A') }}
@@ -58,10 +68,10 @@
                             @endif
                         </td>
                         <td>
-                            @if($nextOccurrence->status === 'scheduled')
-                                <span class="badge bg-success">{{ Str::headline($nextOccurrence->status) }}</span>
+                            @if($nextOccurrence?->status === 'scheduled')
+                                <span class="badge bg-success">{{ Str::headline($nextOccurrence?->status) }}</span>
                             @else
-                                <span class="badge bg-warning">{{ Str::headline($nextOccurrence->status) }}</span>
+                                <span class="badge bg-warning">{{ Str::headline($nextOccurrence?->status) }}</span>
                             @endif
                         </td>
                         <td>

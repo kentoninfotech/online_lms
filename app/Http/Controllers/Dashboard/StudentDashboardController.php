@@ -24,6 +24,13 @@ class StudentDashboardController extends Controller
             ->take(5)
             ->get();
 
+        // Ongoing lesson
+        $ongoingClass = LessonOccurrence::with(['lesson.instructor.user', 'zoomSession'])
+            ->whereHas('lesson', fn($q) => $q->where('student_id', $student->id))
+            ->ongoing()
+            ->orderBy('scheduled_start')
+            ->first();
+
         // Next class
         $nextClass = $student->lessons()
             ->with(['occurrences' => function($q) {
@@ -52,6 +59,7 @@ class StudentDashboardController extends Controller
 
         return view('dashboard.student.index', [
             'student'                => $student,
+            'ongoingClass'           => $ongoingClass,
             'upcoming'               => $upcoming,
             'nextClass'              => $nextClass,
             'notifications'          => $notifications,

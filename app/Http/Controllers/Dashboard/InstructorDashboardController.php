@@ -27,6 +27,13 @@ class InstructorDashboardController extends Controller
             ->orderBy('scheduled_start')
             ->get();
 
+        // Ongoing lesson
+        $ongoingClass = LessonOccurrence::with(['lesson.student.user', 'zoomSession'])
+            ->whereHas('lesson', fn($q) => $q->where('instructor_id', $instructor->id))
+            ->ongoing()
+            ->orderBy('scheduled_start')
+            ->first();
+
         // Next class
         $nextClass = LessonOccurrence::with(['lesson.student.user', 'zoomSession'])
             ->whereHas('lesson', fn($q) => $q->where('instructor_id', $instructor->id))
@@ -68,6 +75,7 @@ class InstructorDashboardController extends Controller
             'instructor',
             'students',
             'todayLessons',
+            'ongoingClass',
             'nextClass',
             'upcoming',
             'reschedules',

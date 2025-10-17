@@ -92,7 +92,7 @@
                 <li class="list-group-item">
                     <span class="d-flex align-items-center">
                         <i class="ph ph-power"></i>
-                        <form action="{{ route('logout') }}" method="post">
+                        <form action="{{ route('logout') }}" method="POST" class="d-inline">
                             @csrf
                            <button type="submit" class="btn btn-basic">Logout</button>
                         </form>

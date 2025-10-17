@@ -23,8 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withSchedule(function (Schedule $schedule): void {
         // Define scheduled tasks
         $schedule->command('lessons:generate-occurrences')->daily();
-        $schedule->command('lessons:create-zoom-sessions')->daily();
-        $schedule->command('zoom:sync-participants')->dailyAt('02:00');
+        // $schedule->command('lessons:create-zoom-sessions')->daily();
+        // $schedule->command('zoom:sync-participants')->dailyAt('02:00');
         $schedule->command('reminders:classes')->everyFiveMinutes();
         $schedule->job(new SendSubscriptionExpiryWarnings)->daily();
         $schedule->job(new SendBillingOverdueReminders)->daily();

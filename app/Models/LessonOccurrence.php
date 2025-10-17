@@ -56,4 +56,12 @@ class LessonOccurrence extends Model
             ? Carbon::parse($this->scheduled_start)->copy()->addMinutes($this->duration_minutes)
             : null;
     }
+
+    // Ongoing 
+    public function scopeOngoing($query)
+    {
+        $now = now();
+        return $query->where('scheduled_start', '<=', $now)
+                    ->whereRaw('DATE_ADD(scheduled_start, INTERVAL duration_minutes MINUTE) >= ?', [$now]);
+    }
 }

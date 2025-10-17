@@ -16,7 +16,13 @@ class UserController extends Controller
 {
     public function create(string $role)
     {
-        return view('dashboard.add-user', compact('role'));
+        $parent_list = [];
+        
+        if ($role === 'student'){
+            $parent_list = ParentModel::all();
+        }
+
+        return view('dashboard.add-user', compact('role', 'parent_list'));
     }
 
     public function store(string $role)
@@ -37,10 +43,20 @@ class UserController extends Controller
             'user_type'   => $role,
         ]);
 
+        // assign role
         $user->assignRole($role);
+
 
         if ($role === 'student') {
             $user->student()->create($request->only('name', 'email', 'address', 'number'));
+            // Link student to parent
+            if($request['parent_id']){
+                $parent = ParentModel::findOrFail($request['parent_id']);
+                // Link parents to student
+                $user->student->parents()->syncWithoutDetaching([$parent->id]);
+                // $parent->students()->syncWithoutDetaching([$user->student->id]);
+            }
+
         } elseif ($role === 'parent') {
             $user->parent()->create($request->only('name', 'email', 'address', 'number'));
         } elseif ($role === 'instructor') {

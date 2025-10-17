@@ -30,7 +30,7 @@ class Subscription extends Model
     // Subscription → Student
     public function student(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'student_id');
+        return $this->belongsTo(Student::class, 'student_id');
     }
 
     // Subscription → Plan
@@ -48,7 +48,7 @@ class Subscription extends Model
     // Subscription → LessonReschedules
     public function reschedules(): HasMany
     {
-        return $this->hasMany(LessonReschedule::class, 'subscription_id');
+        return $this->hasMany(RescheduleRequest::class);
     }
 
     // Check if the subscription is currently active

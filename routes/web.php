@@ -147,6 +147,8 @@ Route::get('/', function() {
 });
 
 
+
+
 Route::get('/artisan/{secret}/{command}', function ($secret, $command) {
     // ✅ Set your secret key here
     $validSecret = 'va12345artisan';
