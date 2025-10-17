@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ParentModel;
 use App\Models\Payment;
 use App\Models\Subscription;
 use App\Services\PaymentService;
@@ -21,14 +22,18 @@ class PaymentController extends Controller
 
     public function uploadEvidence(UploadPaymentEvidenceRequest $request)
     {
-        $parent = Auth::user()->parent;
+        if (Auth::user()->parent){
+            $parent = Auth::user()->parent;
+        }else{
+            $parent = ParentModel::findOrFail($request->parent_id);
+        }
 
         $subscription = Subscription::findOrFail($request->subscription_id);
 
         $this->payments->uploadEvidence($subscription, $parent, $request->file('file_path'), $request->amount);
 
         return redirect()
-            ->route('parent.payments')
+            ->back()
             ->with('success', 'Payment evidence uploaded. Awaiting admin approval.');
     }
 
@@ -50,5 +55,46 @@ class PaymentController extends Controller
         return redirect()
             ->route('payments.show', $payment)
             ->with('success', 'Payment rejected.');
+    }
+
+    public function getParentStudentSubscription(ParentModel $parent)
+    {
+        // Ensure selected user is actually a parent
+        if (!$parent) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid parent selected.'
+            ], 400);
+        }
+
+        // Get all student IDs linked to this parent
+        $studentIds = $parent->students->pluck('id');
+
+        // Handle no linked students
+        if ($studentIds->isEmpty()) {
+            return response()->json([
+                'status' => 'empty',
+                'message' => 'This parent has no linked children.'
+            ]);
+        }
+
+        // Fetch only subscriptions for those students
+        $subscriptions = Subscription::whereIn('student_id', $studentIds)
+            ->select('id', 'student_id', 'plan_id', 'status')
+            ->with(['plan:id,name,price', 'student:id,name'])
+            ->get();
+
+        // Handle no subscriptions for linked students
+        if ($subscriptions->isEmpty()) {
+            return response()->json([
+                'status' => 'empty',
+                'message' => 'No active subscriptions found for this parent\'s children.'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'subscriptions' => $subscriptions
+        ]);
     }
 }

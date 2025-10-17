@@ -102,6 +102,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/subscriptions', [SubscriptionController::class, 'store'])->name('subscriptions.store');
     Route::get('/payments/{payment}', [PaymentController::class, 'show'])->name('payments.show');
     Route::post('/payments/upload', [PaymentController::class, 'uploadEvidence'])->name('payments.upload');
+    Route::get('/payments/{parent}/student-sub', [PaymentController::class, 'getParentStudentSubscription'])->name('parents.student.subscriptions');
 
 });
 

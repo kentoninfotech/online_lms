@@ -85,11 +85,13 @@ class AdminDashboardController extends Controller
 
     public function payments()
     {
+        $parents = ParentModel::all();
+
         $payments = Payment::with(['subscription.student', 'parent'])
             ->latest()
             ->paginate(20);
 
-        return view('dashboard.admin.payments', compact('payments'));
+        return view('dashboard.admin.payments', compact('payments', 'parents'));
     }
 
     public function reschedules()
