@@ -35,8 +35,40 @@ class PaymentSubmitted extends Notification
             ->greeting('Hello Admin,')
             ->line("A new payment evidence has been submitted by parent: {$this->payment->parent->name}")
             ->line("Amount: ₦{$this->payment->amount}")
-            ->action('Review Payment', url('admin.payments.index')) //DEFINE ROUTE LATER
+            ->action('Review Payment', route('payments.show', $this->payment)) 
             ->line('Please log in to approve or reject.');
+    }
+
+    /**
+     * Get the database representation of the notification.
+     */
+    public function toDatabase($notifiable)
+    {
+        $parentName = $this->payment->parent->name;
+        $amount = number_format($this->payment->amount, 2);
+        
+        $actionRoute = [
+            'name' => 'payments.show', 
+            'params' => ['payment' => $this->payment->id], 
+        ];
+
+        return [
+            'category' => 'Payments', 
+            'payment_id' => $this->payment->id,
+            'status'     => 'pending_review',
+            'parent_name' => $parentName,
+
+            'title' => 'New Payment Requires Review',
+            'message_lines' => [
+                'Hello Admin,',
+                "A new payment evidence of **₦{$amount}** has been submitted by parent **{$parentName}**.",
+                'Please log in to review the evidence and approve or reject the payment.',
+            ],
+            'action' => [
+                'text' => 'Review Payment',
+                'route' => $actionRoute,
+            ],
+        ];
     }
 
     /**

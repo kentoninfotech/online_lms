@@ -37,6 +37,38 @@ class InstructorRescheduleAutoApproved extends Notification
     }
 
     /**
+     * Get the database representation of the notification.
+     */
+    public function toDatabase($notifiable)
+    {
+        $newTime = $this->request->proposed_start->format('d M Y H:i');
+
+        $actionRoute = [
+            'name' => 'instructor.reschedules', 
+            'params' => [], 
+        ];
+
+        return [
+            'category' => 'Classes', 
+            'request_id' => $this->request->id,
+            'status'     => 'auto_approved',
+
+            'title' => 'Lesson Reschedule Auto-Approved',
+            'message_lines' => [
+                'Hello Instructor,',
+                "A reschedule request for your lesson occurrence **#{$this->request->lesson_occurrence_id}** was auto-approved.",
+                "Reason: {$this->request->reason}",
+                "New date/time: **{$newTime}**.",
+                'No manual action is required, but please note this updated schedule.',
+            ],
+            'action' => [
+                'text' => 'View Schedule',
+                'route' => $actionRoute,
+            ],
+        ];
+    }
+
+    /**
      * Get the array representation of the notification.
      */
     public function toArray($notifiable)

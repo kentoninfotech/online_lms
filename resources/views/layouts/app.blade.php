@@ -13,8 +13,11 @@
     <meta name="keywords" content="Online Class Management System, Learning Management System"/>
     <meta name="author" content="Online Class Management System"/>
 
-        <!-- [Favicon] icon -->
-    <link rel="icon" href="{{ asset('assets/images/favicon.svg') }}" type="image/x-icon" />
+    <!-- [Favicon] icon -->
+    <link rel="icon" href="{{ asset('assets/images/favicon.png') }}" type="image/x-icon" />
+    
+    <!-- [Bootstrap] icon -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
     <!-- map-vector css -->
     <link rel="stylesheet" href="{{ asset('assets/css/plugins/jsvectormap.min.css') }}" />

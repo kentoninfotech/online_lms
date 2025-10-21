@@ -38,8 +38,42 @@ class AdminRescheduleApprovalRequired extends Notification implements ShouldQueu
             ->line("A reschedule request was submitted for Lesson #{$lessonId}.")
             ->line("Requested by: {$this->request->requester?->name}")
             ->line("Proposed new time: {$this->request->proposed_start?->format('d M Y H:i')}")
-            ->action('Review Request', url("/admin/reschedules/{$this->request->id}"))
+            ->action('Review Request', route("admin.reschedules"))
             ->line('Please review and approve/reject.');
+    }
+
+    /**
+     * Get the database representation of the notification.
+     */
+    public function toDatabase($notifiable)
+    {
+        $occurrence = $this->request->occurrence;
+        $lessonId = $occurrence->lesson_id ?? 'N/A';
+        $newTime = $this->request->proposed_start?->format('d M Y H:i');
+        $requesterName = $this->request->requester?->name ?? 'Parent';
+
+        $actionRoute = [
+            'name' => 'admin.reschedules', 
+            'params' => [], 
+        ];
+
+        return [
+            'category' => 'Admin Tasks', 
+            'request_id' => $this->request->id,
+            'status'     => 'pending_admin_approval',
+
+            'title' => 'Reschedule Request Needs Action',
+            'message_lines' => [
+                "A new reschedule request requires your approval for Lesson **#{$lessonId}**.",
+                "Requested by: **{$requesterName}**",
+                "Proposed new time: **{$newTime}**",
+                'Please review the request details and take immediate action.',
+            ],
+            'action' => [
+                'text' => 'Review Request',
+                'route' => $actionRoute,
+            ],
+        ];
     }
 
     /**

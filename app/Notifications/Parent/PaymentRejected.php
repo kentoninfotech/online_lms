@@ -36,8 +36,37 @@ class PaymentRejected extends Notification
             ->line("Your payment of ₦{$this->payment->amount} for student {$this->payment->subscription->student->name} has been rejected.")
             ->line("Reason: {$this->reason}")
             ->line('Please re-submit valid payment evidence or contact support.')
-            ->action('Re-submit Payment', url('parent.payments.create')) //DEFINE ROUTE LATER
+            ->action('Re-submit Payment', route('parent.payments'))
             ->line('Thank you.');
+    }
+
+    /**
+     * Get the array representation of the notification for database storage.
+     */
+    public function toDatabase($notifiable)
+    {
+        // Define the route details (name and any parameters)
+        $actionRoute = [
+            'name' => 'parent.payments', 
+            'params' => [], 
+        ];
+
+        return [
+            'category' => 'Payments', 
+            'payment_id' => $this->payment->id,
+            'status'     => 'rejected',
+
+            'title' => 'Payment Rejected', 
+            'message_lines' => [
+                "Your payment of ₦{$this->payment->amount} for student {$this->payment->subscription->student->name} has been rejected.",
+                "Reason: {$this->reason}",
+                'Please re-submit valid payment evidence or contact support.',
+            ],
+            'action' => [
+                'text' => 'Re-submit Payment',
+                'route' => $actionRoute, 
+            ],
+        ];
     }
 
     /**

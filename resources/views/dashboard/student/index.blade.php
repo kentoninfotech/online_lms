@@ -19,7 +19,7 @@
                         <h2 class="text-end text-white"><i class="feather icon-book float-start"></i>
                              <span>{{ $student->lessons->count() }}</span> 
                         </h2>
-                        <p class="m-b-0">Lessons this month<span class="float-end">{{ $lessonsThisMonth }}</span></p>
+                        <p class="m-b-0">Lessons this month<span class="float-end">{{ $lessonsThisMonth ?? 'N/A'}}</span></p>
                     </div>
                     </div>
                 </div>
@@ -334,7 +334,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // ==============================
 
     // Ongoing Class countdown
-    const endTime = new Date("{{ $ongoingClass->scheduled_start->copy()->addMinutes($ongoingClass->duration_minutes)->toIso8601String() }}").getTime();
+    const endTime = new Date("{{ $ongoingClass?->scheduled_start->copy()->addMinutes($ongoingClass->duration_minutes)->toIso8601String() }}").getTime();
     const timer = document.getElementById("class-countdown");
 
     const interval = setInterval(() => {

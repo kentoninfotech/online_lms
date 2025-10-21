@@ -37,6 +37,38 @@ class AdminRescheduleAutoApproved extends Notification
     }
 
     /**
+     * Get the database representation of the notification.
+     */
+    public function toDatabase($notifiable)
+    {
+        $newTime = $this->request->proposed_start?->format('d M Y H:i');
+
+        $actionRoute = [
+            'name' => 'admin.reschedules', 
+            'params' => [], 
+        ];
+
+        return [
+            'category' => 'Admin Tasks', 
+            'request_id' => $this->request->id,
+            'status'     => 'auto_approved',
+
+            'title' => 'Reschedule Auto-Approved',
+            'message_lines' => [
+                'Hello Admin,',
+                "A reschedule request for lesson occurrence **#{$this->request->lesson_occurrence_id}** was auto-approved.",
+                "Reason: {$this->request->reason}",
+                "New date/time: **{$newTime}**.",
+                'No manual action is required, this is for your information.',
+            ],
+            'action' => [
+                'text' => 'View Reschedules',
+                'route' => $actionRoute,
+            ],
+        ];
+    }
+
+    /**
      * Get the array representation of the notification.
      */
     public function toArray($notifiable)

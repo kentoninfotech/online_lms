@@ -56,8 +56,39 @@
                             {{ $note->read_at ? '' : 'bg-light' }}">
                             
                             <div>
-                                <div>{{ $note->data['message'] ?? $note->type }}</div>
-                                <small class="text-muted">{{ $note->created_at->diffForHumans() }}</small>
+                                {{-- Display Title/Header (use title if available, otherwise fallback) --}}
+                                <strong class="{{ $category === 'Payments' ? 'text-danger' : 'text-primary' }}">
+                                    {{ $note->data['title'] ?? 'Notification' }}
+                                </strong>
+                                
+                                {{-- Optional: Greeting line (can be customized per notification if needed) --}}
+                                <p class="mb-1 mt-1 text-muted">Hello,</p>
+                                
+                                {{-- Display Message Lines (supports all notification types with a standard structure) --}}
+                                @if (isset($note->data['message_lines']))
+                                    {{-- Render the structured lines for mail-like presentation --}}
+                                    @foreach ($note->data['message_lines'] as $line)
+                                        <p class="mb-1 text-dark">{{ $line }}</p>
+                                    @endforeach
+                                @else
+                                    {{-- Fallback for simple/legacy notifications that just have a 'message' key --}}
+                                    <p class="mb-1 text-dark">{{ $note->data['message'] ?? 'Check your account for details.' }}</p>
+                                @endif
+
+                                {{-- Display Action Button (Resolving the Route) --}}
+                                @if (isset($note->data['action']['route']['name']))
+                                    @php
+                                        // Safely resolve the URL using the stored route name and parameters
+                                        $routeName = $note->data['action']['route']['name'];
+                                        $routeParams = $note->data['action']['route']['params'] ?? [];
+                                        $actionUrl = route($routeName, $routeParams);
+                                    @endphp
+                                    <a href="{{ $actionUrl }}" class="btn btn-sm btn-outline-primary mt-2">
+                                        {{ $note->data['action']['text'] ?? 'View Details' }}
+                                    </a>
+                                @endif
+
+                                <small class="text-muted d-block mt-1">{{ $note->created_at->diffForHumans() }}</small>
                             </div>
 
                             <div>

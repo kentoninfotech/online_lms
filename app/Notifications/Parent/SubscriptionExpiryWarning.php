@@ -36,8 +36,37 @@ class SubscriptionExpiryWarning extends Notification
             ->subject('Your Subscription is Expiring Soon')
             ->line("Your subscription for plan **{$this->subscription->plan->name}** is expiring on **{$endDate}**.")
             ->line('Please renew to avoid interruption of your lessons.')
-            ->action('Renew Subscription', url("/subscriptions/{$this->subscription->id}/renew"))
+            ->action('Renew Subscription', route("parent.payments"))
             ->line('Thank you for staying with us!');
+    }
+
+    /**
+     * Get the array representation of the notification for database storage.
+     */
+    public function toDatabase($notifiable)
+    {
+        $endDate = $this->subscription->end_date->format('d M Y');
+
+        $actionRoute = [
+            'name' => 'parent.payments', 
+            'params' => [],
+        ];
+
+        return [
+            'category' => 'Payments',
+            'subscription_id' => $this->subscription->id,
+            'plan_name' => $this->subscription->plan->name,
+
+            'title' => 'Subscription Expiring Soon', 
+            'message_lines' => [
+                "Your child subscription for plan **{$this->subscription->plan->name}** is expiring on **{$endDate}**.",
+                'Please renew to avoid interruption of your child lessons.',
+            ],
+            'action' => [
+                'text' => 'Renew Subscription',
+                'route' => $actionRoute, 
+            ],
+        ];
     }
 
     /**

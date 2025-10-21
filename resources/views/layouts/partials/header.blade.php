@@ -20,7 +20,7 @@
         </a>
         </li>
         <li class="dropdown pc-h-item">
-        <a
+        <!-- <a
             class="pc-head-link dropdown-toggle arrow-none m-0"
             data-bs-toggle="dropdown"
             href="#"
@@ -29,7 +29,7 @@
             aria-expanded="false"
         >
             <i class="ph ph-magnifying-glass"></i>
-        </a>
+        </a> -->
         <!-- <div class="dropdown-menu pc-h-dropdown drp-search">
             <form class="px-3">
             <div class="form-group mb-0 d-flex align-items-center">
@@ -82,16 +82,16 @@
                     {{-- For Admin --}}
                     @role('admin')
                     <a href="{{ route('settings.index') }}" class="dropdown-item">
-                    <span class="d-flex align-items-center">
-                        <i class="ph ph-gear-six"></i>
-                        <span>System Settings</span>
-                    </span>
+                        <span class="d-flex align-items-center">
+                            <i class="ph ph-gear-six"></i>
+                            <span>System Settings</span>
+                        </span>
                     </a>
                     @endrole
                 </li>
                 <li class="list-group-item">
                     <span class="d-flex align-items-center">
-                        <i class="ph ph-power"></i>
+                        <i class="bi bi-box-arrow-right" style="font-size:18px"></i>
                         <form action="{{ route('logout') }}" method="POST" class="d-inline">
                             @csrf
                            <button type="submit" class="btn btn-basic">Logout</button>

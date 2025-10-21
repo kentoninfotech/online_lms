@@ -195,14 +195,28 @@ class AttendanceService
 
         $lessonsThisMonth = LessonOccurrence::whereHas('lesson', function (Builder $q) use ($attendable) {
             // Check if the user is a student or an instructor
-            if ($attendable->user_type === 'student') {
-                $q->where('student_id', $attendable->id);
-            } elseif ($attendable->user_type === 'instructor') {
-                $q->where('instructor_id', $attendable->id);
-            }
+            $column = ($attendable->user_type === 'student') ? 'student_id' : 'instructor_id';
+            $q->where($column, $attendable->id);
         })
         ->whereBetween('scheduled_start', [$monthStart, $monthEnd])
         ->count();
+
+
+        // 1. Determine the filtering column and ID based on the user type
+        $column = $attendable->user_type === 'student' ? 'student_id' : 'instructor_id';
+        $attendableId = $attendable->id;
+
+        // 2. Get the IDs of the relevant lessons
+        // Assuming 'Lesson' is the correct model name
+        $relevantLessonIds = \App\Models\Lesson::query()
+            ->where($column, $attendableId)
+            ->pluck('id');
+
+        // 3. Query the LessonOccurrences using whereIn for efficiency
+        $lessonsThisMonth = LessonOccurrence::whereIn('lesson_id', $relevantLessonIds) // Efficiently filters by related lesson IDs
+            ->whereBetween('scheduled_start', [$monthStart, $monthEnd])
+            ->count();
+
 
         $monthTotalClasses   = $monthAttendances->count();
         $monthPresentCount   = $monthAttendances->where('status', 'present')->count();

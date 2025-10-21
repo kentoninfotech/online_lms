@@ -21,10 +21,14 @@ class InstructorDecisionNoticeToAdmin extends Notification
         public string $actorName  // instructor name
     ) {}
 
-    // Get the notification's delivery channels.
+    /**
+     * Get the notification's delivery channels.
+     */
     public function via($notifiable) { return ['mail','database']; }
 
-    // Get the mail representation of the notification.
+    /*
+    * Get the mail representation of the notification.
+    */
     public function toMail($notifiable)
     {
         $mail = (new MailMessage)
@@ -43,7 +47,54 @@ class InstructorDecisionNoticeToAdmin extends Notification
         return $mail->line('This is a heads-up so you’re aware of the updated schedule.');
     }
 
-    // Get the array representation of the notification.
+    /*
+    * Get the database representation of the notification.
+    */
+    public function toDatabase($notifiable)
+    {
+        $oldTime = $this->request->occurrence->scheduled_start?->format('d M Y H:i');
+        $newTime = $this->request->proposed_start->format('d M Y H:i');
+        $statusIcon = strtolower($this->decision) === 'approved' ? '✅' : '❌';
+        $title = "Reschedule {$this->decision} by Instructor {$statusIcon}";
+
+        $messageLines = [
+            'Hello Admin,',
+            "Instructor **{$this->actorName}** has **{$this->decision}** a reschedule request.",
+            "Occurrence ID: #{$this->request->lesson_occurrence_id}",
+            "Original time: {$oldTime}",
+            "Proposed time: {$newTime}",
+            "Student/Parent Reason: {$this->request->reason}",
+        ];
+
+        if (!empty($this->request->decision_reason)) {
+            $messageLines[] = "Decision Reason: {$this->request->decision_reason}";
+        }
+        
+        $messageLines[] = 'This is a heads-up so you’re aware of the updated schedule.';
+
+        $actionRoute = [
+            'name' => 'admin.reschedules', 
+            'params' => [], 
+        ];
+
+        return [
+            'category' => 'Reschedules', 
+            'request_id' => $this->request->id,
+            'decision' => $this->decision,
+            'actor' => $this->actorName,
+
+            'title' => $title,
+            'message_lines' => $messageLines,
+            'action' => [
+                'text' => 'View Details',
+                'route' => $actionRoute,
+            ],
+        ];
+    }
+
+    /**
+     * Get the array representation of the notification.
+     */
     public function toArray($notifiable)
     {
         return [

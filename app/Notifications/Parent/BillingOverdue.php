@@ -37,8 +37,39 @@ class BillingOverdue extends Notification
             ->subject('Your Subscription is Overdue')
             ->line("Your subscription expired on {$end}.")
             ->line("You have until {$graceEnd} ({$this->daysLeft} days left) to renew before suspension.")
-            ->action('Renew Now', url('/subscriptions/'.$this->subscription->id.'/renew'))
+            ->action('Renew Now', route('parent.payments'))
             ->line('Please make payment as soon as possible to avoid losing access.');
+    }
+
+    /**
+     * Get the database representation of the notification.
+     */
+    public function toDatabase($notifiable)
+    {
+        $end = $this->subscription->end_date->format('d M Y');
+        $graceEnd = $this->subscription->end_date->copy()->addDays($this->daysLeft)->format('d M Y');
+
+        $actionRoute = [
+            'name' => 'parent.payments', 
+            'params' => [],
+        ];
+
+        return [
+            'category' => 'Payments', 
+            'subscription_id' => $this->subscription->id,
+            'days_left' => $this->daysLeft,
+
+            'title' => 'Subscription Overdue',
+            'message_lines' => [
+                "Your subscription expired on {$end}.",
+                "You have until {$graceEnd} (**{$this->daysLeft} days left**) to renew before suspension.",
+                'Please make payment as soon as possible to avoid losing access.',
+            ],
+            'action' => [
+                'text' => 'Renew Now',
+                'route' => $actionRoute,
+            ],
+        ];
     }
 
     /**

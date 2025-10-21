@@ -34,6 +34,53 @@ class ParentRescheduleDecision extends Notification
         return $mail;
     }
 
+    /**
+     * Get the database representation of the notification.
+     */
+    public function toDatabase($notifiable)
+    {
+        $newTime = $this->request->proposed_start->format('d M Y H:i');
+        $isApproved = strtolower($this->decision) === 'approved';
+        $title = "Reschedule Request {$this->decision}";
+        
+        $messageLines = [
+            "Your reschedule request for Lesson #{$this->request->occurrence->lesson_id} has been **{$this->decision}**.",
+            "Requested reason: {$this->request->reason}",
+        ];
+        
+        if ($isApproved) {
+            $messageLines[] = "The lesson is now confirmed for: **{$newTime}**.";
+            $messageLines[] = "Please update your calendar accordingly.";
+        } else {
+            $messageLines[] = "Proposed new time: {$newTime}";
+            if ($this->request->decision_reason) {
+                $messageLines[] = "Rejection reason: {$this->request->decision_reason}";
+            }
+            $messageLines[] = "Please contact support for further assistance or submit a new request.";
+        }
+        
+        $actionRoute = [
+            'name' => 'parent.reschedules', 
+            'params' => [], 
+        ];
+
+        return [
+            'category' => 'Reschedules', 
+            'request_id' => $this->request->id,
+            'status'     => $this->decision,
+
+            'title' => $title,
+            'message_lines' => $messageLines,
+            'action' => [
+                'text' => 'View Schedule',
+                'route' => $actionRoute,
+            ],
+        ];
+    }
+
+    /**
+     * Get the array representation of the notification for database storage.
+     */
     public function toArray($notifiable)
     {
         return [

@@ -35,8 +35,35 @@ class PaymentApproved extends Notification
             ->greeting('Hello,')
             ->line("Your payment of ₦{$this->payment->amount} for student {$this->payment->subscription->student->name} has been approved.")
             ->line('Your subscription is now active.')
-            ->action('View Subscription', url('parent.subscriptions.index')) //DEFINE ROUTE LATER
+            ->action('View Subscription', route('parent.payments'))
             ->line('Thank you for keeping your subscription active.');
+    }
+
+    /**
+     * Get the array representation of the notification for database storage.
+     */
+    public function toDatabase($notifiable)
+    {
+        $actionRoute = [
+            'name' => 'parent.payments',
+            'params' => [], 
+        ];
+
+        return [
+            'category' => 'Payments', 
+            'payment_id' => $this->payment->id,
+            'status'     => 'approved',
+
+            'title' => 'Payment Approved',
+            'message_lines' => [
+                "Your payment of ₦{$this->payment->amount} for student {$this->payment->subscription->student->name} has been approved.",
+                'Your subscription is now active.',
+            ],
+            'action' => [
+                'text' => 'View Subscription',
+                'route' => $actionRoute,
+            ],
+        ];
     }
 
     /**

@@ -38,8 +38,43 @@ class InstructorRescheduleApprovalRequired extends Notification
             ->line("Your student has requested to reschedule Lesson #{$lessonId}.")
             ->line("Old time: {$this->request->occurrence->scheduled_start?->format('d M Y H:i')}")
             ->line("Proposed new time: {$this->request->proposed_start?->format('d M Y H:i')}")
-            ->action('Review Request', url("/instructor/reschedules/{$this->request->id}"))
+            ->action('Review Request', route("instructor.reschedules"))
             ->line('Please confirm if this new time works for you.');
+    }
+
+    /**
+     * Get the database representation of the notification.
+     */
+    public function toDatabase($notifiable)
+    {
+        $occurrence = $this->request?->occurrence;
+        $lessonId = $occurrence->lesson_id ?? 'N/A';
+        $oldTime = $occurrence->scheduled_start?->format('d M Y H:i');
+        $newTime = $this->request->proposed_start?->format('d M Y H:i');
+
+        $actionRoute = [
+            'name' => 'instructor.reschedules', 
+            'params' => [], 
+        ];
+
+        return [
+            'category' => 'Reschedules', 
+            'request_id' => $this->request->id,
+            'status'     => 'pending_approval',
+
+            'title' => 'New Reschedule Request',
+            'message_lines' => [
+                'Hello Instructor,',
+                "Your student has requested to reschedule Lesson **#{$lessonId}**.",
+                "Old time: **{$oldTime}**",
+                "Proposed new time: **{$newTime}**",
+                'Please review and confirm if this new time works for you.',
+            ],
+            'action' => [
+                'text' => 'Review Request',
+                'route' => $actionRoute,
+            ],
+        ];
     }
 
     /**
