@@ -11,7 +11,11 @@
             <div class="row align-items-center">
             <div class="col-md-12">
                 <div class="page-header-title border-bottom pb-2 mb-2">
-                     <h4 class="mb-0">My Notification</h4>
+                     <h4 class="mb-0">My Notification
+                        @if(auth()->user()->unreadNotifications->count() > 0)
+                            <span class="text-danger">({{ auth()->user()->unreadNotifications->count() }})</span>
+                        @endif
+                     </h4>
                 </div>
             </div>
             <div class="col-md-12">
@@ -61,8 +65,6 @@
                                     {{ $note->data['title'] ?? 'Notification' }}
                                 </strong>
                                 
-                                {{-- Optional: Greeting line (can be customized per notification if needed) --}}
-                                <p class="mb-1 mt-1 text-muted">Hello,</p>
                                 
                                 {{-- Display Message Lines (supports all notification types with a standard structure) --}}
                                 @if (isset($note->data['message_lines']))

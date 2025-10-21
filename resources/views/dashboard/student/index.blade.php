@@ -285,15 +285,70 @@
                 <div class="card-header lead">Recent Notifications</div>
                 <div class="card-body">
                     @forelse($notifications as $note)
-                        <div class="alert alert-info mb-2">
-                            {{ $note->data['message'] ?? $note->type }}
-                            <small class="d-block text-muted">{{ $note->created_at->diffForHumans() }}</small>
+                        @php
+                            // Safely extract data from the notification
+                            $data = $note->data;
+                            $title = $data['title'] ?? 'New Notification';
+                            $isRead = $note->read_at;
+                            
+                            // Get the first message line for a snippet
+                            $snippet = $data['message_lines'][0] ?? $data['message'] ?? 'Click for details...';
+                            
+                            // Determine alert style (using primary for unread, secondary/light for read)
+                            $alertClass = $isRead ? 'alert-light text-muted' : 'alert-primary';
+                            
+                            // Resolve URL if an action route is present
+                            $actionUrl = null;
+                            if (isset($data['action']['route']['name'])) {
+                                $routeName = $data['action']['route']['name'];
+                                $routeParams = $data['action']['route']['params'] ?? [];
+                                // Safely try to resolve the route
+                                try {
+                                    $actionUrl = route($routeName, $routeParams);
+                                } catch (\Exception $e) {
+                                    $actionUrl = null; 
+                                }
+                            }
+                        @endphp
+
+                        <div class="alert {{ $alertClass }} mb-2 p-2" role="alert">
+                            
+                            {{-- 1. Title --}}
+                            <strong class="{{ $isRead ? 'text-secondary' : 'text-dark' }}">
+                                {{ $title }}
+                            </strong>
+
+                            {{-- 2. Message Snippet --}}
+                            <p class="mb-0 small {{ $isRead ? 'text-secondary' : 'text-body' }}">
+                                {{ Str::limit(strip_tags($snippet), 60, '...') }}
+                            </p>
+                            
+                            {{-- 3. Action Link and Timestamp --}}
+                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                @if ($actionUrl)
+                                    <a href="{{ $actionUrl }}" class="alert-link small text-decoration-underline">
+                                        {{ $data['action']['text'] ?? 'View Details' }}
+                                    </a>
+                                @else
+                                    {{-- Placeholder or empty link to align time --}}
+                                    <span></span>
+                                @endif
+                                
+                                <small class="text-muted text-end">{{ $note->created_at->diffForHumans() }}</small>
+                            </div>
                         </div>
                     @empty
-                        <p>No recent notifications.</p>
+                        <p class="text-muted">No recent notifications.</p>
                     @endforelse
+
+                    {{-- Optional: Link to full notifications page --}}
+                    @if(count($notifications) > 0)
+                        <div class="text-center mt-3">
+                            <a href="{{ route('notifications') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                    @endif
                 </div>
-            </div>
+            </div> <!-- Notifications End -->
 
         </div>
         <!-- [col-4] end -->
