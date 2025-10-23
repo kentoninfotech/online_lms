@@ -10,6 +10,7 @@ use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\ZoomController;
 use App\Http\Controllers\JoinClassController;
+use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\Dashboard\AdminDashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
@@ -80,6 +81,9 @@ Route::middleware(['auth'])->group(function () {
     // JOIN CLASS ROUTE
     Route::get('/lesson/{occurrence}/join', [JoinClassController::class, 'join'])->name('lesson.join');
     Route::get('/lesson/{occurrence}/waiting', [JoinClassController::class, 'waiting'])->name('lesson.waiting');
+
+    // CALENDAR ROUTE
+    Route::get('/calendar/occurrences', [CalendarController::class, 'fetchEvents'])->name('calendar.occurrences');
    
     // NOTIFICATION ROUTES
     Route::get('/notifications', [NotificationController::class, 'notifications'])->name('notifications');
@@ -164,4 +168,9 @@ Route::get('/artisan/{secret}/{command}', function ($secret, $command) {
     } catch (\Exception $e) {
         return "❌ Error executing command '{$command}': " . $e->getMessage();
     }
+});
+
+
+Route::get('calendar-test', function () {
+    return view('dashboard.calendar-test');
 });

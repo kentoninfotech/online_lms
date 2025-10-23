@@ -185,7 +185,10 @@
 
         <!-- [col-4] start -->
         <div class="col-lg-4">
-            <iframe src="https://calendar.google.com/calendar/embed?height=300&wkst=1&ctz=UTC&showPrint=0&showTabs=0&showCalendars=0&showTz=0" style="border-width:0" width="300" height="300" frameborder="0" scrolling="no"></iframe>
+            
+            <!-- Custom Calendar -->
+            <x-full-calendar />
+            <!-- End Custom Calendar -->
                         
             @if($ongoingClass)
             <div class="card mt-3 border-0 shadow-sm">
@@ -347,29 +350,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ==============================
 
-    // Ongoing Class countdown
-    const endTime = new Date("{{ $ongoingClass?->scheduled_start->copy()->addMinutes($ongoingClass->duration_minutes)->toIso8601String() }}").getTime();
-    const timer = document.getElementById("class-countdown");
+    @if($ongoingClass)
+        // Ongoing Class countdown
+        const endTime = new Date("{{ $ongoingClass?->scheduled_start->copy()->addMinutes($ongoingClass->duration_minutes)->toIso8601String() }}").getTime();
+        const timer = document.getElementById("class-countdown");
 
-    const interval = setInterval(() => {
-        const ongoingNow = new Date().getTime();
-        const ongoingDiff = endTime - ongoingNow;
+        const interval = setInterval(() => {
+            const ongoingNow = new Date().getTime();
+            const ongoingDiff = endTime - ongoingNow;
 
-        if (ongoingDiff <= 0) {
-            clearInterval(interval);
-            timer.innerHTML = "Class ended";
+            if (ongoingDiff <= 0) {
+                clearInterval(interval);
+                timer.innerHTML = "Class ended";
 
-            // ⏳ Give a short delay, then refresh the dashboard
-            setTimeout(() => {
-                window.location.reload();
-            }, 2000);
-            return;
-        }
+                // Give a short delay, then refresh the dashboard
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+                return;
+            }
 
-        const ongoingMins = Math.floor(ongoingDiff / (1000 * 60));
-        const ongoingSecs = Math.floor((ongoingDiff % (1000 * 60)) / 1000);
-        timer.innerHTML = `Time remaining: ${ongoingMins}m ${ongoingSecs}s`;
-    }, 1000);
+            const ongoingMins = Math.floor(ongoingDiff / (1000 * 60));
+            const ongoingSecs = Math.floor((ongoingDiff % (1000 * 60)) / 1000);
+            timer.innerHTML = `Time remaining: ${ongoingMins}m ${ongoingSecs}s`;
+        }, 1000);
+
+    @endif // End if ongoing class countdown
 
 });
 
