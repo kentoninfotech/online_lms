@@ -58,7 +58,8 @@ body {
   color: #4099ff;
 }
 [data-pc-preset=preset-1] .bg-grd-primary {
-  background: linear-gradient(45deg, #4099ff, #73b4ff);
+  background: linear-gradient(45deg, #9c2496, #990479);
+  /* background: linear-gradient(45deg, #4099ff, #73b4ff); */
 }
 [data-pc-preset=preset-1] .link-primary {
   color: #4099ff !important;

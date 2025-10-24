@@ -14,12 +14,9 @@
     <meta name="author" content="Online Class Management System"/>
 
     <!-- [Styles : Scripts : Icons : Fonts] -->
-    <!-- @vite(['resources/css/app.css', 'resources/js/app.js']) -->
-
-
 
     <!-- [Favicon] icon -->
-    <link rel="icon" href="{{ asset('assets/images/favicon.svg') }}" type="image/x-icon" />
+    <link rel="icon" href="{{ asset('assets/images/favicon.png') }}" type="image/x-icon" />
 
     <!-- map-vector css -->
     <link rel="stylesheet" href="{{ asset('assets/css/plugins/jsvectormap.min.css') }}" />
@@ -43,9 +40,6 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" id="main-style-link" />
     <link rel="stylesheet" href="{{ asset('assets/css/style-preset.css') }}" />
 
-
-
-
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
@@ -64,59 +58,9 @@
     </div>
     <!-- [ Pre-loader ] End -->
 
-    <!-- [ Sidebar Menu ] start -->
-    <nav class="pc-sidebar">
-    <div class="navbar-wrapper">
-        <div class="m-header">
-        <a href="../dashboard/index.html" class="b-brand text-primary">
-            <!-- ========   Change your logo from here   ============ -->
-            <img src="../assets/images/logo-white.svg" alt="logo image" class="logo-lg" />
-        </a>
-        </div>
-        <div class="navbar-content">
-            <ul class="pc-navbar">
-                <li class="pc-item pc-caption">
-                <label>Navigation</label>
-                </li>
-                <li class="pc-item">
-                <a href="../dashboard/index.html" class="pc-link"
-                    ><span class="pc-micon"> <i class="ph ph-gauge"></i></span><span class="pc-mtext">Dashboard</span>
-                </a>
-                </li>
-                @auth
-                    @if(auth()->user()->user_type === 'admin')
-                        @include('layouts.partials.sidebars.admin')
-                    @elseif(auth()->user()->user_type === 'instructor')
-                        @include('layouts.partials.sidebars.instructor')
-                    @elseif(auth()->user()->user_type === 'parent')
-                        @include('layouts.partials.sidebars.parent')
-                    @elseif(auth()->user()->user_type === 'student')
-                        @include('layouts.partials.sidebars.student')
-                    @endif
-                @endauth
-            </ul>
-        </div>
-    </div>
-    </nav>
-    <!-- [ Sidebar Menu ] end -->
-
-    <!-- [ Header Topbar ] start -->
-    @include('layouts.partials.header')
-    <!-- [ Header ] end -->
-
-
     <!-- [ Main Content ] start -->
-    <div class="pc-container">
-        <div class="pc-content">
-          @yield('content')
-        </div>
-    </div>
+    @yield('content')
     <!-- [ Main Content ] end -->
-    
-    {{-- Footer --}}
-    @include('layouts.partials.footer')
-
-
     
 
   </body>
