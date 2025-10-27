@@ -20,7 +20,7 @@ class NotificationService
             if (str_contains($note->type, 'Reschedule')) {
                 return 'Reschedules';
             }
-            if (str_contains($note->type, 'Attendance') || str_contains($note->type, 'Lesson')) {
+            if (str_contains($note->type, 'ClassReminde') || str_contains($note->type, 'Lesson')) {
                 return 'Classes';
             }
             return 'Others';

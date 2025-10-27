@@ -56,7 +56,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
     // manual finalize attendance for occurrence
-    Route::post('/occurrences/{occurrence}/finalize', [AttendanceController::class, 'finalize'])->name('admin.occurrences.finalize');
+    Route::get('/attendance/{occurrence}/finalize', [AttendanceController::class, 'finalize'])->name('admin.attendance.finalize');
     // payment approval/rejection
     Route::post('/payments/{payment}/approve', [PaymentController::class, 'approve'])->name('payments.approve');
     Route::post('/payments/{payment}/reject', [PaymentController::class, 'reject'])->name('payments.reject');
@@ -170,7 +170,3 @@ Route::get('/artisan/{secret}/{command}', function ($secret, $command) {
     }
 });
 
-
-Route::get('calendar-test', function () {
-    return view('dashboard.calendar-test');
-});

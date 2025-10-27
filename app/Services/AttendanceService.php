@@ -6,6 +6,7 @@ use App\Models\LessonOccurrence;
 use App\Models\Attendance;
 use App\Models\Student;
 use App\Models\Instructor;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,8 +24,8 @@ class AttendanceService
         $scheduledEnd   = $scheduledStart->copy()->addMinutes($occurrence->duration_minutes);
 
         // Grace + threshold (dynamic from settings)
-        $lateGrace     = (int) setting('attendance_grace_period_minutes', 10);
-        $minThreshold  = (int) setting('attendance_min_percentage', 0); // 0 = disabled
+        $lateGrace    = (int) Setting::where('key','attendance_grace_period_minutes')->first()->value ?? 10;
+        $minThreshold = (int) Setting::where('key','attendance_min_percentage')->first()->value ?? 0;
 
         // --- Check Student ---
         $this->evaluateUserAttendance(

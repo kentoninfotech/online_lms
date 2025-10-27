@@ -13,7 +13,7 @@ return [
     | You can also enable/disable email and in-app notifications.
     |
     */
-    'class_minutes' => 60, // Send reminders 60 minutes before class
+    'class_minutes' => 10, // Send reminders 60 minutes before class
 
     // 'notifications' => [
     //     'email' => env('CLASS_REMINDER_EMAIL', true),

@@ -95,6 +95,7 @@
                                             <span class="badge 
                                                 (@if($subscription->status === 'active') bg-success 
                                                 @elseif($subscription->status === 'pending') bg-warning
+                                                @elseif($subscription->status === 'grace') bg-info
                                                 @else bg-danger @endif)">
                                                 {{ ucfirst($subscription->status) }}
                                             </span>
@@ -114,6 +115,13 @@
                                         </h6>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="col-12">
+                                @if($subscription->warning_message)
+                                    <div class="alert alert-warning mt-3 mb-0">
+                                        {{ $subscription->warning_message }}
+                                    </div>
+                                @endif
                             </div>
                     </div>
                 </div>

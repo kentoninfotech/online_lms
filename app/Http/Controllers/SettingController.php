@@ -14,6 +14,7 @@ class SettingController extends Controller
     // canonical keys we manage (keeps order stable)
     private array $keys = [
         'reschedule_limit',
+        'class_reminders_minutes',
         'reschedule_guard_time_minutes',
         'attendance_grace_period_minutes',
         'billing_grace_period_days',
@@ -25,6 +26,7 @@ class SettingController extends Controller
 
     private array $descriptions = [
         'reschedule_limit' => 'Maximum number of reschedules allowed per month.',
+        'class_reminders_minutes' => 'Minutes before class to send reminders.',
         'reschedule_guard_time_minutes' => 'Minimum notice before class (in minutes) to allow reschedule. e.g 1140 minutes = 24 hours',
         'attendance_grace_period_minutes' => 'Grace period (in minutes) before a student is marked late.',
         'billing_grace_period_days' => 'Days after subscription expiry before marking overdue.',

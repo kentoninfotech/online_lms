@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\LessonOccurrence;
+use App\Models\Setting;
 use App\Notifications\ClassReminder;
 
 class SendClassReminders extends Command
@@ -16,7 +17,8 @@ class SendClassReminders extends Command
      */
     public function handle()
     {
-        $minutesAhead = config('reminders.class_minutes', 60); // default 1h
+        // $minutesAhead = config('reminders.class_minutes', 20); // default 20 minutes
+        $minutesAhead = (int) Setting::where('key','class_reminders_minutes')->first()->value ?? 20; // default 20 minutes
         $now = now();
         $target = $now->copy()->addMinutes($minutesAhead);
 

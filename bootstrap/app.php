@@ -21,13 +21,23 @@ return Application::configure(basePath: dirname(__DIR__))
     })
 
     ->withSchedule(function (Schedule $schedule): void {
-        // Define scheduled tasks
+        // Generate lesson occurrences daily
         $schedule->command('lessons:generate-occurrences')->daily();
+        // Update lesson statuses every 1 minute
+        $schedule->command('lessons:update-status')->everyFiveMinutes();
+        // Finalize attendance every 5 minutes
+        $schedule->command('attendance:finalize')->everyFiveMinutes();
+        // Send class reminders every 5 minutes
+        $schedule->command('reminders:classes')->everyTenMinutes();
+        // Update subscription statuses daily
+        $schedule->command('subscriptions:update-status')->dailyAt('01:00');
+        // Send payment reminders daily
+        $schedule->job(new SendSubscriptionExpiryWarnings)->daily();
+        // Send billing overdue reminders daily
+        $schedule->job(new SendBillingOverdueReminders)->daily();
+
         // $schedule->command('lessons:create-zoom-sessions')->daily();
         // $schedule->command('zoom:sync-participants')->dailyAt('02:00');
-        $schedule->command('reminders:classes')->everyFiveMinutes();
-        $schedule->job(new SendSubscriptionExpiryWarnings)->daily();
-        $schedule->job(new SendBillingOverdueReminders)->daily();
     })
     
     ->withExceptions(function (Exceptions $exceptions): void {

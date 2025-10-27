@@ -6,10 +6,11 @@ use App\Models\LessonOccurrence;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 
 class CalendarController extends Controller
 {
-    public function fetchEvents(Request $request)
+    public function fetchEvents(Request $request): JsonResponse
     {
         $user = Auth::user();
 
@@ -33,11 +34,11 @@ class CalendarController extends Controller
 
             // Determine styling based on status
             $color = match ($occurrence->status) {
-                'scheduled' => '#10b981', // Emerald 500
-                'ended' => '#ec10bdff', // Emerald 500
-                'pending' => '#f59e0b', // Amber 500
-                'cancelled' => '#ef4444', // Red 500
-                default => '#3b82f6', // Blue 500
+                'scheduled' => '#ff00eaff', 
+                'completed' => '#00ff2aff', 
+                'pending'   => '#f59e0b', 
+                'cancelled' => '#ef4444',
+                default     => '#3b82f6', 
             };
 
             return [

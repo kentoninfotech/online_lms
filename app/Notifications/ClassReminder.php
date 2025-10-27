@@ -53,7 +53,7 @@ class ClassReminder extends Notification
         
         $actionRoute = [
             'name' => "lesson.join", 
-            'params' => ['occurrence' => $this->occurrence],
+            'params' => ['occurrence' => $this->occurrence->id],
         ];
 
         return [
