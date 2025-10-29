@@ -211,6 +211,17 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <p><strong>Whoops! Something went wrong.</strong></p>
+                  <ul>
+                      @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                      @endforeach
+                  </ul>
+            </div>
+        @endif
+
         <div class="modal-body row g-3">
           <!-- Subject -->
           <div class="col-md-6">
@@ -224,7 +235,7 @@
           </div>
 
           <!-- instructor id -->
-          {{-- <input type="hidden" name="instructor_id" value="{{ auth()->user()->instructor->id }}" > --}}
+          <input type="hidden" name="instructor_id" value="{{ auth()->user()->instructor->id }}" >
 
           <!-- Student -->
           <div class="col-md-6">

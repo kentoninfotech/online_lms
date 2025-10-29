@@ -41,7 +41,7 @@
                 <p><strong>End:</strong> <span id="modal-lesson-end"></span></p>
             </div>
             <div class="modal-footer">
-                <!-- Assuming you have a route named 'lessons.show' -->
+                <!-- Assuming you have a route named 'lesson.join' -->
                 <a id="modal-lesson-link" href="#" class="btn btn-primary">Join Class</a>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
@@ -132,8 +132,17 @@
                 }
                 statusEl.classList.add(statusColorClass);
                 
+                // Use a global variable to store the user's role status
+                const isParentUser = @json(Auth::user()->hasRole('parent'));
                 // Update link
                 linkEl.href = info.event.url || '#';
+                if (typeof isParentUser !== 'undefined' && !isParentUser) {
+                    // User is authenticated and NOT a parent, so show the link
+                    linkEl.style.display = 'inline-block'; 
+                } else {
+                    // User is a parent, not authenticated
+                    linkEl.style.display = 'none';
+                }
 
                 // Show the modal
                 const detailModal = new bootstrap.Modal(document.getElementById('eventDetailModal'));

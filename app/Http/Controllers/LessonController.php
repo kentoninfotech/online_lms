@@ -28,7 +28,7 @@ class LessonController extends Controller
         ->paginate(10);
 
         // Today’s schedule
-        $todayLessons = LessonOccurrence::with(['lesson.student.user', 'lesson.student.user', 'zoomSession'])
+        $todayLessons = LessonOccurrence::with(['lesson.student.user', 'lesson.instructor.user', 'zoomSession'])
             ->whereHas('lesson')//, fn($q) => $q->where('instructor_id', $instructor->id))
             ->whereDate('scheduled_start', Carbon::today())
             ->orderBy('scheduled_start')
@@ -48,6 +48,8 @@ class LessonController extends Controller
      */
     public function store(StoreLessonRequest $request)
     {
+        $this->authorize('create', Lesson::class);
+
         $data = $request->validated();
 
         // Normalize recurrence_meta

@@ -17,6 +17,9 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
+        // Authorization check
+        $this->authorize('view', $user);
+
         // Detect role/relationship
         $roleData = null;
 

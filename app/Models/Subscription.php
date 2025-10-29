@@ -57,32 +57,8 @@ class Subscription extends Model
         return $this->status === 'active' && $this->end_date >= now();
     }
 
-    // Check if the subscription is in grace period
-    public function isInGrace(): bool
-    {
-        return $this->status === 'grace';
-    }
-
-    // Check if the subscription has expired
-    public function hasExpired(): bool
-    {
-        return now()->gt($this->end_date);
-    }
-
-    // Mark subscription as expired
-    public function markExpired()
-    {
-        $this->update(['status' => 'expired']);
-    }
-
-    // Mark subscription as in grace period
-    public function markGrace()
-    {
-        $this->update(['status' => 'grace']);
-    }
-
     // Calculate remaining days in the subscription
-    public function remainingDays(): int
+    public function getRemainingDaysAttribute(): int
     {
         return now()->lt($this->end_date) ? now()->diffInDays($this->end_date) : 0;
     }
@@ -91,14 +67,6 @@ class Subscription extends Model
     public function cycleEndDate(): Carbon
     {
         return $this->start_date->copy()->addDays($this->plan->getCycleLength());
-    }
-
-    // Check if the subscription is within the payment grace period
-    public function inGracePeriod(): bool
-    {
-        return $this->end_date->copy()
-            ->addDays($this->plan->payment_grace_days)
-            ->gte(now());
     }
 
     // Calculate remaining reschedules in the current cycle
@@ -118,28 +86,8 @@ class Subscription extends Model
             ?? (int) Setting::where('key', 'billing_grace_period_days')->value('value') ?? 7;
 
         $endWithGrace = Carbon::parse($this->end_date)->addDays($graceDays);
-        return now()->diffInDays($endWithGrace, false);
-    }
-
-    public function getWarningMessageAttribute()
-    {
-        $warnDays = (int) Setting::where('key', 'subscription_expiry_warning_days')->value('value') ?? 7;
-
-        if ($this->days_remaining <= $warnDays && $this->days_remaining > 0) {
-            $days_left = ceil($this->days_remaining);
-            return "⚠️ Your plan expires in {$days_left} days.";
-            // return "⚠️ Your plan expires in {ceil($this->days_remaining)} days.";
-        }
-
-        if ($this->days_remaining === 0) {
-            return "⚠️ Your plan expires today!";
-        }
-
-        if ($this->days_remaining < 0) {
-            return "❌ Your plan has expired. Please renew to continue learning.";
-        }
-
-        return null;
+        $daysRemaining = now()->diffInDays($endWithGrace, false);
+        return ceil($daysRemaining) > 0 ? ceil($daysRemaining) : null;
     }
 
 }

@@ -137,7 +137,7 @@
             </div>
 
         </div>
-        @role('admin')
+        @can('approve', $payment)
            <div class="card-footer">
                 <form class="d-inline" action="{{ route('payments.approve', $payment) }}" method="post">
                     @csrf
@@ -150,7 +150,7 @@
                     <i class="ph ph-x"></i> Reject Payment
                 </button>
             </div>
-        @endrole
+        @endcan
     </div>
 </div>
 

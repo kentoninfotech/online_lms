@@ -18,6 +18,9 @@ class SubscriptionController extends Controller
 
     public function create(Student $student)
     {
+        // Check authorization
+        $this->authorize('view', $student->subscription);
+
         $plans = Plan::all();
 
         return view('dashboard.subscription-plan', compact('student', 'plans'));
@@ -25,6 +28,9 @@ class SubscriptionController extends Controller
 
     public function store(Request $request, Student $student, Plan $plan)
     {
+        // Check authorization
+        $this->authorize('view', $student->subscription);
+
         // use this StoreSubscriptionRequest if decide to use form input 
 
         // Check if student already has an active subscription
@@ -49,6 +55,9 @@ class SubscriptionController extends Controller
 
     public function activate(Subscription $subscription)
     {
+        // Check authorization
+        $this->authorize('update', $subscription);
+
         if ($subscription->isActive()){
             return redirect()
                 ->back()
@@ -64,6 +73,9 @@ class SubscriptionController extends Controller
 
     public function cancel(Subscription $subscription)
     {
+        // Check authorization
+        $this->authorize('update', $subscription);
+
         $this->subs->reject($subscription);
 
         return redirect()

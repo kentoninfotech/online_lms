@@ -17,6 +17,8 @@ class StudentController extends Controller
      */
     public function show(Request $request, Student $student)
     {
+        $this->authorize('view', $student);
+        
         // $student->load([]);
         // Instructors dropdown (for lesson filtering)
         $instructors = Instructor::pluck('name', 'id');

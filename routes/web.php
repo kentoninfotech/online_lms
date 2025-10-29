@@ -34,37 +34,10 @@ use Illuminate\Support\Facades\Artisan;
 // public endpoint for Zoom to POST webhooks to
 Route::post('/webhooks/zoom', [ZoomWebhookController::class, 'handle']);
 
-// ADMIN ROUTES
+// ------------------------------
+// GLOBAL ROUTES
+// ------------------------------
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard/admin', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-    Route::get('/admin/students', [AdminDashboardController::class, 'students'])->name('admin.students');
-    Route::get('/admin/instructors', [AdminDashboardController::class, 'instructors'])->name('admin.instructors');
-    Route::get('/admin/parents', [AdminDashboardController::class, 'parents'])->name('admin.parents');
-    Route::get('/admin/lessons', [LessonController::class, 'lessons'])->name('admin.lessons');
-    Route::get('/admin/payments', [AdminDashboardController::class, 'payments'])->name('admin.payments');
-    Route::get('/admin/reschedules', [AdminDashboardController::class, 'reschedules'])->name('admin.reschedules');
-    Route::get('/admin/subscriptions', [AdminDashboardController::class, 'subscriptions'])->name('admin.subscriptions');
-    Route::post('/admin/subscriptions/{subscription}/active', [SubscriptionController::class, 'activate'])->name('subscriptions.activate');
-    Route::post('/admin/subscriptions/{subscription}/cancel', [SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
-    Route::get('/admin/plans', [PlanController::class, 'plans'])->name('admin.plans');
-    Route::post('/admin/plans/create', [PlanController::class, 'create'])->name('plan.create');
-    Route::put('/admin/plans/{plan}', [PlanController::class, 'update'])->name('plan.update');
-    Route::delete('/admin/plans/{plan}/delete', [PlanController::class, 'destroy'])->name('plan.destroy');
-    Route::get('create/{role}', [UserController::class, 'create'])->name('admin.users.create');
-    Route::post('store/{role}', [UserController::class, 'store'])->name('admin.users.store');
-    Route::get('/admin/settings', [InstructorLessonController::class, 'settings'])->name('admin.settings');
-    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
-    Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
-    // manual finalize attendance for occurrence
-    Route::get('/attendance/{occurrence}/finalize', [AttendanceController::class, 'finalize'])->name('admin.attendance.finalize');
-    // payment approval/rejection
-    Route::post('/payments/{payment}/approve', [PaymentController::class, 'approve'])->name('payments.approve');
-    Route::post('/payments/{payment}/reject', [PaymentController::class, 'reject'])->name('payments.reject');
-});
-
-
-Route::middleware(['auth'])->group(function () {
-    // GLOBAL ROUTES
     Route:: get('/student/{student}', [StudentController::class, 'show'])->name('show.student');
     Route:: get('/parent/{parent}', [ParentController::class, 'show'])->name('show.parent');
     Route:: get('/instructor/{instructor}', [InstructorController::class, 'show'])->name('show.instructor');
@@ -110,8 +83,40 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
-// STUDENT ROUTES
-Route::middleware(['auth'])->group(function () {
+// ------------------------------
+// ADMIN ROUTES
+// ------------------------------
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/students', [AdminDashboardController::class, 'students'])->name('admin.students');
+    Route::get('/admin/instructors', [AdminDashboardController::class, 'instructors'])->name('admin.instructors');
+    Route::get('/admin/parents', [AdminDashboardController::class, 'parents'])->name('admin.parents');
+    Route::get('/admin/lessons', [LessonController::class, 'lessons'])->name('admin.lessons');
+    Route::get('/admin/payments', [AdminDashboardController::class, 'payments'])->name('admin.payments');
+    Route::get('/admin/reschedules', [AdminDashboardController::class, 'reschedules'])->name('admin.reschedules');
+    Route::get('/admin/subscriptions', [AdminDashboardController::class, 'subscriptions'])->name('admin.subscriptions');
+    Route::post('/admin/subscriptions/{subscription}/active', [SubscriptionController::class, 'activate'])->name('subscriptions.activate');
+    Route::post('/admin/subscriptions/{subscription}/cancel', [SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
+    Route::get('/admin/plans', [PlanController::class, 'plans'])->name('admin.plans');
+    Route::post('/admin/plans/create', [PlanController::class, 'create'])->name('plan.create');
+    Route::put('/admin/plans/{plan}', [PlanController::class, 'update'])->name('plan.update');
+    Route::delete('/admin/plans/{plan}/delete', [PlanController::class, 'destroy'])->name('plan.destroy');
+    Route::get('create/{role}', [UserController::class, 'create'])->name('admin.users.create');
+    Route::post('store/{role}', [UserController::class, 'store'])->name('admin.users.store');
+    Route::get('/admin/settings', [InstructorLessonController::class, 'settings'])->name('admin.settings');
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
+    // manual finalize attendance for occurrence
+    Route::get('/attendance/{occurrence}/finalize', [AttendanceController::class, 'finalize'])->name('admin.attendance.finalize');
+    // payment approval/rejection
+    Route::post('/payments/{payment}/approve', [PaymentController::class, 'approve'])->name('payments.approve');
+    Route::post('/payments/{payment}/reject', [PaymentController::class, 'reject'])->name('payments.reject');
+});
+
+// ------------------------------
+//  STUDENT ROUTES
+// ------------------------------
+Route::middleware(['auth', 'role:student'])->group(function () {
     Route::get('/dashboard/student', [StudentDashboardController::class, 'index'])->name('student.dashboard');
     Route::post('/generate-link-code', [LinkStudentParentController::class, 'generateLinkCode'])->name('generate.link.code');
     Route::get('/my-lessons', [StudentLessonController::class, 'lessons'])->name('student.lessons');
@@ -120,8 +125,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/student/settings', [StudentLessonController::class, 'settings'])->name('student.settings');
 });
 
+// ------------------------------
 // INSTRUCTOR ROUTES
-Route::middleware(['auth'])->group(function () {
+// ------------------------------
+Route::middleware(['auth', 'role:instructor'])->group(function () {
     Route::get('dashboard/instructor', [InstructorDashboardController::class, 'index'])->name('instructor.dashboard');
     Route::get('instructors/lessons', [InstructorLessonController::class, 'lessons'])->name('instructor.lessons');
     Route::get('instructors/students', [InstructorStudentController::class, 'students'])->name('instructor.students');
@@ -130,8 +137,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/instructor/settings', [InstructorLessonController::class, 'settings'])->name('instructor.settings');
 });
 
+// ------------------------------
 // PARENT ROUTES
-Route::middleware(['auth'])->group(function () {
+// ------------------------------
+Route::middleware(['auth', 'role:parent'])->group(function () {
     Route::get('/dashboard/parent', [ParentDashboardController::class, 'index'])->name('parent.dashboard');
     Route::get('/children', [ParentDashboardController::class, 'children'])->name('parent.children');
     Route::get('/lessons', [ParentDashboardController::class, 'upcoming'])->name('parent.lessons');

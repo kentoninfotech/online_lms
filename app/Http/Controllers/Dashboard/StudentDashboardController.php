@@ -69,7 +69,6 @@ class StudentDashboardController extends Controller
             'lateCount'              => $lifetimeBreakdown['late'],
             'absentCount'            => $lifetimeBreakdown['absent'],
             'subscription'           => $student->subscription,
-            // 'subscription'           => $student->subscription,
             'lessonsThisMonth'       => $monthlyStats['lessonsThisMonth'],
             'monthTotalClasses'      => $monthlyStats['monthTotalClasses'],
             'monthPresentCount'      => $monthlyStats['monthPresentCount'],

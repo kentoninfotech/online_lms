@@ -19,6 +19,8 @@ class RescheduleController extends Controller
      */
     public function store(StoreRescheduleRequest $request, LessonOccurrence $occurrence)
     {
+        $this->authorize('request', RescheduleRequest::class);
+        
         $user = Auth::user();
         if ($user->user_type === 'parent') {
             $parent = $user;
@@ -62,6 +64,8 @@ class RescheduleController extends Controller
      */
     public function approve(Request $request, RescheduleRequest $reschedule)
     {
+        $this->authorize('approve', $reschedule);
+
         $this->service->approveRequest($reschedule, auto: false, approver: $request->user());
 
         return redirect()
@@ -74,6 +78,8 @@ class RescheduleController extends Controller
      */
     public function reject(Request $request, RescheduleRequest $reschedule)
     {
+        $this->authorize('approve', $reschedule);
+        
         $validated = $request->validate([
             'decision_reason' => ['nullable', 'string', 'max:500'],
         ]);

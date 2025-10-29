@@ -16,6 +16,9 @@ class UserController extends Controller
 {
     public function create(string $role)
     {
+        // Authorization check
+        $this->authorize('create', User::class);
+
         $parent_list = [];
         
         if ($role === 'student'){
@@ -27,6 +30,9 @@ class UserController extends Controller
 
     public function store(string $role)
     {
+        // Authorization check
+        $this->authorize('create', User::class);
+
         // pick correct request
         $request = match($role) {
             'student'     => app(StoreStudentRequest::class),
@@ -73,11 +79,17 @@ class UserController extends Controller
      */
     public function edit(User $user, $role)
     {
+        // Authorization check
+        $this->authorize('update', $user);
+
         return view('dashboard.edit-user', compact('user', 'role'));
     }
 
     public function update(UserUpdateRequest $request, User $user, $role)
     {
+        // Authorization check
+        $this->authorize('update', $user);
+
         $user->update($request->only('name', 'email'));
 
         // Role-specific updates

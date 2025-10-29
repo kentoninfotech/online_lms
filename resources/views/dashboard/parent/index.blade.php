@@ -137,7 +137,10 @@
         <!-- [col-8] end -->
         <!-- [col-4] start -->
         <div class="col-lg-4">
-            <iframe src="https://calendar.google.com/calendar/embed?height=300&wkst=1&ctz=UTC&showPrint=0&showTabs=0&showCalendars=0&showTz=0" style="border-width:0" width="300" height="300" frameborder="0" scrolling="no"></iframe>
+            
+            <!-- Custom Calendar -->
+            <x-full-calendar />
+            <!-- End Custom Calendar -->
             
             <!-- <h3 class="mt-3">Next Event</h3> -->
 

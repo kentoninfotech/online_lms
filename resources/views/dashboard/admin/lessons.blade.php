@@ -87,15 +87,15 @@
                         <td>
                             @if(! isset($nextOccurrence->zoomSession))
                               <!-- Add zoom button opens modal -->
-                              <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#addZoomModal{{ $nextOccurrence?->lesson_occurrence_id }}">
+                              <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#addZoomModal{{ $nextOccurrence?->id }}">
                                     Add Zoom Meeting 
-                                </button>
+                              </button>
                             @endif
 
                             <!-- Create Lesson Modal -->
-                            <div class="modal fade" id="addZoomModal" tabindex="-1" aria-labelledby="createMeetingLabel" aria-hidden="true">
+                            <div class="modal fade" id="addZoomModal{{ $nextOccurrence?->id }}" tabindex="-1" aria-labelledby="createMeetingLabel" aria-hidden="true">
                               <div class="modal-dialog modal-lg">
-                                <form action="{{ route('add.zoom', $nextOccurrence) }}" method="POST">
+                                <form action="{{ route('add.zoom', ['occurrence' => $nextOccurrence?->id]) }}" method="POST">
                                   @csrf
                                   <div class="modal-content">
                                     <div class="modal-header">
@@ -104,7 +104,7 @@
                                     </div>
 
                                     <!-- lesson_occurrence_id -->
-                                    <input type="hidden" name="lesson_occurrence_id" value="{{ $nextOccurrence->id }}" >
+                                    <input type="hidden" name="lesson_occurrence_id" value="{{ $nextOccurrence?->id }}" >
 
                                     <div class="modal-body row g-3">
                                       <!-- Subject -->

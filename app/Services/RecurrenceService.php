@@ -114,7 +114,7 @@ class RecurrenceService
 
     private function getPlanHorizon(Lesson $lesson): int
     {
-        $subscription = $lesson->student?->activeSubscription();
-        return $subscription ? $subscription->plan->getHorizonDays() : 30;
+        $subscription = $lesson->student?->activeSubscription()->first();
+        return $subscription && $subscription->plan ? $subscription->plan->getHorizonDays() : 30;
     }
 }

@@ -17,11 +17,17 @@ class PaymentController extends Controller
 
     public function show(Payment $payment)
     {
+        // Check authorization
+        $this->authorize('view', $payment);
+
         return view('dashboard.show-payment', compact('payment'));
     }
 
     public function uploadEvidence(UploadPaymentEvidenceRequest $request)
     {
+        // Check authorization
+        $this->authorize('upload', Payment::class);
+
         if (Auth::user()->parent){
             $parent = Auth::user()->parent;
         }else{
@@ -39,6 +45,9 @@ class PaymentController extends Controller
 
     public function approve(Payment $payment, SubscriptionService $subs)
     {
+        // Check authorization
+        $this->authorize('approve', $payment);
+
         $this->payments->approve($payment, $subs);
 
         return redirect()
@@ -48,6 +57,9 @@ class PaymentController extends Controller
 
     public function reject(Request $request, Payment $payment, SubscriptionService $subs)
     {
+        // Check authorization
+        $this->authorize('approve', $payment);
+
         $reason = $request->validate(['decision_reason' => 'required|string|max:300']);
 
         $this->payments->reject($payment, $subs, $reason['decision_reason']);

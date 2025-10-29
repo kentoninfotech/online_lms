@@ -50,6 +50,7 @@ class Student extends Model
     public function activeSubscription()
     {
         return $this->hasOne(Subscription::class)
+            ->with('plan')  // Eager load the plan relationship
             ->whereIn('status', ['active', 'grace'])
             ->whereDate('start_date', '<=', now())
             ->where(function ($query) {

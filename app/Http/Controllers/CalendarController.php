@@ -22,6 +22,11 @@ class CalendarController extends Controller
             $occurrences = LessonOccurrence::whereHas('lesson', function ($q) use ($user) {
                 $q->where('instructor_id', $user->instructor->id);
             })->with('lesson')->get();
+        } elseif ($user->hasRole('parent')) {
+            $studentIds = $user->parent->students->pluck('id')->toArray();
+            $occurrences = LessonOccurrence::whereHas('lesson', function ($q) use ($studentIds) {
+                $q->whereIn('student_id', $studentIds);
+            })->with('lesson')->get();
         } else {
             $occurrences = LessonOccurrence::with('lesson')->get();
         }

@@ -27,7 +27,7 @@ class ParentDashboardController extends Controller
         // Guard: must be a parent with parentModel
         if ($user->user_type !== 'parent' || ! $user->parent) {
             return redirect()->route('login') // adapt route to your main dashboard route
-                ->with('success', 'You are not authorized to access the Parent Dashboard.');
+                ->with('error', 'You are not authorized to access the Parent Dashboard.');
         }
 
         $parent = $user->parent;

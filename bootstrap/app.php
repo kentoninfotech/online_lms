@@ -15,9 +15,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         // Register route middleware aliases
-        // $middleware->alias([
-        //     'isAdmin' => App\Http\Middleware\IsAdmin::class,
-        // ]);
+        $middleware->alias([
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+        ]);
     })
 
     ->withSchedule(function (Schedule $schedule): void {

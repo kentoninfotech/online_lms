@@ -117,9 +117,9 @@
                                 </div>
                             </div>
                             <div class="col-12">
-                                @if($subscription->warning_message)
+                                @if($subscription->remainingDays <= 10 && $subscription->status === 'active')
                                     <div class="alert alert-warning mt-3 mb-0">
-                                        {{ $subscription->warning_message }}
+                                        {{ $subscription->remainingDays }} days remaining until your subscription expires.
                                     </div>
                                 @endif
                             </div>
