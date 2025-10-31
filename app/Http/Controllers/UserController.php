@@ -6,11 +6,13 @@ use App\Http\Requests\UserUpdateRequest;
 use App\Http\Requests\StoreInstructorRequest;
 use App\Http\Requests\StoreParentRequest;
 use App\Http\Requests\StoreStudentRequest;
+use Illuminate\Http\Request;
 use App\Models\ParentModel;
 use App\Models\Instructor;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -108,5 +110,36 @@ class UserController extends Controller
         return redirect()->route('users.edit', [$user, $role])
                          ->with('success', ucfirst($role) . ' updated successfully.')
                          ->withFragment('profile');
+    }
+
+    public function delete(User $user)
+    {
+        // Authorization check
+        $this->authorize('delete', $user);
+
+        // Delete user related data based on role
+        if ($user->hasRole('student')){
+            // Detach all linked parents
+            $user->student->parents()->detach();
+            $user->student->delete();
+        }elseif ($user->hasRole('instructor')){
+            $user->instructor->delete();
+        }elseif ($user->hasRole('parent')){
+            // Detach all linked students
+            $user->parent->students()->detach();
+            $user->parent->delete();
+        }
+
+        // check if user has profile picture and delete the file
+        if ($user->profile){
+            Storage::disk('public')->delete($user->profile);
+        }
+
+        // Finally, delete the user
+        $user->delete();
+
+        return redirect()
+                 ->back()
+                 ->with('success', 'User deleted successfully!');
     }
 }

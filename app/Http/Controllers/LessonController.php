@@ -83,4 +83,18 @@ class LessonController extends Controller
         return redirect()->back()->with('success', 'Lesson created successfully.');
     }
 
+    /**
+     * Delete lesson
+     */
+    public function delete(Lesson $lesson)
+    {
+        $this->authorize('delete', $lesson);
+
+        $lesson->delete();
+
+        return redirect()
+                 ->back()
+                 ->with('success', 'Lesson deleted successfully.');
+    }
+
 }

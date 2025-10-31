@@ -33,6 +33,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('reminders:classes')->everyTenMinutes();
         // Update subscription statuses daily
         $schedule->command('subscriptions:update-status')->dailyAt('01:00');
+        // Reset reschedule usage daily at 1am
+        $schedule->command('reschedule:reset-usage')->dailyAt('01:00');
         // Send payment reminders daily
         $schedule->job(new SendSubscriptionExpiryWarnings)->daily();
         // Send billing overdue reminders daily

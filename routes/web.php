@@ -68,6 +68,8 @@ Route::middleware(['auth'])->group(function () {
 
     // LESSON ROUTE
     Route::post('/lesson', [LessonController::class, 'store'])->name('lesson.store');
+    Route::delete('/lesson/{lesson}/delete', [LessonController::class, 'delete'])->name('lesson.delete');
+
     // ZOOM MEETING
     Route::post('/zoom/{occurrence}/add', [ZoomController::class, 'addZoom'])->name('add.zoom');
 
@@ -103,6 +105,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/admin/plans/{plan}/delete', [PlanController::class, 'destroy'])->name('plan.destroy');
     Route::get('create/{role}', [UserController::class, 'create'])->name('admin.users.create');
     Route::post('store/{role}', [UserController::class, 'store'])->name('admin.users.store');
+    Route::delete('user/{user}/delete', [UserController::class, 'delete'])->name('admin.users.delete');
     Route::get('/admin/settings', [InstructorLessonController::class, 'settings'])->name('admin.settings');
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');

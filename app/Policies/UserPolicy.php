@@ -11,19 +11,11 @@ class UserPolicy
     use HandlesAuthorization;
 
     /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(User $user): bool
-    {
-        return false;
-    }
-
-    /**
      * Anyone can view their own record; admin can view all.
      */
-    public function view(User $authUser, User $target)
+    public function view(User $user, User $target)
     {
-        return $authUser->id === $target->id || $authUser->hasRole('admin');
+        return $user->id === $target->id || $user->hasRole('admin');
     }
 
     /**
@@ -37,17 +29,17 @@ class UserPolicy
     /**
      * Editing profile (self-edit or admin).
      */
-    public function update(User $authUser, User $target)
+    public function update(User $user, User $target)
     {
-        return $authUser->id === $target->id || $authUser->hasRole('admin');
+        return $user->id === $target->id || $user->hasRole('admin');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $authUser, User $target)
+    public function delete(User $user, User $target)
     {
-        return $authUser->hasRole('admin');
+        return $user->hasRole('admin');
     }
 
 }
