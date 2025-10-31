@@ -8,9 +8,9 @@ use Illuminate\Auth\Access\Response;
 
 class ReschedulePolicy
 {
-    public function request(User $user, RescheduleRequest $rescheduleRequest)
+    public function request(User $user)
     {
-        return $user->hasAnyRole(['student', 'parent']);
+        return $user->hasAnyRole(['parent', 'student']);
     }
 
     /**

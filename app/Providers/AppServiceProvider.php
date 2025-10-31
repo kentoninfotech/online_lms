@@ -11,19 +11,6 @@ use App\Observers\LessonOccurrenceObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * The policy mappings for the application.
-     *
-     */
-    protected $policies = [
-        \App\Models\User::class              => \App\Policies\UserPolicy::class,
-        \App\Models\Student::class           => \App\Policies\StudentPolicy::class,
-        \App\Models\Lesson::class            => \App\Policies\LessonPolicy::class,
-        \App\Models\LessonOccurrence::class  => \App\Policies\LessonOccurrencePolicy::class,
-        \App\Models\Subscription::class      => \App\Policies\SubscriptionPolicy::class,
-        \App\Models\Payment::class           => \App\Policies\PaymentPolicy::class,
-        \App\Models\RescheduleRequest::class => \App\Policies\ReschedulePolicy::class,
-    ];
 
 
     /**

@@ -71,7 +71,6 @@ class RescheduleService
             // If within limit → auto approve
             if ($usage->reschedule_count < $limit && ! ($minutesUntilStart < $guardMinutes)) {
                 $this->approveRequest($request, auto: true);
-                $usage->increment('reschedule_count');
 
                 // Notify Instructor + Admin only
                 $instructor = $occurrence->lesson->instructor?->user;
@@ -108,6 +107,15 @@ class RescheduleService
         if (! $occurrence) {
             return;
         }
+
+        // Get or create usage record
+        $student = $occurrence->lesson->student;
+        $plan = $student->subscription?->plan;
+        $usage = $this->getActiveUsage($student->id, $plan?->id, $plan?->cycle);
+        // Increment usage count
+        $usage->increment('reschedule_count');
+
+
         // Update scheduled start time
         $occurrence->update([
             'scheduled_start' => $request->proposed_start,
@@ -189,18 +197,27 @@ class RescheduleService
             default     => [$now->copy()->startOfMonth(), $now->copy()->endOfMonth()],
         };
 
-        return RescheduleUsage::query()
-        ->where('student_id', $studentId)
-        ->where('plan_id', $planId)
-        ->where('period_start', $periodStart)
-        ->where('period_end', $periodEnd)
-        ->first()
-        ?? RescheduleUsage::create([
-            'student_id'       => $studentId,
-            'plan_id'          => $planId,
-            'period_start'     => $periodStart,
-            'period_end'       => $periodEnd,
-            'reschedule_count' => 0,
-        ]);
+        return DB::transaction(function () use ($studentId, $planId, $periodStart, $periodEnd) {
+            // Try to find existing record first
+            $usage = RescheduleUsage::where([
+                'student_id'    => $studentId,
+                'plan_id'       => $planId,
+                'period_start'  => $periodStart->toDateString(),
+                'period_end'    => $periodEnd->toDateString(),
+            ])->first();
+
+            if ($usage) {
+                return $usage;
+            }
+
+            // If no record exists, create a new one
+            return RescheduleUsage::create([
+                'student_id'       => $studentId,
+                'plan_id'         => $planId,
+                'period_start'    => $periodStart->toDateString(),
+                'period_end'      => $periodEnd->toDateString(),
+                'reschedule_count' => 0,
+            ]);
+        });
     }
 }
