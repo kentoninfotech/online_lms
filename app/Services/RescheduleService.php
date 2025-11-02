@@ -56,6 +56,11 @@ class RescheduleService
             // Get or create usage record
             $usage = $this->getActiveUsage($student->id, $plan?->id, $plan?->cycle);
 
+            // Check limit
+            if ($usage->reschedule_count >= $limit) {
+                throw new \Exception("You have reached your reschedule limit ({$limit}) for this plan cycle.");
+            }
+
             // Create request record
             $request = RescheduleRequest::create([
                 'lesson_occurrence_id' => $occurrence->id,

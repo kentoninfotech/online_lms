@@ -52,18 +52,33 @@ class LessonController extends Controller
 
         $data = $request->validated();
 
-        // Normalize recurrence_meta
+        // Prepare recurrence meta 
         $recurrenceMeta = null;
 
-        if (in_array($request->recurrence_type, ['daily', 'monthly'])) {
+        if ($data['recurrence_type'] !== 'none') {
             $recurrenceMeta = [
-                'count' => (int) $request->count,
+                'interval'  => (int) ($data['interval'] ?? 1),
+                'end_type'  => $data['end_type'] ?? 'count',
+                'end_date'  => $data['end_date'] ?? null,
+                'count'     => null,
+                'days'      => [],
+                'mode'      => $data['mode'] ?? 'day',
             ];
-        } elseif ($request->recurrence_type === 'weekly') {
-            $recurrenceMeta = [
-                'days'  => $request->days,
-                'count' => (int) $request->count,
-            ];
+
+            // handle count/end_type
+            if ($recurrenceMeta['end_type'] === 'count') {
+                $recurrenceMeta['count'] = (int) ($data['count'] ?? 1);
+            }
+
+            // handle weekly days
+            if ($data['recurrence_type'] === 'weekly') {
+                $recurrenceMeta['days'] = $data['days'] ?? [];
+            }
+
+            // handle monthly mode
+            if ($data['recurrence_type'] === 'monthly') {
+                $recurrenceMeta['mode'] = $data['mode'] ?? 'day';
+            }
         }
 
 

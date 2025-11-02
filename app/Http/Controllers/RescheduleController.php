@@ -40,22 +40,28 @@ class RescheduleController extends Controller
 
         $validated = $request->validated();
 
-        $reschedule = $this->service->requestReschedule(
-            $occurrence,
-            $request->user(),
-            Carbon::parse($validated['proposed_start']),
-            $validated['reason'] ?? ''
-        );
-
-        if ($reschedule->status === 'approved') {
+        try {
+            $reschedule = $this->service->requestReschedule(
+                $occurrence,
+                $request->user(),
+                Carbon::parse($validated['proposed_start']),
+                $validated['reason'] ?? ''
+            );
+            if ($reschedule->status === 'approved') {
+                return redirect()
+                    ->back()
+                    ->with('success', 'Reschedule auto-approved');
+            }else{
+                return redirect()
+                    ->back() 
+                    ->with('success', 'Reschedule request submitted, pending approval');
+            }
+        } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('success', 'Reschedule auto-approved');
-        }else{
-            return redirect()
-                ->back() 
-                ->with('success', 'Reschedule request submitted, pending approval');
+                ->with('error', 'You have reached your reschedule limit for the month cycle.');
         }
+
 
     }
 

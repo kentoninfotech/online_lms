@@ -40,7 +40,7 @@ class GenerateOccurrencesCommand extends Command
         $this->info("Generating occurrences...");
 
         $count = 0;
-        $lessons = Lesson::with('student.subscriptions.plan')->chunk(100, function ($lessons) use ($horizonDays, &$count) {
+        $lessons = Lesson::with('student.subscription.plan')->chunk(100, function ($lessons) use ($horizonDays, &$count) {
             foreach ($lessons as $lesson) {
                 $this->recurrenceService->generateOccurrences($lesson, $horizonDays);
                 $count++;

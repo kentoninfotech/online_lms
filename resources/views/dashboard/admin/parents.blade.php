@@ -74,7 +74,7 @@
                                     <a class="dropdown-item" href="{{ route('users.edit', ['user' => $parent->user, 'role' => 'parent']) }}"><i class="ph ph-user-circle"></i>Edit</a>
                                 </li>
                                 <li>
-                                    <form class="d-inline" action="{{ route('admin.users.delete', $parent->user }}" method="post">
+                                    <form class="d-inline" action="{{ route('admin.users.delete', $parent->user) }}" method="post">
                                         @csrf
                                         <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Are you sure you want to delete this parent, and all its records?');">
                                           <i class="ph ph-trash"></i> Delete

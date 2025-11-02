@@ -72,7 +72,7 @@
                                     <a class="dropdown-item" href="{{ route('show.instructor', $instructor) }}#attendance"><i class="ph ph-check-square"></i> View Attendance</a>
                                 </li>
                                 <li>
-                                    <form class="d-inline" action="{{ route('admin.users.delete', $instructor->user }}" method="post">
+                                    <form class="d-inline" action="{{ route('admin.users.delete', $instructor->user) }}" method="post">
                                         @csrf
                                         <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Are you sure you want to delete this instructor, and all its records?');">
                                            <i class="ph ph-trash"></i> Delete

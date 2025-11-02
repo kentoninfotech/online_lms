@@ -175,6 +175,7 @@
     </div>
 </div>
 
+
 <!-- Create Lesson Modal -->
 <div class="modal fade" id="createLessonModal" tabindex="-1" aria-labelledby="createLessonLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -187,108 +188,141 @@
         </div>
 
         <div class="modal-body row g-3">
+
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <p><strong>Whoops! Something went wrong.</strong></p>
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
           <!-- Subject -->
           <div class="col-md-6">
             <label class="form-label">Subject</label>
-            <input type="text" name="subject" class="form-control @error('subject') is-invalid @enderror" required>
-            @error('subject')
-                <div class="invalid-feedback">
-                    {{ $message }}
-                </div>
-            @enderror
+            {{-- Repopulate subject field --}}
+            <input type="text" name="subject" class="form-control @error('subject') is-invalid @enderror" value="{{ old('subject') }}" required>
+            @error('subject') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
 
-          <!-- instructor id -->
-          {{-- <input type="hidden" name="instructor_id" value="{{ auth()->user()->instructor->id }}" > --}}
-
-          <!-- Student -->
+          <!-- Instructor -->
           <div class="col-md-6">
             <label class="form-label">Instructor</label>
             <select name="instructor_id" class="form-select @error('instructor_id') is-invalid @enderror" required>
               @foreach($instructors as $instructor)
-                <option value="{{ $instructor->id }}">{{ $instructor->user->name }}</option>
+                {{-- Repopulate instructor selection --}}
+                <option value="{{ $instructor->id }}" {{ old('instructor_id') == $instructor->id ? 'selected' : '' }}>{{ $instructor->user->name }}</option>
               @endforeach
             </select>
-            @error('instructor_id')
-                <div class="invalid-feedback">
-                    {{ $message }}
-                </div>
-            @enderror
+            @error('instructor_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
+
           <!-- Student -->
           <div class="col-md-6">
             <label class="form-label">Student</label>
             <select name="student_id" class="form-select @error('student_id') is-invalid @enderror" required>
               @foreach($students as $student)
-                <option value="{{ $student->id }}">{{ $student->user->name }}</option>
+                {{-- Repopulate student selection --}}
+                <option value="{{ $student->id }}" {{ old('student_id') == $student->id ? 'selected' : '' }}>{{ $student->user->name }}</option>
               @endforeach
             </select>
-            @error('student_id')
-                <div class="invalid-feedback">
-                    {{ $message }}
-                </div>
-            @enderror
+            @error('student_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
 
           <!-- Start time -->
           <div class="col-md-6">
             <label class="form-label">Start Time</label>
-            <input type="datetime-local" name="start_time" class="form-control @error('start_time') is-invalid @enderror" required>
-            @error('start_time')
-                <div class="invalid-feedback">
-                    {{ $message }}
-                </div>
-            @enderror
+            {{-- Repopulate datetime-local field --}}
+            <input type="datetime-local" name="start_time" class="form-control @error('start_time') is-invalid @enderror" value="{{ old('start_time') }}" required>
+            @error('start_time') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
 
           <!-- Duration -->
           <div class="col-md-6">
             <label class="form-label">Duration (minutes)</label>
-            <input type="number" name="duration_minutes" class="form-control" min="15" value="60" required>
+            {{-- Repopulate duration field, default to 60 --}}
+            <input type="number" name="duration_minutes" class="form-control" min="15" value="{{ old('duration_minutes', 60) }}" required>
           </div>
 
           <!-- Recurrence Type -->
           <div class="col-md-6">
               <label class="form-label">Recurrence</label>
               <select name="recurrence_type" id="recurrence_type" class="form-select">
-                   <option value="none">None (One-time)</option>
-                   <option value="daily">Daily</option>
-                   <option value="weekly">Weekly</option>
-                   <option value="monthly">Monthly</option>
+                 {{-- Repopulate recurrence type, default to none --}}
+                 <option value="none" {{ old('recurrence_type', 'none') == 'none' ? 'selected' : '' }}>None (One-time)</option>
+                 <option value="daily" {{ old('recurrence_type') == 'daily' ? 'selected' : '' }}>Daily</option>
+                 <option value="weekly" {{ old('recurrence_type') == 'weekly' ? 'selected' : '' }}>Weekly</option>
+                 <option value="monthly" {{ old('recurrence_type') == 'monthly' ? 'selected' : '' }}>Monthly</option>
               </select>
          </div>
 
+          <!-- Recurrence Meta Controls -->
           <div class="form-group row mt-3">
 
-            <!-- Recurrence Meta (hidden initially) -->
-            <!-- Count field -->
-            <div class="col-md-6">
-                <div class="recurrence-field recurrence-daily recurrence-weekly recurrence-monthly d-none">
-                    <label class="form-label">Number of Occurrences</label>
-                    <input type="number" name="count" class="form-control" min="1" value="2">
-                </div>
+            <!-- Occurrence Count or End Date -->
+            <div class="col-md-6 recurrence-field recurrence-daily recurrence-weekly recurrence-monthly d-none">
+                <label class="form-label">Recurrence End</label>
+                <select id="recurrence_end_type" name="end_type" class="form-select">
+                     {{-- Repopulate end type, default to count --}}
+                     <option value="count" {{ old('end_type', 'count') == 'count' ? 'selected' : '' }}>After number of occurrences</option>
+                     <option value="date" {{ old('end_type') == 'date' ? 'selected' : '' }}>Until end date</option>
+                </select>
             </div>
 
-          </div><!-- end group row -->
+            <!-- Count -->
+            <div class="col-md-6 recurrence-field recurrence-daily recurrence-weekly recurrence-monthly d-none" id="countField">
+                <label class="form-label">Number of Occurrences</label>
+                {{-- Repopulate count field, default to 2 --}}
+                <input type="number" name="count" class="form-control" min="1" value="{{ old('count', 2) }}">
+            </div>
 
-          <!-- Weekly days -->
+            <!-- End Date -->
+            <div class="col-md-6 recurrence-field recurrence-daily recurrence-weekly recurrence-monthly d-none d-none" id="endDateField">
+                <label class="form-label">End Date</label>
+                {{-- Repopulate end date field --}}
+                <input type="date" name="end_date" class="form-control" value="{{ old('end_date') }}">
+            </div>
+          </div>
+
+          <!-- Weekly Days -->
           <div class="col-md-12">
               <div class="recurrence-field recurrence-weekly d-none">
                   <label class="form-label">Select Days</label><br>
                   @foreach(['mon'=>'Mon','tue'=>'Tue','wed'=>'Wed','thu'=>'Thu','fri'=>'Fri','sat'=>'Sat','sun'=>'Sun'] as $key=>$day)
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="days[]" value="{{ $key }}">
-                        <label class="form-check-label">{{ $day }}</label>
-                    </div>
+                      <div class="form-check form-check-inline">
+                          {{-- Repopulate weekly days checkbox array --}}
+                          <input class="form-check-input" type="checkbox" name="days[]" value="{{ $key }}" {{ is_array(old('days')) && in_array($key, old('days')) ? 'checked' : '' }}>
+                          <label class="form-check-label">{{ $day }}</label>
+                      </div>
                   @endforeach
               </div>
           </div>
 
-        </div> <!-- modal-body -->
+          <!-- Monthly Mode -->
+          <div class="col-md-12">
+            <div class="recurrence-field recurrence-monthly d-none">
+              <label class="form-label">Monthly Mode</label><br>
+              <div class="form-check form-check-inline">
+                {{-- Repopulate monthly mode radio, default to 'day' --}}
+                <input class="form-check-input" type="radio" name="mode" value="day" {{ old('mode', 'day') == 'day' ? 'checked' : '' }}>
+                <label class="form-check-label">By Day (e.g., 5th of each month)</label>
+              </div>
+              <div class="form-check form-check-inline">
+                {{-- Repopulate monthly mode radio --}}
+                <input class="form-check-input" type="radio" name="mode" value="weekday" {{ old('mode') == 'weekday' ? 'checked' : '' }}>
+                <label class="form-check-label">By Weekday (e.g., 2nd Monday of each month)</label>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /.modal-body -->
 
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-primary">Create Lesson</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Lesson</button>
         </div>
       </div>
     </form>
@@ -300,22 +334,48 @@
 
 
 <script>
-    
 document.addEventListener("DOMContentLoaded", () => {
   const typeSelect = document.getElementById('recurrence_type');
+  const endTypeSelect = document.getElementById('recurrence_end_type');
+  const countField = document.getElementById('countField');
+  const endDateField = document.getElementById('endDateField');
 
-  typeSelect.addEventListener('change', function () {
+  // Helper function to toggle recurrence fields
+  function toggleRecurrenceFields() {
+    const type = typeSelect.value;
+
+    // Hide all recurrence fields first
     document.querySelectorAll('.recurrence-field').forEach(el => el.classList.add('d-none'));
 
-    if (this.value === 'daily' || this.value === 'monthly') {
-      document.querySelectorAll('.recurrence-daily, .recurrence-monthly').forEach(el => el.classList.remove('d-none'));
-    }
+    // Show relevant fields if recurrence type is not "none"
+    if (type !== 'none') {
+      document.querySelectorAll(`.recurrence-${type}`).forEach(el => el.classList.remove('d-none'));
+      document.querySelectorAll(`.recurrence-${type}, .recurrence-daily`).forEach(el => el.classList.remove('d-none'));
 
-    if (this.value === 'weekly') {
-      document.querySelectorAll('.recurrence-weekly').forEach(el => el.classList.remove('d-none'));
-      document.querySelectorAll('.recurrence-weekly, .recurrence-daily').forEach(el => el.classList.remove('d-none'));
+      // Show End Type selector and default to "count"
+      document.querySelector('#recurrence_end_type').closest('.recurrence-field').classList.remove('d-none');
+      toggleEndType(); // trigger initial state
     }
-  });
+  }
+
+  // Helper function to toggle between count and end date
+  function toggleEndType() {
+    if (endTypeSelect.value === 'count') {
+      countField.classList.remove('d-none');
+      endDateField.classList.add('d-none');
+    } else {
+      countField.classList.add('d-none');
+      endDateField.classList.remove('d-none');
+    }
+  }
+
+  // Event listeners
+  typeSelect.addEventListener('change', toggleRecurrenceFields);
+  endTypeSelect.addEventListener('change', toggleEndType);
+
+  // Initialize on page load
+  toggleRecurrenceFields();
 });
-
 </script>
+
+
