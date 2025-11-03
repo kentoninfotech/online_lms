@@ -282,28 +282,71 @@
               </select>
             </div>
 
-            <!-- Recurrence Meta (hidden initially) -->
-            <!-- Count field -->
-            <div class="col-md-6">
-                <div class="recurrence-field recurrence-daily recurrence-weekly recurrence-monthly d-none">
+            <!-- Recurrence Meta Controls -->
+          <div class="form-group row mt-3">
+              <!-- Occurrence Count or End Date -->
+              <div class="col-md-4 recurrence-field recurrence-daily recurrence-weekly recurrence-monthly d-none">
+                  <label class="form-label">Recurrence End</label>
+                  <select id="recurrence_end_type" name="end_type" class="form-select">
+                      {{-- Repopulate end type, default to count --}}
+                      <option value="count" {{ old('end_type', 'count') == 'count' ? 'selected' : '' }}>After number of occurrences</option>
+                      <option value="date" {{ old('end_type') == 'date' ? 'selected' : '' }}>Until end date</option>
+                  </select>
+              </div>
+
+              <!-- Count -->
+              <div class="col-md-4 recurrence-field recurrence-daily recurrence-weekly recurrence-monthly d-none" id="countField">
                   <label class="form-label">Number of Occurrences</label>
-                  <input type="number" name="count" class="form-control" min="1" value="2">
+                  {{-- Repopulate count field, default to 2 --}}
+                  <input type="number" name="count" class="form-control" min="1" value="{{ old('count', 2) }}">
+              </div>
+
+              <!-- End Date -->
+              <div class="col-md-4 recurrence-field recurrence-daily recurrence-weekly recurrence-monthly d-none d-none" id="endDateField">
+                  <label class="form-label">End Date</label>
+                  {{-- Repopulate end date field --}}
+                  <input type="date" name="end_date" class="form-control" value="{{ old('end_date') }}">
+              </div>
+
+              <!-- Interval / Repeat Every -->
+              <div class="col-md-4 recurrence-field recurrence-daily recurrence-weekly recurrence-monthly d-none">
+                <label class="form-label">Repeat Every (Interval)</label>
+                <div class="input-group">
+                  <input type="number" name="interval" class="form-control" min="1" value="{{ old('interval', 1) }}" required>
+                  <span class="input-group-text" id="intervalLabelText">day(s)</span>
                 </div>
-            </div>
+              </div>
+          </div>
 
-          </div><!-- end group row -->
-
-          <!-- Weekly days -->
+          <!-- Weekly Days -->
           <div class="col-md-12">
               <div class="recurrence-field recurrence-weekly d-none">
                   <label class="form-label">Select Days</label><br>
                   @foreach(['mon'=>'Mon','tue'=>'Tue','wed'=>'Wed','thu'=>'Thu','fri'=>'Fri','sat'=>'Sat','sun'=>'Sun'] as $key=>$day)
-                    <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="checkbox" name="days[]" value="{{ $key }}">
-                      <label class="form-check-label">{{ $day }}</label>
-                    </div>
+                      <div class="form-check form-check-inline">
+                          {{-- Repopulate weekly days checkbox array --}}
+                          <input class="form-check-input" type="checkbox" name="days[]" value="{{ $key }}" {{ is_array(old('days')) && in_array($key, old('days')) ? 'checked' : '' }}>
+                          <label class="form-check-label">{{ $day }}</label>
+                      </div>
                   @endforeach
               </div>
+          </div>
+
+          <!-- Monthly Mode -->
+          <div class="col-md-12">
+            <div class="recurrence-field recurrence-monthly d-none">
+              <label class="form-label">Monthly Mode</label><br>
+              <div class="form-check form-check-inline">
+                {{-- Repopulate monthly mode radio, default to 'day' --}}
+                <input class="form-check-input" type="radio" name="mode" value="day" {{ old('mode', 'day') == 'day' ? 'checked' : '' }}>
+                <label class="form-check-label">By Day (e.g., 5th of each month)</label>
+              </div>
+              <div class="form-check form-check-inline">
+                {{-- Repopulate monthly mode radio --}}
+                <input class="form-check-input" type="radio" name="mode" value="weekday" {{ old('mode') == 'weekday' ? 'checked' : '' }}>
+                <label class="form-check-label">By Weekday (e.g., 2nd Monday of each month)</label>
+              </div>
+            </div>
           </div>
 
         </div> <!-- modal-body -->
@@ -322,22 +365,53 @@
 
 
 <script>
-    
 document.addEventListener("DOMContentLoaded", () => {
-  const typeSelect = document.getElementById('recurrence_type');
+    const typeSelect = document.getElementById('recurrence_type');
+    const endTypeSelect = document.getElementById('recurrence_end_type');
+    const countField = document.getElementById('countField');
+    const endDateField = document.getElementById('endDateField');
+    const intervalLabelText = document.getElementById('intervalLabelText');
 
-  typeSelect.addEventListener('change', function () {
-    document.querySelectorAll('.recurrence-field').forEach(el => el.classList.add('d-none'));
+    // Helper function to toggle recurrence fields
+    function toggleRecurrenceFields() {
+        const type = typeSelect.value;
 
-    if (this.value === 'daily' || this.value === 'monthly') {
-      document.querySelectorAll('.recurrence-daily, .recurrence-monthly').forEach(el => el.classList.remove('d-none'));
+        // Hide all recurrence fields first
+        document.querySelectorAll('.recurrence-field').forEach(el => el.classList.add('d-none'));
+
+        // Show relevant fields if recurrence type is not "none"
+        if (type !== 'none') {
+          document.querySelectorAll(`.recurrence-${type}`).forEach(el => el.classList.remove('d-none'));
+          document.querySelectorAll(`.recurrence-${type}, .recurrence-daily`).forEach(el => el.classList.remove('d-none'));
+
+          // Update interval label dynamically
+          if (type === 'daily') intervalLabelText.textContent = 'day(s)';
+          else if (type === 'weekly') intervalLabelText.textContent = 'week(s)';
+          else if (type === 'monthly') intervalLabelText.textContent = 'month(s)';
+
+          // Show End Type selector and default to "count"
+          document.querySelector('#recurrence_end_type').closest('.recurrence-field').classList.remove('d-none');
+          toggleEndType(); // trigger initial state
+          
+        }
     }
 
-    if (this.value === 'weekly') {
-      document.querySelectorAll('.recurrence-weekly').forEach(el => el.classList.remove('d-none'));
-      document.querySelectorAll('.recurrence-weekly, .recurrence-daily').forEach(el => el.classList.remove('d-none'));
+    // Helper function to toggle between count and end date
+    function toggleEndType() {
+      if (endTypeSelect.value === 'count') {
+        countField.classList.remove('d-none');
+        endDateField.classList.add('d-none');
+      } else {
+        countField.classList.add('d-none');
+        endDateField.classList.remove('d-none');
+      }
     }
-  });
+
+    // Event listeners
+    typeSelect.addEventListener('change', toggleRecurrenceFields);
+    endTypeSelect.addEventListener('change', toggleEndType);
+
+    // Initialize on page load
+    toggleRecurrenceFields();
 });
-
 </script>

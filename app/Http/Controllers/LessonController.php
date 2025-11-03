@@ -47,7 +47,7 @@ class LessonController extends Controller
      * Create lesson
      */
     public function store(StoreLessonRequest $request)
-    {
+    { 
         $this->authorize('create', Lesson::class);
 
         $data = $request->validated();
@@ -67,7 +67,11 @@ class LessonController extends Controller
 
             // handle count/end_type
             if ($recurrenceMeta['end_type'] === 'count') {
-                $recurrenceMeta['count'] = (int) ($data['count'] ?? 1);
+                $recurrenceMeta['count'] = (int) ($request->count ?? 1);
+            } elseif ($recurrenceMeta['end_type'] === 'date') {
+                $recurrenceMeta['end_date'] = $request->end_date;
+                // Ensure no leftover 'count'
+                unset($recurrenceMeta['count']);
             }
 
             // handle weekly days
@@ -81,7 +85,7 @@ class LessonController extends Controller
             }
         }
 
-
+        
         $lesson = Lesson::create([
             'subject'          => $data['subject'],
             'student_id'       => $data['student_id'],

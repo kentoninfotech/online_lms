@@ -52,6 +52,13 @@ class StudentDashboardController extends Controller
             ->take(10)
             ->get();
 
+        $lessonsThisMonth = LessonOccurrence::whereHas('lesson', function ($q) use ($student) {
+                $q->where('student_id', $student->id);
+            })
+            ->whereMonth('scheduled_start', now()->month)
+            ->whereYear('scheduled_start', now()->year)
+            ->count();
+
         // Pull from service
         $attendanceStats   = $attendanceService->getAttendanceStats($student);
         $lifetimeBreakdown = $attendanceService->getLifetimeBreakdown($student);
@@ -69,7 +76,8 @@ class StudentDashboardController extends Controller
             'lateCount'              => $lifetimeBreakdown['late'],
             'absentCount'            => $lifetimeBreakdown['absent'],
             'subscription'           => $student->subscription,
-            'lessonsThisMonth'       => $monthlyStats['lessonsThisMonth'],
+            'lessonsThisMonth'       => $lessonsThisMonth,
+            // 'lessonsThisMonth'       => $monthlyStats['lessonsThisMonth'],
             'monthTotalClasses'      => $monthlyStats['monthTotalClasses'],
             'monthPresentCount'      => $monthlyStats['monthPresentCount'],
             'monthAttendancePercent' => $monthlyStats['monthAttendancePercent'],

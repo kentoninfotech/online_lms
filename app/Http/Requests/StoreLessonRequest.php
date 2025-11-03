@@ -30,22 +30,28 @@ class StoreLessonRequest extends FormRequest
             'recurrence_type'  => 'required|in:none,daily,weekly,monthly',
             'recurrence_meta'  => 'nullable|array',
 
-            // Common recurrence meta 
+            // Common recurrence meta
             'interval'         => 'required_if:recurrence_type,daily,weekly,monthly|integer|min:1',
             'end_type'         => 'required_if:recurrence_type,daily,weekly,monthly|in:count,date',
 
-            // For count-based endings 
+            // Count-based endings
             'count'            => 'required_if:end_type,count|integer|min:1',
 
-            // For date-based endings 
-            'end_date'         => 'required_if:end_type,date|date|after_or_equal:start_time',
+            // Date-based endings
+            'end_date'         => [
+                'nullable',
+                'required_if:end_type,date',
+                'date',
+                'after_or_equal:start_time',
+            ],
 
-            // For weekly-specific options 
+            // Weekly-specific options
             'days'             => 'required_if:recurrence_type,weekly|array',
             'days.*'           => 'in:mon,tue,wed,thu,fri,sat,sun',
 
-            // For monthly-specific options 
+            // Monthly-specific options
             'monthly_mode'     => 'nullable|in:day,weekday',
         ];
+
     }
 }
