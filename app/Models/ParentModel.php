@@ -19,7 +19,7 @@ class ParentModel extends Model
         'email', 
         'number', 
         'address',
-        'profile',
+        'occupation',
     ];
 
     // Relationships, Accessors, Mutators, etc.

@@ -56,7 +56,7 @@ class UserController extends Controller
 
 
         if ($role === 'student') {
-            $user->student()->create($request->only('name', 'email', 'address', 'number'));
+            $user->student()->create($request->only('name', 'email', 'address', 'number', 'dob', 'gender'));
             // Link student to parent
             if($request['parent_id']){
                 $parent = ParentModel::findOrFail($request['parent_id']);
@@ -66,9 +66,9 @@ class UserController extends Controller
             }
 
         } elseif ($role === 'parent') {
-            $user->parent()->create($request->only('name', 'email', 'address', 'number'));
+            $user->parent()->create($request->only('name', 'email', 'address', 'number', 'occupation'));
         } elseif ($role === 'instructor') {
-            $user->instructor()->create($request->only('name', 'email', 'address', 'number'));
+            $user->instructor()->create($request->only('name', 'email', 'address', 'number', 'zoom_link', 'specialization', 'bio'));
         }
 
         return redirect()
@@ -96,7 +96,7 @@ class UserController extends Controller
 
         // Role-specific updates
         if ($role === 'student' && $user->student) {
-            $user->student->update($request->only('name', 'email', 'address', 'number'));
+            $user->student->update($request->only('name', 'email', 'address', 'number', 'dob', 'gender'));
         }
 
         if ($role === 'parent' && $user->parent) {
@@ -104,7 +104,7 @@ class UserController extends Controller
         }
 
         if ($role === 'instructor' && $user->instructor) {
-            $user->instructor->update($request->only('name', 'email', 'address', 'number', 'specialization', 'bio'));
+            $user->instructor->update($request->only('name', 'email', 'address', 'number', 'zoom_link', 'specialization', 'bio'));
         }
 
         return redirect()->route('users.edit', [$user, $role])

@@ -54,6 +54,11 @@
                 <input type="text" class="form-control bg-light" 
                        value="{{ $parent->address ?? 'N/A' }}" readonly>
             </div>
+            <div class="col-md-6">
+                <label class="form-label small text-muted">Occupation</label>
+                <input type="text" class="form-control bg-light" 
+                       value="{{ $parent->occupation ?? 'N/A' }}" readonly>
+            </div>
         </div>
 
         <!-- Quick Stats -->

@@ -54,6 +54,16 @@
                 <input type="text" class="form-control bg-light" 
                        value="{{ $student->address ?? 'N/A' }}" readonly>
             </div>
+            <div class="col-md-6">
+                <label class="form-label small text-muted">Date of Birth</label>
+                <input type="text" class="form-control bg-light" 
+                       value="{{ $student->dob ?? 'N/A' }}" readonly>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small text-muted">Sex</label>
+                <input type="text" class="form-control bg-light" 
+                       value="{{ Str::headline($student->gender) ?? 'N/A' }}" readonly>
+            </div>
         </div>
 
         <!-- Quick Stats -->

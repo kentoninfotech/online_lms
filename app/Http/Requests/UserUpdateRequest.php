@@ -27,6 +27,8 @@ class UserUpdateRequest extends FormRequest
             $rules += [
                 'address'        => 'nullable|string|max:255',
                 'number'         => 'nullable|string|max:20',
+                'gender'         => 'nullable|string|max:20',
+                'dob'            => 'nullable|date',
             ];
         }
 
@@ -34,7 +36,7 @@ class UserUpdateRequest extends FormRequest
             $rules += [
                 'address'        => 'nullable|string|max:255',
                 'number'         => 'nullable|string|max:20',
-                // 'occupation'     => 'nullable|string|max:255',
+                'occupation'     => 'nullable|string|max:255',
             ];
         }
 
@@ -42,8 +44,9 @@ class UserUpdateRequest extends FormRequest
             $rules += [
                 'address'        => 'nullable|string|max:255',
                 'number'         => 'nullable|string|max:20',
-                // 'specialization' => 'nullable|string|max:255',
-                // 'bio'            => 'nullable|string|max:1000',
+                'zoom_link'      => 'nullable|string|max:2048',
+                'specialization' => 'nullable|string|max:255',
+                'bio'            => 'nullable|string|max:1000',
             ];
         }
 

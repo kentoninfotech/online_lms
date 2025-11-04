@@ -55,9 +55,20 @@
 
                 <!-- Role-specific fields -->
                 @if($role === 'student')
-                    <div class="mb-3">
-                        <!-- <label class="form-label">Enrollment Number</label>
-                        <input type="text" name="enrollment_no" class="form-control" value="{{ old('enrollment_no') }}"> -->
+                    <div class="form-group row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted">Date of Birth</label>
+                            <input type="date" name="dob" class="form-control" 
+                                value="{{ old('dob') }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted">Sex</label>
+                            <select name="gender" id="gender" class="form-control">
+                                <option value="">--Select Gender--</option>
+                                <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
+                                <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                            </select>
+                        </div>
                     </div>
                     <h5>Student Parent</h5>
                     <div class="col-md-6 m-3">
@@ -73,14 +84,20 @@
                         </select>
                     </div>
                 @elseif($role === 'parent')
-                    <div class="mb-3">
-                        <!-- <label class="form-label">Emergency Contact</label>
-                        <input type="text" name="emergency_contact" class="form-control" value="{{ old('emergency_contact') }}"> -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Occupation</label>
+                        <input type="text" name="occupation" class="form-control" value="{{ old('occupation') }}">
                     </div>
                 @elseif($role === 'instructor')
-                    <div class="mb-3">
-                        <!-- <label class="form-label">Bio / Qualification</label>
-                        <textarea name="bio" class="form-control">{{ old('bio') }}</textarea> -->
+                    <div class="form-group row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Specialization</label>
+                            <input type="text" name="specialization" class="form-control" value="{{ old('specialization') }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Bio</label>
+                            <textarea name="bio" class="form-control">{{ old('bio') }}</textarea>
+                        </div>
                     </div>
                 @endif
 

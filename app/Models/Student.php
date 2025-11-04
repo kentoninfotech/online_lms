@@ -19,7 +19,8 @@ class Student extends Model
         'email', 
         'number', 
         'address',
-        'profile'
+        'gender',
+        'dob',
     ];
 
     // Relationships, Accessors, Mutators, etc. can be added here

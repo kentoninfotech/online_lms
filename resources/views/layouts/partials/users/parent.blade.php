@@ -9,4 +9,9 @@
         <input type="text" name="number" class="form-control" 
                value="{{ old('number', $parent->number ?? '') }}">
     </div>
+    <div class="col-md-6">
+        <label class="form-label small text-muted">Occupation</label>
+        <input type="text" name="occupation" class="form-control" 
+               value="{{ old('occupation', $parent->occupation ?? '') }}">
+    </div>
 </div>

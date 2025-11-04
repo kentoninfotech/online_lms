@@ -13,10 +13,12 @@ class Instructor extends Model
 
     protected $fillable = [
         'name', 
-        'email', 
+        'email',
+        'bio', 
         'number', 
         'address',
-        'profile',
+        'zoom_link',
+        'specialization',
     ];
 
     // Relationships, Accessors, Mutators, etc. can be added here

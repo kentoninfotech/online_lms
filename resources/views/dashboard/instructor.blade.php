@@ -54,6 +54,17 @@
                 <input type="text" class="form-control bg-light" 
                        value="{{ $instructor->address ?? 'N/A' }}" readonly>
             </div>
+            <div class="col-md-6">
+                <label class="form-label small text-muted">Specialization</label>
+                <input type="text" class="form-control bg-light" 
+                       value="{{ $instructor->specialization ?? 'N/A' }}" readonly>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small text-muted">Bio</label>
+                <textarea class="form-control bg-light" 
+                     readonly>{{ $instructor->bio ?? 'N/A' }}
+                </textarea>
+            </div>
         </div>
 
         <!-- Quick Stats -->
