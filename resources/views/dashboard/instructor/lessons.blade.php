@@ -63,7 +63,7 @@
                     <th>Next Class</th>
                     <th>Status</th>
                     <th>Start</th>
-                    <th>Action</th>
+                    <!-- <th>Action</th> -->
                 </tr>
             </thead>
             <tbody>
@@ -104,17 +104,17 @@
                                 Start Class
                             </a>
                             
-                            @if(! isset($nextOccurrence->zoomSession))
-                                <span class="text-muted">Zoom link not ready</span>
-                            @endif
+                            {{-- @if(! isset($nextOccurrence->zoomSession))
+                                <!-- <span class="text-muted">Zoom link not ready</span> -->
+                            @endif --}}
                         </td>
                         <td>
-                            @if(! isset($nextOccurrence->zoomSession))
+                            {{-- @if(! isset($nextOccurrence->zoomSession))
                               <!-- Add zoom button opens modal -->
-                              <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#addZoomModal{{ $nextOccurrence->id }}">
+                              <!-- <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#addZoomModal{{ $nextOccurrence->id }}">
                                     Add Zoom Meeting 
-                                </button>
-                            @endif
+                              </button> -->
+                            @endif --}}
 
                             <!-- Add Zoom Modal -->
                             <div class="modal fade" id="addZoomModal{{ $nextOccurrence->id }}" tabindex="-1" aria-labelledby="createMeetingLabel{{ $nextOccurrence->id }}" aria-hidden="true">

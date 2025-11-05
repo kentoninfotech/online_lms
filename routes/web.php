@@ -20,6 +20,7 @@ use App\Http\Controllers\ParentController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\LinkStudentParentController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\BulkMessageController;
 use App\Http\Controllers\Dashboard\StudentDashboardController;
 use App\Http\Controllers\Student\StudentLessonController;
 use App\Http\Controllers\Student\StudentAttendanceController;
@@ -66,6 +67,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/students/{student}/lessons/export/{format}', [StudentController::class, 'exportLessons'])->name('students.lessons.export');
     Route::get('/students/{student}/attendance/export/{format}', [StudentController::class, 'exportAttendance'])->name('students.attendance.export');
 
+    // BULK MESSAGE ROUTES
+    Route::get('bulk-messages', [BulkMessageController::class, 'index'])->name('bulk-messages.index');
+    Route::get('bulk-messages/fetch', [BulkMessageController::class, 'fetchRecipients'])->name('bulk-messages.fetch');
+    Route::post('bulk-messages/send', [BulkMessageController::class, 'send'])->name('bulk-messages.send');
+
     // LESSON ROUTE
     Route::post('/lesson', [LessonController::class, 'store'])->name('lesson.store');
     Route::delete('/lesson/{lesson}/delete', [LessonController::class, 'delete'])->name('lesson.delete');
@@ -77,6 +83,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/reschedules/{occurrence}/request', [RescheduleController::class, 'store'])->name('reschedule.store');
     Route::post('/reschedules/{reschedule}/approve', [RescheduleController::class, 'approve'])->name('reschedule.approve');
     Route::post('/reschedules/{reschedule}/reject', [RescheduleController::class, 'reject'])->name('reschedule.reject');
+    
     // Subscription and Payment routes
     Route::post('/subscriptions', [SubscriptionController::class, 'store'])->name('subscriptions.store');
     Route::get('/payments/{payment}', [PaymentController::class, 'show'])->name('payments.show');

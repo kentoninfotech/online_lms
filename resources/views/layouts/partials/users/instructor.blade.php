@@ -25,7 +25,7 @@
         <input type="text" name="specialization" class="form-control" 
                value="{{ old('specialization', $instructor->specialization ?? '') }}">
     </div>
-    <div class="col-md-6 mb-3">
+    <div class="col-md-12 mb-3">
         <label class="form-label">Bio</label>
         <textarea name="bio" class="form-control">{{ old('bio', $instructor->bio) }}</textarea>
     </div>
