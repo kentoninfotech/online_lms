@@ -16,7 +16,7 @@ class JoinClassController extends Controller
         $now = Carbon::now();
 
         $zoomSession = $occurrence->zoomSession;
-        if (!$zoomSession || !$zoomSession->join_url) {
+        if (! $occurrence->lesson->instructor->zoom_link) {
             return back()->with('error', 'Zoom meeting is not available for this class.');
         }
 
@@ -45,8 +45,10 @@ class JoinClassController extends Controller
 
         // Redirect to Zoom link
         return $user->hasRole('instructor') || $user->hasRole('admin')
-            ? redirect($zoomSession->start_url)
-            : redirect($zoomSession->join_url);
+            ? redirect($occurrence->lesson->instructor->zoom_link)
+            : redirect($occurrence->lesson->instructor->zoom_link);
+            // ? redirect($zoomSession->start_url)
+            // : redirect($zoomSession->join_url);
     }
 
     public function waiting(LessonOccurrence $occurrence)
