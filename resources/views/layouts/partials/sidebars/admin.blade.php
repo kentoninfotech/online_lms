@@ -41,15 +41,21 @@
         </a>
     </li>
     <li class="pc-item">
+        <a href="{{ route('bulk-messages.index') }}" class="pc-link">
+            <span class="pc-micon"><i class="bi bi-megaphone"></i></span>
+            <span class="pc-mtext">Broadcast</span>
+        </a>
+    </li>
+    <li class="pc-item">
         <a href="{{ route('admin.subscriptions') }}" class="pc-link">
-            <span class="pc-micon"><i class="bi bi-briefcase"></i></span>
+            <span class="pc-micon"><i class="bi bi-briefcase-fill"></i></span>
             <span class="pc-mtext">Subscriptions</span>
         </a>
     </li>
 
     <li class="pc-item">
         <a href="{{ route('admin.payments') }}" class="pc-link">
-            <span class="pc-micon"><i class="bi bi-credit-card-fill"></i></span>
+            <span class="pc-micon"><i class="bi bi-credit-card"></i></span>
             <span class="pc-mtext">Payments</span>
         </a>
     </li>

@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('bulk_message_id')->constrained('bulk_messages')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('email')->nullable();
-            $table->string('phone')->nullable();
-            $table->enum('delivery_method', ['email', 'sms']);
+            $table->string('number')->nullable();
+            $table->json('delivery_method')->nullable();
             $table->enum('delivery_status', ['queued', 'sent', 'failed'])->default('queued');
             $table->text('response_log')->nullable();
             

@@ -4,104 +4,102 @@ namespace App\Jobs;
 
 use App\Models\BulkMessage;
 use App\Models\BulkMessageRecipient;
-use App\Services\SmsService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use App\Notifications\BulkMessageNotification;
+use Illuminate\Support\Facades\Notification;
 
 class SendBulkMessageJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $recipients;
-    public $subject;
-    public $message;
-    public $methods;
-    public $bulkMessageId;
+    public int $bulkMessageId;
+    public $tries = 3;
 
-    /**
-     * Create a new job instance.
-     */
-    public function __construct($recipients, $subject, $message, $methods, $bulkMessageId)
+    public function __construct(int $bulkMessageId)
     {
-        $this->recipients = $recipients;
-        $this->subject = $subject;
-        $this->message = $message;
-        $this->methods = $methods;
         $this->bulkMessageId = $bulkMessageId;
     }
 
-    /**
-     * Execute the job.
-     */
-    public function handle(SmsService $smsService)
+    public function handle(): void
     {
-        $bulkMessage = BulkMessage::find($this->bulkMessageId);
+        $bulkMessage = BulkMessage::with('recipients.user')->find($this->bulkMessageId);
 
-        if (!$bulkMessage) {
+        if (! $bulkMessage) {
             Log::error("Bulk message record {$this->bulkMessageId} not found.");
             return;
         }
 
-        foreach ($this->recipients as $user) {
-            $emailStatus = 'skipped';
-            $smsStatus = 'skipped';
-            $errorMessage = null;
+        // Mark as processing
+        $bulkMessage->update(['status' => 'processing']);
 
-            try {
-                // EMAIL
-                if (in_array('email', $this->methods) && $user->email) {
-                    Mail::raw($this->message, function ($mail) use ($user) {
-                        $mail->to($user->email)->subject($this->subject);
-                    });
-                    $emailStatus = 'sent';
-                }
+        BulkMessageRecipient::where('bulk_message_id', $this->bulkMessageId)
+            ->where('delivery_status', 'queued')
+            ->orderBy('id')
+            ->chunkById(50, function ($recipients) use ($bulkMessage) {
+                foreach ($recipients as $recipient) {
+                    try {
+                        $user = $recipient->user;
 
-                // SMS
-                if (in_array('sms', $this->methods)) {
-                    $number = $user->parent->number
-                        ?? $user->student->number
-                        ?? $user->instructor->number
-                        ?? null;
+                        if (! $user) {
+                            $recipient->update([
+                                'delivery_status' => 'failed',
+                                'response_log'    => 'User not found',
+                            ]);
+                            continue;
+                        }
 
-                    if ($number) {
-                        $smsService->sendSms($number, $this->message);
-                        $smsStatus = 'sent';
+                        // Convert delivery methods to array
+                        $methods = is_array($bulkMessage->methods)
+                            ? $bulkMessage->methods
+                            : explode(',', $bulkMessage->methods);
+
+                        // Send notification through selected channels
+                        Notification::send(
+                            $user,
+                            new BulkMessageNotification(
+                                $bulkMessage->subject,
+                                $bulkMessage->message,
+                                $methods
+                            )
+                        );
+
+                        $recipient->update([
+                            'delivery_status' => 'sent',
+                            'response_log'    => 'Message sent successfully',
+                        ]);
+
+                    } catch (\Throwable $e) {
+                        Log::error("SendBulkMessageJob failed for bulk {$this->bulkMessageId}: " . $e->getMessage());
+
+                        $recipient->update([
+                            'delivery_status' => 'failed',
+                            'response_log'    => $e->getMessage(),
+                        ]);
                     }
                 }
+            });
 
-                // Update recipient status
-                BulkMessageRecipient::where('bulk_message_id', $this->bulkMessageId)
-                    ->where('user_id', $user->id)
-                    ->update([
-                        'status' => 'sent',
-                        'email_status' => $emailStatus,
-                        'sms_status' => $smsStatus,
-                        'error' => null,
-                    ]);
-
-                Log::info("Message sent to user ID {$user->id}");
-            } catch (\Exception $e) {
-                $errorMessage = $e->getMessage();
-
-                BulkMessageRecipient::where('bulk_message_id', $this->bulkMessageId)
-                    ->where('user_id', $user->id)
-                    ->update([
-                        'status' => 'failed',
-                        'email_status' => $emailStatus,
-                        'sms_status' => $smsStatus,
-                        'error' => $errorMessage,
-                    ]);
-
-                Log::error("Bulk message failed for user ID {$user->id}: {$errorMessage}");
-            }
-        }
-
-        // Mark bulk message as completed after all
+        // Mark bulk message as completed
         $bulkMessage->update(['status' => 'completed']);
+    }
+
+    public function failed(\Throwable $exception)
+    {
+        Log::error("SendBulkMessageJob failed for bulk {$this->bulkMessageId}: " . $exception->getMessage());
+
+        // Mark all queued recipients as failed
+        BulkMessageRecipient::where('bulk_message_id', $this->bulkMessageId)
+            ->where('delivery_status', 'queued')
+            ->update([
+                'delivery_status' => 'failed',
+                'response_log'    => 'Job failed: ' . $exception->getMessage(),
+            ]);
+
+        BulkMessage::where('id', $this->bulkMessageId)->update(['status' => 'failed']);
     }
 }

@@ -87,4 +87,30 @@ class User extends Authenticatable
             ->latest()
             ->first();
     }
+
+    // Accessor for phone number based on user type - call as $user->phone_number
+    public function getPhoneNumberAttribute()
+    {
+        if ($this->relationLoaded('parent') && $this->parent) {
+            return $this->parent->number;
+        }
+
+        if ($this->relationLoaded('student') && $this->student) {
+            return $this->student->number;
+        }
+
+        if ($this->relationLoaded('instructor') && $this->instructor) {
+            return $this->instructor->number;
+        }
+
+        return null;
+    }
+
+    // Route notification for SMS channel
+    public function routeNotificationForSms($notification)
+    {
+        return $this->phone_number;
+    }
+
+
 }

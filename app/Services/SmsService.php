@@ -7,38 +7,65 @@ use Illuminate\Support\Facades\Log;
 
 class SmsService
 {
-    /*
-    *  Send SMS using external SMS API
-    */
-    public function sendSms(string $number, string $message)
+    protected string $baseUrl;
+    protected string $apiKey;
+    protected string $sender;
+
+    public function __construct()
     {
-        $number = $this->normalizePhone($number);
+        $this->baseUrl = config('services.sms.url');
+        $this->apiKey  = config('services.sms.key');
+        $this->sender  = config('services.sms.sender', 'TheVirtualAcademy');
+    }
+
+    /**
+     * Send an SMS to a recipient.
+     */
+    public function sendSms(string $number, string $message): bool
+    {
+        $formatted = $this->normalizeNumber($number);
+
+        if (!$formatted) {
+            Log::warning("Invalid phone number skipped: {$number}");
+            return false;
+        }
 
         try {
-            $response = Http::post('https://api.smsprovider.com/send', [
-                'to' => $number,
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Accept' => 'application/json',
+            ])->post($this->baseUrl, [
+                'to'      => $number,
+                'from'    => $this->sender,
                 'message' => $message,
-                'from' => app('env.app_name', 'LMS'),
             ]);
 
-            return $response->body();
-        } catch (\Throwable $e) {
-            Log::error("SMS sending failed to {$number}: " . $e->getMessage());
-            throw $e;
+            if ($response->successful()) {
+                Log::info("SMS sent to {$number}");
+                return true;
+            } else {
+                Log::error("SMS failed to {$number}: " . $response->body());
+                return false;
+            }
+        } catch (Exception $e) {
+            Log::error("SMS sending error for {$number}: " . $e->getMessage());
+            return false;
         }
     }
 
-    /*
-    *  Normalize phone number to international format (e.g., 234XXXXXXXXXX for Nigeria)
-    */
-    public function normalizePhone(string $number): string
+    /**
+     * Normalize phone number to E.164 format (e.g. 0809… → +234809…)
+     */
+    protected function normalizeNumber(string $number): ?string
     {
         $number = preg_replace('/\D/', '', $number);
+
         if (str_starts_with($number, '0')) {
-            return '234' . substr($number, 1);
-        } elseif (!str_starts_with($number, '234')) {
-            return '234' . $number;
+            $number = '+234' . substr($number, 1);
+        } elseif (!str_starts_with($number, '+')) {
+            $number = '+' . $number;
         }
-        return $number;
+
+        return strlen($number) >= 10 ? $number : null;
     }
 }

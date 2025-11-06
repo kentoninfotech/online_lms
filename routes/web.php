@@ -68,9 +68,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/students/{student}/attendance/export/{format}', [StudentController::class, 'exportAttendance'])->name('students.attendance.export');
 
     // BULK MESSAGE ROUTES
-    Route::get('bulk-messages', [BulkMessageController::class, 'index'])->name('bulk-messages.index');
-    Route::get('bulk-messages/fetch', [BulkMessageController::class, 'fetchRecipients'])->name('bulk-messages.fetch');
-    Route::post('bulk-messages/send', [BulkMessageController::class, 'send'])->name('bulk-messages.send');
+    Route::get('/bulk-messages', [BulkMessageController::class, 'index'])->name('bulk-messages.index');
+    Route::get('/bulk-messages/logs', [BulkMessageController::class, 'logs'])->name('bulk-messages.logs');
+    Route::get('/bulk-messages/{id}/recipients', [BulkMessageController::class, 'recipients'])->name('bulk-messages.recipients');
+    Route::get('/bulk-messages/fetch', [BulkMessageController::class, 'fetchRecipients'])->name('bulk-messages.fetch');
+    Route::post('/bulk-messages/send', [BulkMessageController::class, 'send'])->name('bulk-messages.send');
 
     // LESSON ROUTE
     Route::post('/lesson', [LessonController::class, 'store'])->name('lesson.store');

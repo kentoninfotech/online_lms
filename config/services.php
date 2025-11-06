@@ -35,6 +35,13 @@ return [
         ],
     ],
 
+    'sms' => [
+        'url' => env('SMS_PROVIDER_URL'),
+        'key' => env('SMS_PROVIDER_KEY'),
+        'sender' => env('SMS_SENDER', 'TheVirtualAcademy'),
+    ],
+
+
     'zoom' => [
         'account_id'        => env('ZOOM_ACCOUNT_ID'),
         'client_id'         => env('ZOOM_CLIENT_ID'),

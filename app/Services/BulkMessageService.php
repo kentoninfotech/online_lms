@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Notifications\ChannelManager;
 use App\Models\User;
 use App\Models\BulkMessage;
 use App\Models\BulkMessageRecipient;
@@ -11,12 +12,14 @@ class BulkMessageService
 {
     public function dispatchBulkMessage(string $subject, string $message, array $methods, array $recipientIds)
     {
+        dd(app(ChannelManager::class)->getDefaultDriver());
         // Create log entry
         $bulkMessage = BulkMessage::create([
             'subject' => $subject,
             'message' => $message,
-            'methods' => json_encode($methods),
+            'methods' => $methods,
             'status'  => 'queued',
+            'sender'  => auth()->id(),
         ]);
 
         $recipients = User::with(['parent', 'student', 'instructor'])
@@ -26,15 +29,16 @@ class BulkMessageService
         // Log each recipient
         foreach ($recipients as $user) {
             BulkMessageRecipient::create([
-                'bulk_message_id' => $bulkMessage->id,
-                'user_id' => $user->id,
-                'email'   => $user->email,
-                'number'  => $user->parent->number ?? $user->student->number ?? $user->instructor->number ?? null,
-                'status'  => 'queued',
+                'bulk_message_id'  => $bulkMessage->id,
+                'user_id'          => $user->id,
+                'email'            => $user->email,
+                'number'           => $user->parent->number ?? $user->student->number ?? $user->instructor->number ?? null,
+                'delivery_status'  => 'queued',
+                'delivery_method'  => $methods,
             ]);
         }
 
         // Dispatch queued job
-        SendBulkMessageJob::dispatch($recipients, $subject, $message, $methods, $bulkMessage->id);
+        SendBulkMessageJob::dispatch($bulkMessage->id);
     }
 }

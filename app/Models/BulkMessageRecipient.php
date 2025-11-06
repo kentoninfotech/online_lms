@@ -20,6 +20,10 @@ class BulkMessageRecipient extends Model
         'response_log'
     ];
 
+    protected $casts = [
+        'delivery_method' => 'array'
+    ];
+
     public function bulkMessage(): BelongsTo
     {
         return $this->belongsTo(BulkMessage::class);
