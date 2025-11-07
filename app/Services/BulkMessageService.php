@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use Illuminate\Notifications\ChannelManager;
 use App\Models\User;
 use App\Models\BulkMessage;
 use App\Models\BulkMessageRecipient;
@@ -12,8 +11,7 @@ class BulkMessageService
 {
     public function dispatchBulkMessage(string $subject, string $message, array $methods, array $recipientIds)
     {
-        dd(app(ChannelManager::class)->getDefaultDriver());
-        // Create log entry
+        // Create bulk message record
         $bulkMessage = BulkMessage::create([
             'subject' => $subject,
             'message' => $message,

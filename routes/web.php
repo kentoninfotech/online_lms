@@ -31,6 +31,28 @@ use App\Http\Controllers\Instructor\InstructorStudentController;
 use App\Http\Controllers\Dashboard\ParentDashboardController;
 use Illuminate\Support\Facades\Artisan;
 
+// MAIL TEST ROUTE
+use Illuminate\Support\Facades\Mail;
+
+Route::get('/mail-test', function () {
+    // try {
+    //     Mail::raw('Test mail from Gmail SMTP setup', function ($m) {
+    //         $m->to('dbillionmindset@gmail.com')->subject('Laravel Mail Test');
+    //     });
+    //     return 'Mail sent successfully ✅';
+    // } catch (\Throwable $e) {
+    //     return 'Mail failed ❌: ' . $e->getMessage();
+    // }
+
+    $user = App\Models\User::find(4);
+    $user->notify(new App\Notifications\BulkMessageNotification('Direct Test', 'This is a direct email', ['mail']));
+
+    return 'Mail sent successfully ✅';
+    
+});
+
+
+
 
 // public endpoint for Zoom to POST webhooks to
 Route::post('/webhooks/zoom', [ZoomWebhookController::class, 'handle']);

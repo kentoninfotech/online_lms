@@ -36,8 +36,8 @@ return [
     ],
 
     'sms' => [
-        'url' => env('SMS_PROVIDER_URL'),
-        'key' => env('SMS_PROVIDER_KEY'),
+        'url' => env('SMS_URL'),
+        'api_key' => env('SMS_API_KEY'),
         'sender' => env('SMS_SENDER', 'TheVirtualAcademy'),
     ],
 

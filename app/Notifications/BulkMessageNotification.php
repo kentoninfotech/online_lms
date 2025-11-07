@@ -8,7 +8,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Notifications\Channels\SmsChannel;
 
-class BulkMessageNotification extends Notification implements ShouldQueue
+class BulkMessageNotification extends Notification // implements ShouldQueue
 {
     use Queueable;
 
@@ -31,13 +31,13 @@ class BulkMessageNotification extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        $channels = ['database']; // always log
+        $channels = ['database'];
 
-        if (in_array('email', $this->methods) && !empty($notifiable->email)) {
+        if (in_array('mail', $this->methods)) {
             $channels[] = 'mail';
         }
 
-        if (in_array('sms', $this->methods) && !empty($notifiable->phone_number)) {
+        if (in_array('sms', $this->methods)) {
             $channels[] = SmsChannel::class;
         }
 
@@ -49,11 +49,13 @@ class BulkMessageNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
+        \Log::info('Mail channel triggered via:', ['mailer' => config('mail.default'), 'from' => config('mail.from.address')]);
+
         return (new MailMessage)
             ->subject($this->subject)
             ->greeting('Hello ' . ($notifiable->name ?? ''))
             ->line($this->message)
-            ->salutation('— TheVirtualAcademy Admin');
+            ->salutation('Kind regards, ' . config('app.name'));
     }
 
     /**
@@ -77,6 +79,18 @@ class BulkMessageNotification extends Notification implements ShouldQueue
             'email'        => $notifiable->email ?? null,
             'phone_number' => $notifiable->phone_number ?? null,
             'status'       => 'sent',
+        ];
+    }
+
+    /**
+     * Get the array representation of the notification.
+     */
+    public function toArray($notifiable)
+    {
+        return [
+            'subject' => $this->subject,
+            'message' => $this->message,
+            'methods' => $this->methods,
         ];
     }
 }

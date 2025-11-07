@@ -14,7 +14,7 @@ class SmsService
     public function __construct()
     {
         $this->baseUrl = config('services.sms.url');
-        $this->apiKey  = config('services.sms.key');
+        $this->apiKey  = config('services.sms.api_key');
         $this->sender  = config('services.sms.sender', 'TheVirtualAcademy');
     }
 

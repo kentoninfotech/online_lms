@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
+
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -91,25 +92,23 @@ class User extends Authenticatable
     // Accessor for phone number based on user type - call as $user->phone_number
     public function getPhoneNumberAttribute()
     {
-        if ($this->relationLoaded('parent') && $this->parent) {
-            return $this->parent->number;
-        }
-
-        if ($this->relationLoaded('student') && $this->student) {
-            return $this->student->number;
-        }
-
-        if ($this->relationLoaded('instructor') && $this->instructor) {
-            return $this->instructor->number;
-        }
-
-        return null;
+        return $this->parent->number
+            ?? $this->student->number
+            ?? $this->instructor->number
+            ?? null;
     }
+
 
     // Route notification for SMS channel
     public function routeNotificationForSms($notification)
     {
         return $this->phone_number;
+    }
+
+    // Route notification for Mail channel
+    public function routeNotificationForMail($notification)
+    {
+        return $this->email; 
     }
 
 
