@@ -33,6 +33,7 @@ use Illuminate\Support\Facades\Artisan;
 
 // MAIL TEST ROUTE
 use Illuminate\Support\Facades\Mail;
+use App\Jobs\SendBulkMessageJob;
 
 Route::get('/mail-test', function () {
     // try {
@@ -44,11 +45,13 @@ Route::get('/mail-test', function () {
     //     return 'Mail failed ❌: ' . $e->getMessage();
     // }
 
-    $user = App\Models\User::find(4);
-    $user->notify(new App\Notifications\BulkMessageNotification('Direct Test', 'This is a direct email', ['mail']));
+    // $user = App\Models\User::find(4);
+    // $user->notify(new App\Notifications\BulkMessageNotification('Direct Test', 'This is a direct email', ['mail']));
 
-    return 'Mail sent successfully ✅';
-    
+    // return 'Mail sent successfully ✅';
+    SendBulkMessageJob::dispatch(1);
+    echo "✅ Job dispatched.";
+
 });
 
 

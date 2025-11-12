@@ -73,10 +73,10 @@ class BulkMessageController extends Controller
     {
         $logs = BulkMessage::withCount([
             'recipients as sent_count' => function ($q) {
-                $q->where('status', 'sent');
+                $q->where('delivery_status', 'sent');
             },
             'recipients as failed_count' => function ($q) {
-                $q->where('status', 'failed');
+                $q->where('delivery_status', 'failed');
             },
             'recipients as total_count'
         ])

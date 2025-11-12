@@ -11,16 +11,16 @@ class SubscriptionPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Subscription $subscription): bool
+    public function view(User $user): bool
     {
         if ($user->hasRole('admin')) return true;
 
         if ($user->hasRole('parent')) {
-            return $user->parent?->students->contains('id', $subscription->student_id);
+            return $user->parent?->students->contains('id', $student_id);
         }
 
         if ($user->hasRole('student')) {
-            return $user->student?->id === $subscription->student_id;
+            return $user->student?->id === $student_id;
         }
 
         return false;

@@ -19,7 +19,7 @@ class SubscriptionController extends Controller
     public function create(Student $student)
     {
         // Check authorization
-        $this->authorize('view', $student->subscription);
+        $this->authorize('view', Subscription::class);
 
         $plans = Plan::all();
 
@@ -29,7 +29,7 @@ class SubscriptionController extends Controller
     public function store(Request $request, Student $student, Plan $plan)
     {
         // Check authorization
-        $this->authorize('view', $student->subscription);
+        $this->authorize('view', Subscription::class);
 
         // use this StoreSubscriptionRequest if decide to use form input 
 
