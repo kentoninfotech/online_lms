@@ -50,7 +50,7 @@
             
 
             <div class="mb-4">
-                <h3 class="fw-bold text-primary mb-0 fs-2 fs-md-1">₦{{ number_format($payment->amount, 2) ?? '-' }}</h3>
+                <h3 class="fw-bold text-virtual mb-0 fs-2 fs-md-1">₦{{ number_format($payment->amount, 2) ?? '-' }}</h3>
             </div>
 
             <div class="border-top pt-3 mt-2">

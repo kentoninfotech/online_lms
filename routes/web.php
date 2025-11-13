@@ -45,12 +45,13 @@ Route::get('/mail-test', function () {
     //     return 'Mail failed ❌: ' . $e->getMessage();
     // }
 
-    // $user = App\Models\User::find(4);
-    // $user->notify(new App\Notifications\BulkMessageNotification('Direct Test', 'This is a direct email', ['mail']));
+    $user = App\Models\User::find(4);
+    $user->notify(new App\Notifications\BulkMessageNotification('Direct Test', 'This is a direct email', ['mail']));
+    echo "✅ Mail sent!";
 
     // return 'Mail sent successfully ✅';
-    SendBulkMessageJob::dispatch(1);
-    echo "✅ Job dispatched.";
+    // SendBulkMessageJob::dispatch(1);
+    // echo "✅ Job dispatched.";
 
 });
 

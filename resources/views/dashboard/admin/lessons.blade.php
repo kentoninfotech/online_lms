@@ -79,9 +79,11 @@
                         </td>
                         <td>
                             @if($nextOccurrence?->status === 'scheduled')
-                                <span class="badge bg-success">{{ Str::headline($nextOccurrence?->status) ?? 'N/A' }}</span>
+                                <span class="badge bg-virtual">{{ Str::headline($nextOccurrence?->status) ?? 'N/A' }}</span>
+                            @elseif($nextOccurrence?->status === 'completed')
+                                <span class="badge virtual-secondary">{{ Str::headline($nextOccurrence?->status) ?? 'N/A' }}</span>
                             @else
-                                <span class="badge bg-warning">{{ Str::headline($nextOccurrence?->status) ?? 'N/A' }}</span>
+                                <span class="badge bg-success">{{ Str::headline($nextOccurrence?->status) ?? 'N/A' }}</span>
                             @endif
                         </td>
                         <td>

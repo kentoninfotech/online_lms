@@ -53,7 +53,7 @@
                     <td>
                         @foreach($parent->students as $student)
                         <a href="{{ route('show.student', $student) }}">
-                            <span class="badge bg-primary">
+                            <span class="badge bg-virtual">
                                 {{ $student->name }}
                             </span>
                         </a>

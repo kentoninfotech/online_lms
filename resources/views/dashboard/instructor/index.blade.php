@@ -13,7 +13,7 @@
 
            <div class="row">
                <div class="col-md-6 col-xl-6">
-                    <div class="card bg-grd-success order-card">
+                    <div class="card bg-v-secondary order-card">
                     <div class="card-body">
                         <h6 class="text-white">Total Courses</h6>
                         <h2 class="text-end text-white"><i class="feather icon-tag float-start"></i>
@@ -221,7 +221,7 @@
 
             <!-- Next Class -->
             @if($nextClass)
-               <div class="card nav-action-card bg-brand-color-1">
+               <div class="card nav-action-card bg-virtual">
                     <div class="card-body" style="background-image: url('../assets/images/layout/nav-card-bg.svg')">
                         <h5 class="text-white">Next Class</h5>
                         <p class="text-white text-opacity-75">

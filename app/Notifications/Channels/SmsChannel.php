@@ -31,14 +31,16 @@ class SmsChannel
         $number = $notifiable->routeNotificationFor('sms', $notification);
 
         if (! $number) {
-            Log::warning("SMS route: No number found for user {$notifiable->id} (class: " . get_class($notifiable) . ")");
+            Log::warning("No phone number found for notifiable ID {$notifiable->id}");
             return;
         }
-        // if (! $number) {
-        //     Log::warning("No phone number found for notifiable ID {$notifiable->id}");
-        //     return;
-        // }
 
-        $this->smsService->sendSms($number, $message);
+        try {
+            $this->smsService->sendSms($number, $message);
+        } catch (\Throwable $e) {
+            // Log but don't throw — prevents aborting mail channel
+            Log::error("SMS sending failed for user {$notifiable->id}: {$e->getMessage()}");
+        }
+
     }
 }

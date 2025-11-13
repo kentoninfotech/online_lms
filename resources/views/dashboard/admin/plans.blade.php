@@ -49,7 +49,7 @@
                     <td>{{ $plan->name }}</td>
                     <td>₦ {{ number_format($plan->price, 2) }}</td>
                     <td>
-                        <span class="badge bg-{{ $plan->duration_type === 'monthly' ? 'success' : ($plan->duration_type === 'weekly' ? 'primary' : 'warning') }}">
+                        <span class="badge bg-{{ $plan->duration_type === 'monthly' ? 'virtual' : ($plan->duration_type === 'weekly' ? 'v-secondary' : 'primary') }}">
                             {{ ucfirst($plan->duration_type) }}
                         </span>
                     </td>

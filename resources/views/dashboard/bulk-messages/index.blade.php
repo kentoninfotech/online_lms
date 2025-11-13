@@ -60,7 +60,7 @@
                                     name="method[]" 
                                     value="email" 
                                     id="emailCheck"
-                                    {{ (is_array(old('method')) && in_array('email', old('method'))) ? 'checked' : '' }}
+                                    {{ (is_array(old('method')) && in_array('mail', old('method'))) ? 'checked' : '' }}
                                 >
                                 <label class="form-check-label" for="emailCheck">Email</label>
                             </div>
@@ -314,7 +314,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td>${log.total}</td>
                     <td>${log.sent}</td>
                     <td>${log.failed}</td>
-                    <td><span class="badge bg-${log.status === 'completed' ? 'success' : 'secondary'}">${log.status}</span></td>
+                    <td>
+                        <span class="badge bg-${
+                            log.status === 'completed'
+                            ? 'success'
+                            : log.status === 'failed'
+                                ? 'danger'
+                                : log.status === 'partial'
+                                ? 'warning'
+                                : 'secondary'
+                            }">${log.status}
+                        </span>
+                    </td>
                     <td>${log.created_at}</td>
                     <td><button class="btn btn-sm btn-outline-primary viewRecipients" data-id="${log.id}">View</button></td>
                 </tr>

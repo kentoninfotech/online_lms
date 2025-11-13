@@ -8,6 +8,9 @@
             font-size: 1rem;
             font-weight: 400;
         }
+        .fc-button {
+            background-color: #330952 !important;
+        }
         #my-calendar {
             max-width: 900px;
             margin: 0 auto;

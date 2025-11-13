@@ -39,11 +39,11 @@ class CalendarController extends Controller
 
             // Determine styling based on status
             $color = match ($occurrence->status) {
-                'scheduled' => '#ff00eaff', 
-                'completed' => '#00ff2aff', 
-                'pending'   => '#f59e0b', 
-                'cancelled' => '#ef4444',
-                default     => '#3b82f6', 
+                'scheduled' => '#330952', 
+                'completed' => '#f0c221', 
+                'pending'   => '#76aa15ff', 
+                'cancelled' => '#f00a0aff',
+                default     => '#00ff2aff', 
             };
 
             return [

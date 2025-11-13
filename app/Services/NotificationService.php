@@ -20,6 +20,9 @@ class NotificationService
             if (str_contains($note->type, 'Reschedule')) {
                 return 'Reschedules';
             }
+            if (str_contains($note->type, 'BulkMessage')) {
+                return 'Messages';
+            }
             if (str_contains($note->type, 'ClassReminde') || str_contains($note->type, 'Lesson')) {
                 return 'Classes';
             }

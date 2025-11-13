@@ -69,7 +69,7 @@
                     </td>
                     <td>{{ $pay->created_at->format('d M Y h:i A') }}</td>
                     <td>
-                        <a href="{{ route('payments.show', $pay) }}" class="dropdown-item text-info">
+                        <a href="{{ route('payments.show', $pay) }}" class="dropdown-item text-virtual">
                             <i class="ph ph-eye"></i> View Payment
                         </a>
                     </td>

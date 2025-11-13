@@ -270,7 +270,7 @@
 
             <!-- Next Class -->
             @if($nextClass)
-               <div class="card nav-action-card bg-brand-color-1">
+               <div class="card nav-action-card bg-virtual">
                     <div class="card-body" style="background-image: url('../assets/images/layout/nav-card-bg.svg')">
                         <h5 class="text-white">Next Class</h5>
                         <h6 class="text-white">Lesson: {{ $nextClass->lesson->subject }}</h6>

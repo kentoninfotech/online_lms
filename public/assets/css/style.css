@@ -41,11 +41,32 @@ File: style.css
 
  /* OVERWRITE BOOTSTRAP PRIMARY COLOR */
 .btn-primary {
-  background-color: #9c2496 !important;
+  background-color: #330952 !important;
+}
+
+.btn-outline-primary {
+  color: #330952 !important;
+  border-color: #330952 !important;
+}
+.btn-outline-primary:hover {
+  color: #fff !important;
+  background-color: #330952 !important;
 }
 
 .bg-virtual {
-  background-color: #990479 !important;
+  background-color: #330952 !important;
+}
+
+.bg-v-secondary {
+  background-color: #f0c221 !important;
+}
+
+.text-virtual {
+  color: #330952 !important;
+}
+
+.virtual-secondary {
+  background-color: #f0c221 !important;
 }
 
 
@@ -66,7 +87,7 @@ File: style.css
 
 .profile-nav .nav-link.active {
     color: #fff;
-    background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+    background: linear-gradient(90deg, #330952 0%, #330952 100%);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
@@ -128,7 +149,7 @@ body {
   --bs-secondary: #6c757d;
   --bs-success: #2ed8b6;
   --bs-info: #00bcd4;
-  --bs-warning: #ffb64d;
+  --bs-warning: #f0c221;
   --bs-danger: #ff5370;
   --bs-light: #f8f9fa;
   --bs-dark: #212529;
@@ -3322,7 +3343,7 @@ textarea.form-control-lg {
 }
 
 .btn-outline-warning {
-  --bs-btn-color: #ffb64d;
+  --bs-btn-color: #f0c221;
   --bs-btn-border-color: #ffb64d;
   --bs-btn-hover-color: #ffffff;
   --bs-btn-hover-bg: #ffb64d;

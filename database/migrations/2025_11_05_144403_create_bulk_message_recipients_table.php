@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('number')->nullable();
             $table->json('delivery_method')->nullable();
-            $table->enum('delivery_status', ['queued', 'sent', 'failed'])->default('queued');
+            $table->string('delivery_status', 20)->default('queued');
             $table->text('response_log')->nullable();
             
             $table->timestamps();

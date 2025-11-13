@@ -8,7 +8,7 @@
 <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
     <!-- Banner -->
     <div class="w-100" 
-         style="background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%); height: 140px;">
+         style="background: linear-gradient(90deg, #330952 0%, #330952 100%); height: 140px;">
     </div>
 
     <div class="card-body position-relative">

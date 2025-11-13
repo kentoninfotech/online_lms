@@ -49,6 +49,8 @@
                         <span class="me-2">📅</span>
                     @elseif($category === 'Classes')
                         <span class="me-2">🎓</span>
+                    @elseif($category === 'Messages')
+                        <span class="me-2">✉️</span>
                     @else
                         <span class="me-2">🔔</span>
                     @endif
@@ -61,7 +63,7 @@
                             
                             <div>
                                 {{-- Display Title/Header (use title if available, otherwise fallback) --}}
-                                <strong class="{{ $category === 'Payments' ? 'text-danger' : 'text-primary' }}">
+                                <strong class="{{ $category === 'Payments' ? 'text-danger' : 'text-virtual' }}">
                                     {{ $note->data['title'] ?? 'Notification' }}
                                 </strong>
                                 

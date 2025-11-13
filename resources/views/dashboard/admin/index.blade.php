@@ -13,7 +13,7 @@
 
            <div class="row">
                <div class="col-md-6 col-xl-6">
-                    <div class="card bg-grd-success order-card">
+                    <div class="card virtual-secondary order-card">
                     <div class="card-body">
                         <h6 class="text-white">Total Student</h6>
                         <h2 class="text-end text-white"><i class="feather icon-tag float-start"></i>

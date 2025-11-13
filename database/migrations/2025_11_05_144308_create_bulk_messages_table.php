@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('subject');
             $table->text('message');
             $table->json('methods');
-            $table->enum('status', ['queued', 'processing', 'completed', 'failed'])->default('queued');
+            $table->string('status', 20)->default('queued');
             $table->foreignId('sender')->constrained('users')->onDelete('cascade');
 
             $table->timestamps();
