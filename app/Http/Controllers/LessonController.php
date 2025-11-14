@@ -46,6 +46,17 @@ class LessonController extends Controller
     /**
      * Create lesson
      */
+    public function create()
+    {
+        $instructors = Instructor::all();
+        $students = Student::all();
+
+        return view('dashboard.add-lesson', compact('instructors', 'students'));
+    }
+
+    /**
+     * Store lesson records
+     */
     public function store(StoreLessonRequest $request)
     { 
         $this->authorize('create', Lesson::class);
@@ -99,7 +110,22 @@ class LessonController extends Controller
         // Expand into occurrences
         app(\App\Services\RecurrenceService::class)->generateOccurrences($lesson);
 
-        return redirect()->back()->with('success', 'Lesson created successfully.');
+        // Determine the redirect route based on the user's role
+        $redirTo = auth()->user()->hasRole('admin') ? 'admin.lessons' : 'instructor.lessons';
+
+        return redirect()
+            ->route($redirTo)
+            ->with('success', 'Lesson created successfully.');
+    }
+
+    public function edit(Lesson $lesson)
+    {
+        $this->authorize('update', $lesson);
+
+        $instructors = Instructor::all();
+        $students = Student::all();
+
+        return view('dashboard.edit-lesson', compact('lesson', 'instructors', 'students'));
     }
 
     /**

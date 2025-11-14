@@ -78,6 +78,13 @@ Route::middleware(['auth'])->group(function () {
     // Add Subscription
     Route::get('/subscriptions/{student}', [SubscriptionController::class, 'create'])->name('subscription.create');
     Route::post('/subscriptions/{student}/{plan}/store', [SubscriptionController::class, 'store'])->name('subscription.store');
+
+    // LESSON ROUTE
+    Route::get('/lesson/add', [LessonController::class, 'create'])->name('lesson.create');
+    Route::get('/lesson/{lesson}/edit', [LessonController::class, 'edit'])->name('lesson.edit');
+    Route::post('/lesson', [LessonController::class, 'store'])->name('lesson.store');
+    Route::post('/lesson/{lesson}/update', [LessonController::class, 'update'])->name('lesson.update');
+    Route::delete('/lesson/{lesson}/delete', [LessonController::class, 'delete'])->name('lesson.delete');
     // JOIN CLASS ROUTE
     Route::get('/lesson/{occurrence}/join', [JoinClassController::class, 'join'])->name('lesson.join');
     Route::get('/lesson/{occurrence}/waiting', [JoinClassController::class, 'waiting'])->name('lesson.waiting');
@@ -99,10 +106,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/bulk-messages/{id}/recipients', [BulkMessageController::class, 'recipients'])->name('bulk-messages.recipients');
     Route::get('/bulk-messages/fetch', [BulkMessageController::class, 'fetchRecipients'])->name('bulk-messages.fetch');
     Route::post('/bulk-messages/send', [BulkMessageController::class, 'send'])->name('bulk-messages.send');
-
-    // LESSON ROUTE
-    Route::post('/lesson', [LessonController::class, 'store'])->name('lesson.store');
-    Route::delete('/lesson/{lesson}/delete', [LessonController::class, 'delete'])->name('lesson.delete');
 
     // ZOOM MEETING
     Route::post('/zoom/{occurrence}/add', [ZoomController::class, 'addZoom'])->name('add.zoom');

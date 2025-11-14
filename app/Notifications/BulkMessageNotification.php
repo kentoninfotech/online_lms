@@ -43,8 +43,6 @@ class BulkMessageNotification extends Notification implements ShouldQueue
             $channels[] = SmsChannel::class;
         }
 
-        Log::info("Notification via() resolved channels", ['channels' => $channels]);
-
         return $channels;
     }
 
@@ -53,8 +51,6 @@ class BulkMessageNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        \Log::info('Email channel triggered for user: ' . ($notifiable->email ?? 'N/A'));
-
         return (new MailMessage)
             ->subject($this->subject)
             ->greeting('Hello ' . ($notifiable->name ?? ''))
@@ -67,11 +63,6 @@ class BulkMessageNotification extends Notification implements ShouldQueue
      */
     public function toSms($notifiable)
     {
-        \Log::info('SMS channel triggered', [
-            'methods' => $this->methods,
-            'user' => $notifiable->phone_number ?? 'N/A'
-        ]);
-
         return $this->message;
     }
 

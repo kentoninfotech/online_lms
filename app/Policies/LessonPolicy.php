@@ -41,7 +41,8 @@ class LessonPolicy
      */
     public function delete(User $user, Lesson $lesson): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasRole('admin') ||
+            $lesson->instructor_id === $user->instructor->id;
     }
 
 }
