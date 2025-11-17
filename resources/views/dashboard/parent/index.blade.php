@@ -175,7 +175,7 @@
                             $snippet = $data['message_lines'][0] ?? $data['message'] ?? 'Click for details...';
                             
                             // Determine alert style (using primary for unread, secondary/light for read)
-                            $alertClass = $isRead ? 'alert-light text-muted' : 'alert-primary';
+                            $alertClass = $isRead ? 'alert-light text-muted' : 'alert-secondary';
                             
                             // Resolve URL if an action route is present
                             $actionUrl = null;

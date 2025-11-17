@@ -16,7 +16,7 @@
                     <div class="card bg-v-secondary order-card">
                     <div class="card-body">
                         <h6 class="text-white">Total Courses</h6>
-                        <h2 class="text-end text-white"><i class="feather icon-tag float-start"></i>
+                        <h2 class="text-end text-white"><i class="feather ph ph-book float-start"></i>
                              <span>{{ $instructor->lessons->count() }}</span> 
                         </h2>
                         <p class="m-b-0">Lessons this month<span class="float-end">{{ $lessonsThisMonth }}</span></p>
@@ -27,7 +27,7 @@
                     <div class="card bg-grd-primary order-card">
                     <div class="card-body">
                         <h6 class="text-white">Students</h6>
-                        <h2 class="text-end text-white"><i class="feather icon-shopping-cart float-start"></i><span>{{ $students->count() }}</span> </h2>
+                        <h2 class="text-end text-white"><i class="bi bi-people-fill float-start"></i><span>{{ $students->count() }}</span> </h2>
                         <p class="m-b-0">Active<span class="float-end"> {{ $students->count() }} </span></p>
                     </div>
                     </div>
@@ -256,7 +256,7 @@
                             $snippet = $data['message_lines'][1] ?? $data['message'] ?? 'Click for details...';
                             
                             // Determine alert style (using primary for unread, secondary/light for read)
-                            $alertClass = $isRead ? 'alert-light text-muted' : 'alert-primary';
+                            $alertClass = $isRead ? 'alert-light text-muted' : 'alert-secondary';
                             
                             // Resolve URL if an action route is present
                             $actionUrl = null;

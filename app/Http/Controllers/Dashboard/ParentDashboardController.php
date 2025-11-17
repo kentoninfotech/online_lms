@@ -72,7 +72,14 @@ class ParentDashboardController extends Controller
             $monthTotalClasses = $monthly['monthTotalClasses'] ?? 0;
             $monthPresentCount = $monthly['monthPresentCount'] ?? 0;
             $monthAttendancePercent = $monthly['monthAttendancePercent'] ?? 0;
-            $lessonsThisMonth = $monthly['lessonsThisMonth'] ?? 0;
+            // $lessonsThisMonth = $monthly['lessonsThisMonth'] ?? 0;
+
+            $lessonsThisMonth = LessonOccurrence::whereHas('lesson', function ($q) use ($child) {
+                $q->where('student_id', $child->id);
+                    })
+                    ->whereMonth('scheduled_start', now()->month)
+                    ->whereYear('scheduled_start', now()->year)
+                    ->count();
 
             // Next class (nearest future occurrence)
             $nextClass = LessonOccurrence::whereHas('lesson', fn($q) => $q->where('student_id', $child->id))

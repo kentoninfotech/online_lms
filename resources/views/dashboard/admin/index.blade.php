@@ -16,7 +16,7 @@
                     <div class="card virtual-secondary order-card">
                     <div class="card-body">
                         <h6 class="text-white">Total Student</h6>
-                        <h2 class="text-end text-white"><i class="feather icon-tag float-start"></i>
+                        <h2 class="text-end text-white"><i class="feather bi bi-people float-start"></i>
                              <span>{{ $totalStudents }}</span> 
                         </h2>
                         <p class="m-b-0">Active<span class="float-end">{{ $totalStudents }}</span></p>
@@ -27,7 +27,7 @@
                     <div class="card bg-grd-primary order-card">
                     <div class="card-body">
                         <h6 class="text-white">Instructor</h6>
-                        <h2 class="text-end text-white"><i class="feather icon-shopping-cart float-start"></i><span>{{ $totalInstructors }}</span> </h2>
+                        <h2 class="text-end text-white"><i class="feather bi bi-people-fill float-start"></i><span>{{ $totalInstructors }}</span> </h2>
                         <p class="m-b-0">Active<span class="float-end"> {{ $totalInstructors }} </span></p>
                     </div>
                     </div>
@@ -36,7 +36,7 @@
                     <div class="card bg-grd-primary order-card">
                     <div class="card-body">
                         <h6 class="text-white">Active Subscriptions</h6>
-                        <h2 class="text-end text-white"><i class="feather icon-shopping-cart float-start"></i><span>{{ $activeSubs }}</span> </h2>
+                        <h2 class="text-end text-white"><i class="feather bi bi-credit-card float-start"></i><span>{{ $activeSubs }}</span> </h2>
                         <p class="m-b-0">Pending Payments<span class="float-end"> {{ $pendingPayments }} </span></p>
                     </div>
                     </div>
@@ -188,7 +188,7 @@
                             $snippet = $data['message_lines'][1] ?? $data['message'] ?? 'Click for details...';
                             
                             // Determine alert style (using primary for unread, secondary/light for read)
-                            $alertClass = $isRead ? 'alert-light text-muted' : 'alert-primary';
+                            $alertClass = $isRead ? 'alert-light text-muted' : 'alert-secondary';
                             
                             // Resolve URL if an action route is present
                             $actionUrl = null;
