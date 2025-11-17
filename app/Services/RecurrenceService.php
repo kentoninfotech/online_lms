@@ -285,6 +285,16 @@ class RecurrenceService
     }
 
     /**
+     * Remove future occurrences.
+     */
+    public function removeFutureOccurrences(Lesson $lesson): void
+    {
+        LessonOccurrence::where('lesson_id', $lesson->id)
+            ->where('scheduled_start', '>', now())
+            ->delete();
+    }
+
+    /**
      * Remove any occurrences beyond allowed limit.
      */
     private function removeExcessOccurrences(Lesson $lesson, Carbon $horizonEnd): void
@@ -293,4 +303,5 @@ class RecurrenceService
             ->where('scheduled_start', '>', $horizonEnd->copy()->endOfDay())
             ->delete();
     }
+
 }

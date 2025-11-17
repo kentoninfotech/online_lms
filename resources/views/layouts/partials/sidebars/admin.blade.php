@@ -62,7 +62,7 @@
 
     <li class="pc-item">
         <a href="{{ route('admin.plans') }}" class="pc-link">
-            <span class="pc-micon"><i class="ph ph-package" style="color: #f0c221;"></i></span>
+            <span class="pc-micon"><i class="fa fa-clipboard-list" style="color: #330952;"></i></span>
             <span class="pc-mtext">Plans</span>
         </a>
     </li>
@@ -73,7 +73,7 @@
     </li>
     <li class="pc-item">
         <a href="{{ route('notifications') }}" class="pc-link">
-            <span class="pc-micon"><i class="bi bi-bell-fill" style="color: #330952;"></i></span>
+            <span class="pc-micon"><i class="bi bi-bell-fill" style="color: #f0c221;"></i></span>
             <span class="pc-mtext">Notification</span>
             @if(auth()->user()->unreadNotifications->count() > 0)
                 <span class="badge bg-danger">{{ auth()->user()->unreadNotifications->count() }}</span>
@@ -83,7 +83,7 @@
     <li class="pc-item">
         <a href="{{ route('users.edit', ['user' => auth()->user(), 'role' => auth()->user()->user_type]) }}" 
             target="_blank" class="pc-link">
-            <span class="pc-micon"><i class="bi bi-gear" style="color: #f0c221;"></i></span>
+            <span class="pc-micon"><i class="bi bi-gear-fill" style="color: #330952;"></i></span>
             <span class="pc-mtext">Settings</span>
         </a>
     </li>

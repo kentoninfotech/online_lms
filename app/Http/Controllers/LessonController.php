@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Services\RecurrenceService;
 use App\Models\Lesson;
 use App\Models\Instructor;
 use App\Models\Student;
@@ -13,6 +14,11 @@ use Carbon\Carbon;
 
 class LessonController extends Controller
 {
+    /**
+     * Constructor
+     */
+    public function __construct(protected RecurrenceService $recurrenceService) { }
+
     /**
      * Show lessons
      */
@@ -29,7 +35,7 @@ class LessonController extends Controller
 
         // Today’s schedule
         $todayLessons = LessonOccurrence::with(['lesson.student.user', 'lesson.instructor.user', 'zoomSession'])
-            ->whereHas('lesson')//, fn($q) => $q->where('instructor_id', $instructor->id))
+            ->whereHas('lesson')
             ->whereDate('scheduled_start', Carbon::today())
             ->orderBy('scheduled_start')
             ->get();
@@ -44,7 +50,7 @@ class LessonController extends Controller
     }
 
     /**
-     * Create lesson
+     * Show create lesson page
      */
     public function create()
     {
@@ -108,7 +114,7 @@ class LessonController extends Controller
         ]);
 
         // Expand into occurrences
-        app(\App\Services\RecurrenceService::class)->generateOccurrences($lesson);
+        $this->recurrenceService->generateOccurrences($lesson);
 
         // Determine the redirect route based on the user's role
         $redirTo = auth()->user()->hasRole('admin') ? 'admin.lessons' : 'instructor.lessons';
@@ -118,6 +124,9 @@ class LessonController extends Controller
             ->with('success', 'Lesson created successfully.');
     }
 
+    /**
+     * Show lesson edit page
+     */
     public function edit(Lesson $lesson)
     {
         $this->authorize('update', $lesson);
@@ -126,6 +135,73 @@ class LessonController extends Controller
         $students = Student::all();
 
         return view('dashboard.edit-lesson', compact('lesson', 'instructors', 'students'));
+    }
+
+    /**
+     * Update lesson record
+     */
+    public function update(Lesson $lesson, StoreLessonRequest $request)
+    {
+        $this->authorize('update', $lesson);
+
+        $data = $request->validated();
+
+        // Prepare recurrence meta 
+        $recurrenceMeta = null;
+
+        if ($data['recurrence_type'] !== 'none') {
+            $recurrenceMeta = [
+                'interval'  => (int) ($data['interval'] ?? 1),
+                'end_type'  => $data['end_type'] ?? 'count',
+                'end_date'  => $data['end_date'] ?? null,
+                'count'     => null,
+                'days'      => [],
+                'mode'      => $data['mode'] ?? 'day',
+            ];
+
+            // handle count/end_type
+            if ($recurrenceMeta['end_type'] === 'count') {
+                $recurrenceMeta['count'] = (int) ($request->count ?? 1);
+            } elseif ($recurrenceMeta['end_type'] === 'date') {
+                $recurrenceMeta['end_date'] = $request->end_date;
+                // Ensure no leftover 'count'
+                unset($recurrenceMeta['count']);
+            }
+
+            // handle weekly days
+            if ($data['recurrence_type'] === 'weekly') {
+                $recurrenceMeta['days'] = $data['days'] ?? [];
+            }
+
+            // handle monthly mode
+            if ($data['recurrence_type'] === 'monthly') {
+                $recurrenceMeta['mode'] = $data['mode'] ?? 'day';
+            }
+        }
+
+        
+        $lesson->update([
+            'subject'          => $data['subject'],
+            'student_id'       => $data['student_id'],
+            'instructor_id'    => $data['instructor_id'] ?? Auth::user()->instructor->id,
+            'start_time'       => $data['start_time'],
+            'duration_minutes' => $data['duration_minutes'],
+            'recurrence_type'  => $data['recurrence_type'],
+            'recurrence_meta'  => $recurrenceMeta,
+        ]);
+
+        // Delete future occurrences
+        $this->recurrenceService->removeFutureOccurrences($lesson);
+
+        // Expand into occurrences
+        $this->recurrenceService->generateOccurrences($lesson);
+
+        // Determine the redirect route based on the user's role
+        $redirTo = auth()->user()->hasRole('admin') ? 'admin.lessons' : 'instructor.lessons';
+
+        return redirect()
+            ->route($redirTo)
+            ->with('success', 'Lesson created successfully.');
     }
 
     /**

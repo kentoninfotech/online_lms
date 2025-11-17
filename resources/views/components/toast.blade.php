@@ -19,18 +19,18 @@
 @php
     // Define the type and message variables based on session
     $type = session('success') ? 'success' : (session('error') ? 'danger' : null);
-    $message = session('success') ?? session('error'); // Removed the incorrect 'null'
+    $message = session('success') ?? session('error'); 
     $title = $type == 'success' ? 'Success!' : ($type == 'danger' ? 'Warning!' : '');
 @endphp
 
 @if($type && $message)
 <div class="position-fixed top-0 end-0 p-3" style="z-index: 9999;">
     <div id="liveToast" 
-         class="toast align-items-center text-bg-{{ $type == 'danger' ? 'danger' : ($type == 'info' ? 'primary' : $type) }} border-0 show" 
+         class="toast align-items-center text-bg-{{ $type == 'danger' ? 'danger' : ($type == 'success' ? 'success' : $type) }} border-0" 
          role="alert" 
          aria-live="assertive" 
          aria-atomic="true" 
-         data-bs-delay="5000" {{-- Set dismissal delay in milliseconds --}}>
+         data-bs-delay="5000">
         
         <div class="toast-header">
             <i class="me-2 
@@ -48,7 +48,7 @@
 
         <div class="progress" style="height: 5px; border-radius: 0 0 .25rem .25rem;">
             <div id="toast-progress" 
-                 class="progress-bar progress-bar-striped progress-bar-animated bg-{{ $type == 'danger' ? 'danger' : ($type == 'info' ? 'primary' : $type) }}" 
+                 class="progress-bar progress-bar-striped progress-bar-animated bg-{{ $type == 'danger' ? 'danger' : ($type == 'success' ? 'success' : $type) }}" 
                  role="progressbar" 
                  aria-valuenow="100" 
                  aria-valuemin="0" 
@@ -63,29 +63,29 @@
 
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var toastEl = document.getElementById('liveToast');
-        if (toastEl) {
-            // Initialize the toast
-            var toast = new bootstrap.Toast(toastEl);
+document.addEventListener('DOMContentLoaded', function () {
+    var toastEl = document.getElementById('liveToast');
+    if (toastEl) {
+        // Initialize the toast
+        var toast = new bootstrap.Toast(toastEl);
+        
+        // Get the progress bar element
+        var progressBar = document.getElementById('toast-progress');
+
+        // Listen for when the toast is shown
+        toastEl.addEventListener('show.bs.toast', function () {
+            // Remove the animation style if it exists
+            progressBar.style.animation = 'none';
             
-            // Get the progress bar element
-            var progressBar = document.getElementById('toast-progress');
+            // Set the correct duration for the animation based on data-bs-delay
+            var delay = toastEl.getAttribute('data-bs-delay') / 1000; // Convert ms to s
 
-            // Listen for when the toast is shown
-            toastEl.addEventListener('show.bs.toast', function () {
-                // Remove the animation style if it exists
-                progressBar.style.animation = 'none';
-                
-                // Set the correct duration for the animation based on data-bs-delay
-                var delay = toastEl.getAttribute('data-bs-delay') / 1000; // Convert ms to s
+            // Apply the animation style
+            progressBar.style.animation = `toast-progress-fill ${delay}s linear forwards`;
+        });
 
-                // Apply the animation style
-                progressBar.style.animation = `toast-progress-fill ${delay}s linear forwards`;
-            });
-
-            // Show the toast
-            toast.show();
-        }
-    });
+        // Show the toast
+        toast.show();
+    }
+});
 </script>

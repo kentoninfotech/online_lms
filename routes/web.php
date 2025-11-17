@@ -83,7 +83,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/lesson/add', [LessonController::class, 'create'])->name('lesson.create');
     Route::get('/lesson/{lesson}/edit', [LessonController::class, 'edit'])->name('lesson.edit');
     Route::post('/lesson', [LessonController::class, 'store'])->name('lesson.store');
-    Route::post('/lesson/{lesson}/update', [LessonController::class, 'update'])->name('lesson.update');
+    Route::put('/lesson/{lesson}/update', [LessonController::class, 'update'])->name('lesson.update');
     Route::delete('/lesson/{lesson}/delete', [LessonController::class, 'delete'])->name('lesson.delete');
     // JOIN CLASS ROUTE
     Route::get('/lesson/{occurrence}/join', [JoinClassController::class, 'join'])->name('lesson.join');
