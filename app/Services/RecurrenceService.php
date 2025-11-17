@@ -87,11 +87,11 @@ class RecurrenceService
     private function expandRecurrence(string $type, Carbon $start, int $duration, array $meta, Carbon $horizon): array
     {
         $events    = [];
-        $interval  = $meta['interval'] ?? 1;
+        $interval  = (int) ($meta['interval'] ?? 1);
         $days      = $meta['days'] ?? [];
         $mode      = $meta['mode'] ?? 'day';
         $endType   = $meta['end_type'] ?? 'count';
-        $count    = ($endType === 'count') ? ($meta['count'] ?? null) : null;
+        $count    = ($endType === 'count') ? (int) ($meta['count'] ?? null) : null;
         $endDate  = ($endType === 'date' && !empty($meta['end_date'])) ? Carbon::parse($meta['end_date']) : null;
 
         // Determine actual upper limit
@@ -121,7 +121,7 @@ class RecurrenceService
 
                     $events[] = ['start' => $cursor->copy()];
 
-                    $cursor->addDays($interval);
+                    $cursor->addDays((int) $interval);
                 }
                 break;
 
@@ -178,7 +178,7 @@ class RecurrenceService
 
                         $events[] = ['start' => $dayDate->copy()];
                     }
-                    $currentWeekStart->addWeeks($interval)->startOfWeek();
+                    $currentWeekStart->addWeeks((int) $interval)->startOfWeek();
                 }
                 break;
 
@@ -194,7 +194,7 @@ class RecurrenceService
                     : ceil($start->diffInMonths($limitDate) / $interval) + 1; // +1 to include potential end month
 
                 for ($m = 0; $m < $months; $m++) {
-                    $monthDate = $start->copy()->addMonths($m * $interval);
+                    $monthDate = $start->copy()->addMonths($m * (int) $interval);
 
                     if ($mode === 'day') {
                         // Repeat on same day of month (e.g. 15th of every 2 months)
