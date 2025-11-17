@@ -34,8 +34,10 @@ class CalendarController extends Controller
         // Map to FullCalendar format
         $events = $occurrences->map(function ($occurrence) {
             // Calculate the end time
-            $startTime = Carbon::parse($occurrence->scheduled_start);
-            $endTime = $startTime->copy()->addMinutes($occurrence->duration_minutes);
+            $startTime = Carbon::parse((string) $occurrence->scheduled_start);
+            $endTime = $startTime->copy()->addMinutes((int) $occurrence->duration_minutes);
+            // $startTime = Carbon::parse($occurrence->scheduled_start);
+            // $endTime = $startTime->copy()->addMinutes($occurrence->duration_minutes);
 
             // Determine styling based on status
             $color = match ($occurrence->status) {
