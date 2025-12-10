@@ -32,8 +32,21 @@ class LessonPolicy
      */
     public function update(User $user, Lesson $lesson)
     {
-        return $user->hasRole('admin') ||
-            $lesson->instructor_id === $user->instructor->id;
+        // 1. Allow if the user is an admin.
+        if ($user->hasRole('admin')) {
+            return true;
+        }
+
+        // 2. ONLY continue if the user is an instructor.
+        // If they aren't an instructor, this check should fail, and the rest of the expression short-circuits.
+        if (!$user->hasRole('instructor')) {
+            return false;
+        }
+
+        // 3. Compare safely using the nullsafe operator (?->).
+        // This prevents an error if $user->instructor is null, returning null instead of throwing an exception.
+        // PHP treats null !== 13 as TRUE, and thus FALSE for authorization.
+        return $lesson->instructor_id === $user->instructor?->id;
     }
 
     /**

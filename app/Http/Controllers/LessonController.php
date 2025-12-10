@@ -130,7 +130,6 @@ class LessonController extends Controller
     public function edit(Lesson $lesson)
     {
 
-        dd($lesson->instructor_id." User Instructor ID:" . auth()->user()->instructor->id);
         $this->authorize('update', $lesson);
 
         $instructors = Instructor::all();
