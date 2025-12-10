@@ -33,7 +33,7 @@ class LessonPolicy
     public function update(User $user, Lesson $lesson)
     {
         return $user->hasRole('admin') ||
-            $lesson->instructor_id === $user->instructor->id;
+            $lesson->instructor_id === $user->id;
     }
 
     /**
@@ -42,7 +42,7 @@ class LessonPolicy
     public function delete(User $user, Lesson $lesson): bool
     {
         return $user->hasRole('admin') ||
-            $lesson->instructor_id === $user->instructor->id;
+            $lesson->instructor_id === $user->id;
     }
 
 }

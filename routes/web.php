@@ -48,7 +48,6 @@ Route::get('/mail-test', function () {
     $user = App\Models\User::find(4);
     $user->notify(new App\Notifications\BulkMessageNotification('Direct Test', 'This is a direct email', ['mail']));
     echo "✅ Mail sent!";
-
     // return 'Mail sent successfully ✅';
     // SendBulkMessageJob::dispatch(1);
     // echo "✅ Job dispatched.";
@@ -78,7 +77,6 @@ Route::middleware(['auth'])->group(function () {
     // Add Subscription
     Route::get('/subscriptions/{student}', [SubscriptionController::class, 'create'])->name('subscription.create');
     Route::post('/subscriptions/{student}/{plan}/store', [SubscriptionController::class, 'store'])->name('subscription.store');
-
     // LESSON ROUTE
     Route::get('/lesson/add', [LessonController::class, 'create'])->name('lesson.create');
     Route::get('/lesson/{lesson}/edit', [LessonController::class, 'edit'])->name('lesson.edit');
@@ -88,7 +86,6 @@ Route::middleware(['auth'])->group(function () {
     // JOIN CLASS ROUTE
     Route::get('/lesson/{occurrence}/join', [JoinClassController::class, 'join'])->name('lesson.join');
     Route::get('/lesson/{occurrence}/waiting', [JoinClassController::class, 'waiting'])->name('lesson.waiting');
-
     // CALENDAR ROUTE
     Route::get('/calendar/occurrences', [CalendarController::class, 'fetchEvents'])->name('calendar.occurrences');
    
