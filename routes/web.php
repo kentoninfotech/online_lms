@@ -54,9 +54,6 @@ Route::get('/mail-test', function () {
 
 });
 
-
-
-
 // public endpoint for Zoom to POST webhooks to
 Route::post('/webhooks/zoom', [ZoomWebhookController::class, 'handle']);
 
@@ -191,15 +188,29 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
     // Route::get('/parent/settings', [InstructorLessonController::class, 'settings'])->name('parent.settings');
 });
 
-
 Auth::routes();
 
 Route::get('/', function() {
-    return view('auth.login');
+    // Check if user is authenticated
+    if (!auth()->check()) {
+        return view('auth.login');
+    }
+    
+    $user = auth()->user();
+    
+    // Redirect based on user type
+    if ($user->user_type === 'admin') {
+        return redirect()->route('admin.dashboard');
+    } elseif ($user->user_type === 'instructor') {
+        return redirect()->route('instructor.dashboard');
+    } elseif ($user->user_type === 'student') {
+        return redirect()->route('student.dashboard');
+    } elseif ($user->user_type === 'parent') {
+        return redirect()->route('parent.dashboard');
+    } else {
+        return redirect()->route('login'); // Fallback if user_type is undefined
+    }
 });
-
-
-
 
 Route::get('/artisan/{secret}/{command}', function ($secret, $command) {
     // ✅ Set your secret key here
