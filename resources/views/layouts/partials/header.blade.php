@@ -54,13 +54,7 @@
             aria-haspopup="false"
             data-bs-auto-close="outside"
             aria-expanded="false">
-            <img src="{{ 
-    Auth::user()->profile 
-    ? asset('storage/' . Auth::user()->profile) 
-    : (file_exists(public_path('storage/profiles/profile.png')) 
-        ? asset('storage/profiles/profile.png') 
-        : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name)) 
-}}" 
+            <img src="{{ Auth::user()->profile ? asset('storage/'. Auth::user()->profile) : asset('storage/profiles/profile.png') ?? 'https://ui-avatars.com/api/?name='. Auth::user()->name }}" 
                 alt="{{ Auth::user()->name }}" class="user-avtar" />
          </a>
     

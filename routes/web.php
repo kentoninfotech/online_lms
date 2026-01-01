@@ -34,8 +34,6 @@ use Illuminate\Support\Facades\Artisan;
 // MAIL TEST ROUTE
 use Illuminate\Support\Facades\Mail;
 use App\Jobs\SendBulkMessageJob;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Response;
 
 Route::get('/mail-test', function () {
     // try {
@@ -230,16 +228,3 @@ Route::get('/artisan/{secret}/{command}', function ($secret, $command) {
     }
 });
 
-
-// This handles ANY file under the storage/ prefix
-Route::get('storage/{path}', function ($path) {
-    // Check if the file exists in storage/app/public/
-    if (!Storage::disk('public')->exists($path)) {
-        abort(404);
-    }
-
-    $file = Storage::disk('public')->get($path);
-    $type = Storage::disk('public')->mimeType($path);
-
-    return Response::make($file, 200)->header("Content-Type", $type);
-})->where('path', '.*'); // The '.*' allows slashes in the filename
