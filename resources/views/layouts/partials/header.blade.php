@@ -55,11 +55,11 @@
             data-bs-auto-close="outside"
             aria-expanded="false">
             <img src="{{ 
-    $user->profile 
-    ? asset('storage/' . $user->profile) 
+    Auth::user()->profile 
+    ? asset('storage/' . Auth::user()->profile) 
     : (file_exists(public_path('storage/profiles/profile.png')) 
         ? asset('storage/profiles/profile.png') 
-        : 'https://ui-avatars.com/api/?name=' . urlencode($user->name)) 
+        : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name)) 
 }}" 
                 alt="{{ Auth::user()->name }}" class="user-avtar" />
          </a>
