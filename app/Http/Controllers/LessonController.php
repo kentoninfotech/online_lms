@@ -132,7 +132,7 @@ class LessonController extends Controller
     /**
      * Show lesson edit page
      */
-    public function edit(Lesson $lesson)
+    public function edit(?Lesson $lesson)
     {
         if (!$lesson || !$lesson->id) {
             return redirect()
@@ -151,9 +151,12 @@ class LessonController extends Controller
     /**
      * Update lesson record
      */
-    public function update(Lesson $lesson, StoreLessonRequest $request)
-    {
-        
+    public function update(?Lesson $lesson, StoreLessonRequest $request)
+    {        if (!$lesson || !$lesson->id) {
+            return redirect()
+                ->back()
+                ->with('error', 'Lesson not found.');
+        }        
         $this->authorize('update', $lesson);
 
         $data = $request->validated();
@@ -219,7 +222,7 @@ class LessonController extends Controller
     /**
      * Delete lesson
      */
-    public function delete(Lesson $lesson)
+    public function delete(?Lesson $lesson)
     {
         if (!$lesson || !$lesson->id) {
             return redirect()
