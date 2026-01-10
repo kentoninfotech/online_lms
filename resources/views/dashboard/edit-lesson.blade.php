@@ -54,11 +54,18 @@
                 <!-- Subject -->
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Subject</label>
-                    <input type="text" name="subject" class="form-control @error('subject') is-invalid @enderror" 
-                        value="{{ old('subject', $lesson->subject) }}" required>
+
+                    <select name="subject" class="form-select @error('subject') is-invalid @enderror" required>
+                        @foreach(['Algebra 1', 'Algebra 2', 'Geometry', 'Pre-Calculus', 'Mathematics', 'Science', 'Physics', 'Chemistry', 'Biology', 'Basic Science', 'Basic Technology', 'English'] as $subject)
+                            <option value="{{ $subject }}" 
+                                {{ old('subject', $lesson->subject) == $subject ? 'selected' : '' }}>
+                                {{ $subject }}
+                            </option>
+                        @endforeach
+
+
                     @error('subject') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
-
                 @hasrole('admin')
                    <!-- Instructor -->
                     <div class="col-md-6 mb-3">

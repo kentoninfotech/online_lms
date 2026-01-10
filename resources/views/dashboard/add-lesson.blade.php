@@ -53,8 +53,22 @@
                 <!-- Subject -->
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Subject</label>
-                    {{-- Repopulate subject field --}}
-                    <input type="text" name="subject" class="form-control @error('subject') is-invalid @enderror" value="{{ old('subject') }}" required>
+
+                    <select name="subject" class="form-select @error('subject') is-invalid @enderror" required>
+                        <option value="">Select Subject</option>
+                        <option value="Algebra 1" {{ old('subject') == 'Algebra 1' ? 'selected' : '' }}>Algebra 1</option>
+                        <option value="Algebra 2" {{ old('subject') == 'Algebra 2' ? 'selected' : '' }}>Algebra 2</option>
+                        <option value="Geometry" {{ old('subject') == 'Geometry' ? 'selected' : '' }}>Geometry</option>
+                        <option value="Pre-Calculus" {{ old('subject') == 'Pre-Calculus' ? 'selected' : '' }}>Pre-Calculus</option>
+                        <option value="Mathematics" {{ old('subject') == 'Mathematics' ? 'selected' : '' }}>Mathematics</option>
+                        <option value="Science" {{ old('subject') == 'Science' ? 'selected' : '' }}>Science</option>
+                        <option value="Physics" {{ old('subject') == 'Physics' ? 'selected' : '' }}>Physics</option>
+                        <option value="Chemistry" {{ old('subject') == 'Chemistry' ? 'selected' : '' }}>Chemistry</option>
+                        <option value="Biology" {{ old('subject') == 'Biology' ? 'selected' : '' }}>Biology</option>
+                        <option value="Basic Science" {{ old('subject') == 'Basic Science' ? 'selected' : '' }}>Basic Science</option>
+                        <option value="Basic Technology" {{ old('subject') == 'Basic Technology' ? 'selected' : '' }}>Basic Technology</option>
+                        <option value="English" {{ old('subject') == 'English' ? 'selected' : '' }}>English</option>
+                    </select>
                     @error('subject') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
