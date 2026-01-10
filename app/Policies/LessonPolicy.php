@@ -13,9 +13,26 @@ class LessonPolicy
      */
     public function view(User $user, Lesson $lesson)
     {
-        return $user->hasRole('admin') ||
-            $lesson->instructor_id === $user->instructor->id ||
-            $lesson->student_id === optional($user->student)->id;
+        // Admin can view all lessons
+        if ($user->hasRole('admin')) {
+            return true;
+        }
+
+        // Instructor can view their own lessons
+        if ($user->hasRole('instructor')) {
+            $instructorId = $user->instructor?->id;
+            if ($instructorId && $lesson->instructor_id === $instructorId) {
+                return true;
+            }
+        }
+
+        // Student can view their own lessons
+        $studentId = $user->student?->id;
+        if ($studentId && $lesson->student_id === $studentId) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -38,14 +55,21 @@ class LessonPolicy
         }
 
         // 2. ONLY continue if the user is an instructor.
-        // If they aren't an instructor, this check should fail, and the rest of the expression short-circuits.
         if (!$user->hasRole('instructor')) {
             return false;
         }
 
         // 3. Allow instructor to edit their own lessons
-        // Get the instructor ID - handle case where instructor relationship might not be loaded
         $instructorId = $user->instructor?->id;
+        
+        // Log for debugging
+        \Log::info('Lesson Update Authorization Check', [
+            'user_id' => $user->id,
+            'instructor_id' => $instructorId,
+            'lesson_id' => $lesson->id,
+            'lesson_instructor_id' => $lesson->instructor_id,
+            'match' => $lesson->instructor_id === $instructorId,
+        ]);
         
         if ($instructorId === null) {
             return false;
