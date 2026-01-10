@@ -12,7 +12,12 @@ use Illuminate\Support\Carbon;
 
 class RescheduleController extends Controller
 {
-    public function __construct(private RescheduleService $service) {}
+    private RescheduleService $service;
+
+    public function __construct(RescheduleService $service)
+    {
+        $this->service = $service;
+    }
 
     /**
      * Student/Parent requests reschedule
@@ -84,7 +89,7 @@ class RescheduleController extends Controller
 
         $this->authorize('approve', $reschedule);
 
-        $this->service->approveRequest($reschedule, auto: false, approver: $user);
+        $this->service->approveRequest($reschedule, false, $user);
 
         return redirect()
             ->back() 
@@ -102,7 +107,7 @@ class RescheduleController extends Controller
             'decision_reason' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $this->service->rejectRequest($reschedule, approver: $request->user(), reason: $validated['decision_reason'] ?? null);
+        $this->service->rejectRequest($reschedule, $request->user(), $validated['decision_reason'] ?? null);
 
         return redirect()
             ->back() 

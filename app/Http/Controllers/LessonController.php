@@ -134,6 +134,11 @@ class LessonController extends Controller
      */
     public function edit(Lesson $lesson)
     {
+        if (!$lesson || !$lesson->id) {
+            return redirect()
+                ->back()
+                ->with('error', 'Lesson not found.');
+        }
 
         $this->authorize('update', $lesson);
 
@@ -216,6 +221,12 @@ class LessonController extends Controller
      */
     public function delete(Lesson $lesson)
     {
+        if (!$lesson || !$lesson->id) {
+            return redirect()
+                ->back()
+                ->with('error', 'Lesson not found.');
+        }
+
         $this->authorize('delete', $lesson);
 
         $lesson->delete();
