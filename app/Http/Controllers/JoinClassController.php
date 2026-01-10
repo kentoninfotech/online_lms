@@ -37,6 +37,7 @@ class JoinClassController extends Controller
 
         // Guard: instructor match
         if ($user->hasRole('instructor') && $occurrence->lesson->instructor_id !== $user->instructor->id) {
+            dd($occurrence->lesson->instructor_id, $user->instructor->id);
             abort(403, 'You are not the instructor for this class.');
         }
 
