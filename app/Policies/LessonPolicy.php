@@ -43,10 +43,15 @@ class LessonPolicy
             return false;
         }
 
-        // 3. Compare safely using the nullsafe operator (?->).
-        // This prevents an error if $user->instructor is null, returning null instead of throwing an exception.
-        // PHP treats null !== 13 as TRUE, and thus FALSE for authorization.
-        return $lesson->instructor_id === $user->instructor?->id;
+        // 3. Allow instructor to edit their own lessons
+        // Get the instructor ID - handle case where instructor relationship might not be loaded
+        $instructorId = $user->instructor?->id;
+        
+        if ($instructorId === null) {
+            return false;
+        }
+        
+        return $lesson->instructor_id === $instructorId;
     }
 
     /**
@@ -54,8 +59,17 @@ class LessonPolicy
      */
     public function delete(User $user, Lesson $lesson): bool
     {
-        return $user->hasRole('admin') ||
-            $lesson->instructor_id === $user->instructor->id;
+        // Admin can always delete
+        if ($user->hasRole('admin')) {
+            return true;
+        }
+
+        // Instructor can delete their own lessons
+        if ($user->hasRole('instructor')) {
+            return $lesson->instructor_id === $user->instructor?->id;
+        }
+
+        return false;
     }
 
 }
