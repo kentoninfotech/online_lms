@@ -16,7 +16,7 @@ class JoinClassController extends Controller
         $now = Carbon::now();
 
         $zoomSession = $occurrence->zoomSession;
-        if (! $occurrence->lesson->instructor->zoom_link) {
+        if (!$occurrence->lesson->instructor || !$occurrence->lesson->instructor->zoom_link) {
             return back()->with('error', 'Zoom meeting is not available for this class.');
         }
 
@@ -31,13 +31,13 @@ class JoinClassController extends Controller
         }
 
         // Guard: active subscription
-        if ($user->hasRole('student') && (!$user->student || !$user->student->hasActiveSubscription())) {
+        $student = $user->student;
+        if ($user->hasRole('student') && (!$student || !$student->hasActiveSubscription())) {
             return back()->with('error', 'Your subscription is not active.');
         }
 
         // Guard: instructor match
-        if ($user->hasRole('instructor') && $occurrence->lesson->instructor_id !== $user->instructor->id) {
-            dd($occurrence->lesson->instructor_id, $user->instructor->id);
+        if ($user->hasRole('instructor') && (int) $occurrence->lesson->instructor_id !== (int) $user->instructor->id) {
             abort(403, 'You are not the instructor for this class.');
         }
 
@@ -62,17 +62,18 @@ class JoinClassController extends Controller
     private function markAttendance(LessonOccurrence $occurrence, $user)
     {
         $now = now();
-        $settingsGraceMinutes = (int) Setting::where('key','attendance_grace_period_minutes')->first()->value ?? 10;
+        $setting = Setting::where('key', 'attendance_grace_period_minutes')->first();
+        $settingsGraceMinutes = (int) ($setting->value ?? 10);
 
         if ($user->hasRole('student')) {
             $attendableType = \App\Models\Student::class;
-            $attendableId = $user->student->id ?? null;
+            $attendableId = (int) ($user->student->id ?? null);
         } elseif ($user->hasRole('instructor')) {
             $attendableType = \App\Models\Instructor::class;
-            $attendableId = $user->instructor->id ?? null;
+            $attendableId = (int) ($user->instructor->id ?? null);
         } else {
             $attendableType = \App\Models\User::class;
-            $attendableId = $user->id;
+            $attendableId = (int) $user->id;
         }
 
         if (!$attendableId) return;
@@ -84,8 +85,7 @@ class JoinClassController extends Controller
         // Calculate duration
         $leaveTime = $occurrence->scheduled_end;
         
-        $durationMinutes = max(0, $now->diffInMinutes($leaveTime, false));
-        // $durationMinutes = max(0, $leaveTime->diffInMinutes($now));
+        $durationMinutes = (int) max(0, $now->diffInMinutes($leaveTime, false));
 
         Attendance::updateOrCreate(
             [
