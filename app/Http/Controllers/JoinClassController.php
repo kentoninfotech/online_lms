@@ -63,17 +63,16 @@ class JoinClassController extends Controller
         $now = now();
         $settingsGraceMinutes = (int) Setting::where('key','attendance_grace_period_minutes')->first()->value ?? 10;
 
-        $attendableType = match (true) {
-            $user->hasRole('student') => \App\Models\Student::class,
-            $user->hasRole('instructor') => \App\Models\Instructor::class,
-            default => \App\Models\User::class,
-        };
-
-        $attendableId = match (true) {
-            $user->hasRole('student') => $user->student->id ?? null,
-            $user->hasRole('instructor') => $user->instructor->id ?? null,
-            default => $user->id,
-        };
+        if ($user->hasRole('student')) {
+            $attendableType = \App\Models\Student::class;
+            $attendableId = $user->student->id ?? null;
+        } elseif ($user->hasRole('instructor')) {
+            $attendableType = \App\Models\Instructor::class;
+            $attendableId = $user->instructor->id ?? null;
+        } else {
+            $attendableType = \App\Models\User::class;
+            $attendableId = $user->id;
+        }
 
         if (!$attendableId) return;
 
