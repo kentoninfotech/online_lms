@@ -17,7 +17,12 @@ class LessonController extends Controller
     /**
      * Constructor
      */
-    public function __construct(protected RecurrenceService $recurrenceService) { }
+    protected RecurrenceService $recurrenceService;
+
+    public function __construct(RecurrenceService $recurrenceService)
+    {
+        $this->recurrenceService = $recurrenceService;
+    }
 
     /**
      * Show lessons
