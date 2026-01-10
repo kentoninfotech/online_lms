@@ -140,6 +140,19 @@ class LessonController extends Controller
                 ->with('error', 'Lesson not found.');
         }
 
+        $user = auth()->user();
+        
+        // Debug logging
+        \Log::info('Lesson Edit Debug', [
+            'user_id' => $user->id,
+            'user_type' => $user->user_type,
+            'roles' => $user->getRoleNames()->toArray(),
+            'has_instructor_role' => $user->hasRole('instructor'),
+            'instructor_record' => $user->instructor,
+            'lesson_id' => $lesson->id,
+            'lesson_instructor_id' => $lesson->instructor_id,
+        ]);
+
         $this->authorize('update', $lesson);
 
         $instructors = Instructor::all();

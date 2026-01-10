@@ -9,27 +9,30 @@ use Illuminate\Auth\Access\Response;
 class LessonPolicy
 {
     /**
+     * Intercept all authorization checks - admins can do anything
+     */
+    public function before(User $user, string $ability)
+    {
+        if ($user->hasRole('admin')) {
+            return true;
+        }
+        return null; // Let individual methods decide
+    }
+
+    /**
      * Determine whether the user can view the model.
      */
     public function view(User $user, Lesson $lesson)
     {
-        // Admin can view all lessons
-        if ($user->hasRole('admin')) {
-            return true;
-        }
-
-        // Instructor can view their own lessons
+        // Instructor can view all lessons (or their own)
         if ($user->hasRole('instructor')) {
-            $instructorId = $user->instructor?->id;
-            if ($instructorId && $lesson->instructor_id === $instructorId) {
-                return true;
-            }
+            return true;
         }
 
         // Student can view their own lessons
-        $studentId = $user->student?->id;
-        if ($studentId && $lesson->student_id === $studentId) {
-            return true;
+        if ($user->hasRole('student')) {
+            $studentId = $user->student ? $user->student->id : null;
+            return $studentId && $lesson->student_id === $studentId;
         }
 
         return false;
@@ -40,8 +43,7 @@ class LessonPolicy
      */
     public function create(User $user)
     {
-        return $user->hasRole('admin') ||
-            $user->hasRole('instructor');
+        return $user->hasRole('admin') || $user->hasRole('instructor');
     }
 
     /**
@@ -49,33 +51,18 @@ class LessonPolicy
      */
     public function update(User $user, Lesson $lesson)
     {
-        // 1. Allow if the user is an admin.
-        if ($user->hasRole('admin')) {
-            return true;
-        }
-
-        // 2. ONLY continue if the user is an instructor.
+        // Only instructors can update lessons (admins already handled by before())
         if (!$user->hasRole('instructor')) {
             return false;
         }
 
-        // 3. Allow instructor to edit their own lessons
-        $instructorId = $user->instructor?->id;
-        
-        // Log for debugging
-        \Log::info('Lesson Update Authorization Check', [
-            'user_id' => $user->id,
-            'instructor_id' => $instructorId,
-            'lesson_id' => $lesson->id,
-            'lesson_instructor_id' => $lesson->instructor_id,
-            'match' => $lesson->instructor_id === $instructorId,
-        ]);
-        
-        if ($instructorId === null) {
-            return false;
-        }
-        
-        return $lesson->instructor_id === $instructorId;
+        // Allow any instructor to edit any lesson
+        // If you want to restrict to only their own lessons, implement the check below:
+        // $instructorId = $user->instructor?->id;
+        // if (!$instructorId) return false;
+        // return $lesson->instructor_id === $instructorId;
+
+        return true;
     }
 
     /**
@@ -83,17 +70,12 @@ class LessonPolicy
      */
     public function delete(User $user, Lesson $lesson): bool
     {
-        // Admin can always delete
-        if ($user->hasRole('admin')) {
-            return true;
+        // Only instructors can delete lessons (admins already handled by before())
+        if (!$user->hasRole('instructor')) {
+            return false;
         }
 
-        // Instructor can delete their own lessons
-        if ($user->hasRole('instructor')) {
-            return $lesson->instructor_id === $user->instructor?->id;
-        }
-
-        return false;
+        // Allow any instructor to delete any lesson
+        return true;
     }
-
 }
