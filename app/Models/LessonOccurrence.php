@@ -53,7 +53,7 @@ class LessonOccurrence extends Model
     public function getScheduledEndAttribute()
     {
         return $this->scheduled_start
-            ? Carbon::parse($this->scheduled_start)->copy()->addMinutes($this->duration_minutes)
+            ? Carbon::parse($this->scheduled_start)->copy()->addMinutes((int) $this->duration_minutes)
             : null;
     }
 
