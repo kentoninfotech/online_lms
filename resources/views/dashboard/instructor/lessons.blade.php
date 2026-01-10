@@ -145,9 +145,10 @@
                             @endif --}}
 
                             <!-- Add Zoom Modal -->
-                            <div class="modal fade" id="addZoomModal{{ $nextOccurrence->id ?? '' }}" tabindex="-1" aria-labelledby="createMeetingLabel{{ $nextOccurrence->id }}" aria-hidden="true">
+                            @if($nextOccurrence)
+                            <div class="modal fade" id="addZoomModal{{ $nextOccurrence->id }}" tabindex="-1" aria-labelledby="createMeetingLabel{{ $nextOccurrence->id }}" aria-hidden="true">
                               <div class="modal-dialog modal-lg">
-                                <form action="{{ route('add.zoom', $nextOccurrence) }}" method="POST">
+                                <form action="{{ route('add.zoom', ['occurrence' => $nextOccurrence]) }}" method="POST">
                                   @csrf
                                   <div class="modal-content">
                                     <div class="modal-header">
@@ -212,6 +213,7 @@
                                 </form>
                               </div>
                             </div>
+                            @endif
 
                         </td>
                     </tr>
