@@ -77,9 +77,13 @@
                             @endif
                         </td>
                         <td>
-                            <a href="{{ route('lesson.join', $nextOccurrence) }}" target="_blank" class="btn btn-sm btn-primary">
+                            @if($nextOccurrence)
+                            <a href="{{ route('lesson.join', ['occurrence' => $nextOccurrence]) }}" target="_blank" class="btn btn-sm btn-primary">
                                 Join
                             </a>
+                            @else
+                            <span class="text-muted">No upcoming class</span>
+                            @endif
                             {{-- @if(! isset($nextOccurrence->zoomSession))
                                 <!-- <span class="text-muted">Zoom link not ready</span> -->
                             @endif --}}

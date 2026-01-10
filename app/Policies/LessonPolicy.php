@@ -37,12 +37,16 @@ class LessonPolicy
             return true;
         }
 
-        // 2. Allow if the user is an instructor AND is the lesson's assigned instructor.
-        if ($user->hasRole('instructor') && $user->instructor && $lesson->instructor_id === $user->instructor->id) {
-            return true;
+        // 2. ONLY continue if the user is an instructor.
+        // If they aren't an instructor, this check should fail, and the rest of the expression short-circuits.
+        if (!$user->hasRole('instructor')) {
+            return false;
         }
 
-        return false;
+        // 3. Compare safely using the nullsafe operator (?->).
+        // This prevents an error if $user->instructor is null, returning null instead of throwing an exception.
+        // PHP treats null !== 13 as TRUE, and thus FALSE for authorization.
+        return $lesson->instructor_id === $user->instructor?->id;
     }
 
     /**

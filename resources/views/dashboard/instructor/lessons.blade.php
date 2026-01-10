@@ -102,11 +102,11 @@
                         </td>
                         <td>
                             @if($nextOccurrence)
-                                <a href="{{ route('lesson.join', ['occurrence' => $nextOccurrence]) }}" target="_blank" class="btn btn-sm btn-primary">
-                                    Start Class
-                                </a>
+                            <a href="{{ route('lesson.join', ['occurrence' => $nextOccurrence]) }}" target="_blank" class="btn btn-sm btn-primary">
+                                Start Class
+                            </a>
                             @else
-                                <span class="text-muted">No upcoming class</span>
+                            <span class="text-muted">No upcoming class</span>
                             @endif
                             
                             {{-- @if(! isset($nextOccurrence->zoomSession))
@@ -145,10 +145,9 @@
                             @endif --}}
 
                             <!-- Add Zoom Modal -->
-                            @if($nextOccurrence)
                             <div class="modal fade" id="addZoomModal{{ $nextOccurrence->id }}" tabindex="-1" aria-labelledby="createMeetingLabel{{ $nextOccurrence->id }}" aria-hidden="true">
                               <div class="modal-dialog modal-lg">
-                                <form action="{{ route('add.zoom', ['occurrence' => $nextOccurrence]) }}" method="POST">
+                                <form action="{{ route('add.zoom', $nextOccurrence) }}" method="POST">
                                   @csrf
                                   <div class="modal-content">
                                     <div class="modal-header">
@@ -213,7 +212,6 @@
                                 </form>
                               </div>
                             </div>
-                            @endif
 
                         </td>
                     </tr>
