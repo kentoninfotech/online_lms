@@ -145,6 +145,7 @@
                             @endif --}}
 
                             <!-- Add Zoom Modal -->
+                             @if(isset($nextOccurrence) && !isset($nextOccurrence->zoomSession))
                             <div class="modal fade" id="addZoomModal{{ $nextOccurrence->id }}" tabindex="-1" aria-labelledby="createMeetingLabel{{ $nextOccurrence->id }}" aria-hidden="true">
                               <div class="modal-dialog modal-lg">
                                 <form action="{{ route('add.zoom', $nextOccurrence) }}" method="POST">
@@ -212,6 +213,7 @@
                                 </form>
                               </div>
                             </div>
+                            @endif
 
                         </td>
                     </tr>
