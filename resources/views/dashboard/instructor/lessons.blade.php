@@ -145,7 +145,7 @@
                             @endif --}}
 
                             <!-- Add Zoom Modal -->
-                            <div class="modal fade" id="addZoomModal{{ $nextOccurrence->id }}" tabindex="-1" aria-labelledby="createMeetingLabel{{ $nextOccurrence->id }}" aria-hidden="true">
+                            <div class="modal fade" id="addZoomModal{{ $nextOccurrence->id ?? '' }}" tabindex="-1" aria-labelledby="createMeetingLabel{{ $nextOccurrence->id }}" aria-hidden="true">
                               <div class="modal-dialog modal-lg">
                                 <form action="{{ route('add.zoom', $nextOccurrence) }}" method="POST">
                                   @csrf
