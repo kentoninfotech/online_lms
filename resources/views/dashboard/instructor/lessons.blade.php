@@ -41,7 +41,7 @@
             <p>
                 {{ $class->scheduled_start->format('h:i A') }} — {{ $class->lesson->student->name }}
                 — {{ $class->lesson->subject }}
-                <a href="{{ route('lesson.join', $class) }}" target="_blank" class="btn btn-sm btn-primary">Start class</a>
+                <a href="{{ route('lesson.join', ['occurrence' => $class]) }}" target="_blank" class="btn btn-sm btn-primary">Start class</a>
                 {{-- <!-- @if($class->zoomSession)
                     <a href="{{ $class->zoomSession->start_url }}" target="_blank" class="btn btn-sm btn-primary">Start class</a>
                 @endif --> --}}
