@@ -31,7 +31,7 @@ class JoinClassController extends Controller
         }
 
         // Guard: active subscription
-        if ($user->hasRole('student') && !$user->student?->hasActiveSubscription()) {
+        if ($user->hasRole('student') && (!$user->student || !$user->student->hasActiveSubscription())) {
             return back()->with('error', 'Your subscription is not active.');
         }
 
