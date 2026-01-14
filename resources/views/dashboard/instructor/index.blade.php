@@ -352,7 +352,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     @if($ongoingClass)
         // Ongoing Class countdown
-        const endTime = new Date("{{ $ongoingClass?->scheduled_start->copy()->addMinutes($ongoingClass->duration_minutes)->toIso8601String() }}").getTime();
+        const endTime = new Date("{{ $ongoingClass?->scheduled_start->copy()->addMinutes((int)$ongoingClass->duration_minutes)->toIso8601String() }}").getTime();
         const timer = document.getElementById("class-countdown");
 
         const interval = setInterval(() => {
