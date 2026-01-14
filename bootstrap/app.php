@@ -6,10 +6,12 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Console\Scheduling\Schedule;
 use App\Jobs\SendSubscriptionExpiryWarnings;
 use App\Jobs\SendBillingOverdueReminders;
+use Throwable;
 
-return Application::configure(basePath: dirname(__DIR__))
+return Application::configure(dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
@@ -45,7 +47,23 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Handle TokenMismatchException (419 Page Expired)
+        $exceptions->render(function (Throwable $e, $request) {
+            // Handle TokenMismatchException (CSRF token mismatch / session expired)
+            if ($e instanceof \Illuminate\Session\TokenMismatchException) {
+                // Logout the user
+                \Illuminate\Support\Facades\Auth::logout();
+                
+                // Invalidate the session
+                $request->session()->invalidate();
+                
+                // Regenerate token for next session
+                $request->session()->regenerateToken();
+                
+                // Redirect to login page
+                return redirect()->route('login')->with('error', 'Your session has expired. Please log in again.');
+            }
+        });
     })->create();
 
 
