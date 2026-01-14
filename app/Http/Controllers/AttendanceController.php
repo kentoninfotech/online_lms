@@ -71,3 +71,6 @@ class AttendanceController extends Controller
         }
 
         return response()->json(['report' => $attendance->raw]);
+    }
+
+}
