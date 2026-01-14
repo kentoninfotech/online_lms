@@ -35,9 +35,14 @@
                             @enderror
                         </div>
                         <div class="form-group mb-3">
-                            <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" id="floatingInput1" placeholder="Password" />
+                            <div class="password-field position-relative">
+                                <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" id="passwordInput" placeholder="Password" />
+                                <button type="button" class="btn-password-toggle" id="togglePassword" title="Show/Hide Password">
+                                    <i class="feather icon-eye" id="eyeIcon"></i>
+                                </button>
+                            </div>
                             @error('password')
-                                <span class="invalid-feedback" role="alert">
+                                <span class="invalid-feedback d-block" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
                             @enderror
@@ -86,5 +91,71 @@
     </div>
   </div>
 </div>
+
+<style>
+    .password-field {
+        position: relative;
+    }
+
+    .btn-password-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 6px 8px;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s ease;
+        z-index: 10;
+    }
+
+    .btn-password-toggle:hover {
+        color: #495057;
+    }
+
+    .btn-password-toggle:focus {
+        outline: none;
+    }
+
+    #passwordInput {
+        padding-right: 40px;
+    }
+
+    #passwordInput.is-invalid + .btn-password-toggle {
+        right: 30px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordInput = document.getElementById('passwordInput');
+        const togglePassword = document.getElementById('togglePassword');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        if (togglePassword && passwordInput) {
+            togglePassword.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Toggle the type attribute
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // Toggle the icon
+                if (type === 'text') {
+                    eyeIcon.classList.remove('icon-eye');
+                    eyeIcon.classList.add('icon-eye-off');
+                } else {
+                    eyeIcon.classList.remove('icon-eye-off');
+                    eyeIcon.classList.add('icon-eye');
+                }
+            });
+        }
+    });
+</script>
   
 @endsection
