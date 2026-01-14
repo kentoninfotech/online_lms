@@ -27,9 +27,13 @@ class AttendanceController extends Controller
      */
     public function updateStatus(Request $request, Attendance $attendance)
     {
-        // Verify the instructor owns this attendance record
-        if ($attendance->occurrence->lesson->instructor_id !== Auth::user()->instructor->id) {
-            dd($attendance->occurrence->lesson->instructor_id, Auth::user()->instructor->id);
+        $authUser = Auth::user();
+        
+        // Get the instructor for the authenticated user
+        $userInstructor = $authUser->instructor;
+        
+        // Check if user has instructor role and if they own this attendance record
+        if (!$userInstructor || (int)$attendance->occurrence->lesson->instructor_id !== (int)$userInstructor->id) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -47,9 +51,13 @@ class AttendanceController extends Controller
      */
     public function saveReport(Request $request, Attendance $attendance)
     {
-        // Verify the instructor owns this attendance record
-        if ($attendance->occurrence->lesson->instructor_id !== Auth::user()->instructor->id) {
-
+        $authUser = Auth::user();
+        
+        // Get the instructor for the authenticated user
+        $userInstructor = $authUser->instructor;
+        
+        // Check if user has instructor role and if they own this attendance record
+        if (!$userInstructor || (int)$attendance->occurrence->lesson->instructor_id !== (int)$userInstructor->id) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -67,8 +75,13 @@ class AttendanceController extends Controller
      */
     public function getReport(Request $request, Attendance $attendance)
     {
-        // Verify the instructor owns this attendance record
-        if ($attendance->occurrence->lesson->instructor_id !== Auth::user()->instructor->id || Auth::user()->user_type !== 'admin') {
+        $authUser = Auth::user();
+        
+        // Get the instructor for the authenticated user
+        $userInstructor = $authUser->instructor;
+        
+        // Check if user has instructor role and if they own this attendance record
+        if (!$userInstructor || (int)$attendance->occurrence->lesson->instructor_id !== (int)$userInstructor->id) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
