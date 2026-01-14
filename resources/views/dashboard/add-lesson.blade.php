@@ -68,6 +68,13 @@
                         <option value="Basic Science" {{ old('subject') == 'Basic Science' ? 'selected' : '' }}>Basic Science</option>
                         <option value="Basic Technology" {{ old('subject') == 'Basic Technology' ? 'selected' : '' }}>Basic Technology</option>
                         <option value="English" {{ old('subject') == 'English' ? 'selected' : '' }}>English</option>
+                        <option value="French" {{ old('subject') == 'French' ? 'selected' : '' }}>French</option>                   
+                        <option value="English Literature" {{ old('subject') == 'English Literature' ? 'selected' : '' }}>English Literature</option>
+                        <option value="Reading" {{ old('subject') == 'Reading' ? 'selected' : '' }}>Reading</option>
+                        <option value="Music" {{ old('subject') == 'Music' ? 'selected' : '' }}>Music</option>
+                        <option value="Yoruba" {{ old('subject') == 'Yoruba' ? 'selected' : '' }}>Yoruba</option>
+                        <option value="Igbo" {{ old('subject') == 'Igbo' ? 'selected' : '' }}>Igbo</option>
+                        <option value="Spanish" {{ old('subject') == 'Spanish' ? 'selected' : '' }}>Spanish</option>
                     </select>
                     @error('subject') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
