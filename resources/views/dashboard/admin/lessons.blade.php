@@ -47,7 +47,7 @@
     </div>
 </div>
 
-<div class="card mb-3">
+<div class="card shadow-sm p-3">
     <div class="card-body">
         <table class="table table-striped">
             <thead>
@@ -203,12 +203,12 @@
 <!-- [ Main Content ] end -->
 
 <!-- Recent Attendances Section -->
-<div class="card mb-3">
+<div class="card shadow-sm p-3">
     <div class="card-header">
         <h5>Recent Attendances</h5>
         <span class="text-muted">All recent attendance records from all instructors</span>
     </div>
-    <div class="card-body">
+    <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover mb-0">
                 <thead class="table-light">
@@ -290,5 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+@endsection
 
 
