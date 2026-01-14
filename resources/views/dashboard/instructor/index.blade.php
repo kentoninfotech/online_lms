@@ -439,7 +439,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div id="reportContent" style="white-space: pre-wrap; word-wrap: break-word;"></div>
+                <div id="reportContent2" style="white-space: pre-wrap; word-wrap: break-word;"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -558,7 +558,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.view-report-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const report = this.getAttribute('data-report');
-            document.getElementById('reportContent').textContent = report;
+            document.getElementById('reportContent2').textContent = report;
             const modal = new bootstrap.Modal(document.getElementById('viewReportModal'));
             modal.show();
         });
