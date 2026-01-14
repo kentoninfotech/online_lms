@@ -8,6 +8,7 @@ use App\Models\Lesson;
 use App\Models\Instructor;
 use App\Models\Student;
 use App\Models\LessonOccurrence;
+use App\Models\Attendance;
 use App\Http\Requests\StoreLessonRequest;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -45,12 +46,19 @@ class LessonController extends Controller
             ->orderBy('scheduled_start')
             ->get();
 
+        // Recent attendances from all instructors
+        $recentAttendances = Attendance::with(['occurrence.lesson.student', 'occurrence.lesson.instructor'])
+            ->latest()
+            ->take(20)
+            ->get();
+
         return view('dashboard.admin.lessons', 
                compact(
                 'lessons', 
                 'students', 
                 'instructors', 
-                'todayLessons'
+                'todayLessons',
+                'recentAttendances'
         ));
     }
 

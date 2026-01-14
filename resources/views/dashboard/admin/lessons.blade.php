@@ -201,8 +201,94 @@
     </div>
 </div>
 <!-- [ Main Content ] end -->
- 
-@endsection
 
+<!-- Recent Attendances Section -->
+<div class="card shadow-sm p-3">
+    <div class="card-header">
+        <h5>Recent Attendances</h5>
+        <span class="text-muted">All recent attendance records from all instructors</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Student</th>
+                        <th>Instructor</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Report</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($recentAttendances ?? collect() as $attendance)
+                        <tr>
+                            <td>
+                                <strong>{{ $attendance->occurrence->lesson->student->name }}</strong>
+                            </td>
+                            <td>{{ $attendance->occurrence->lesson->instructor->name }}</td>
+                            <td>{{ $attendance->occurrence->lesson->subject }}</td>
+                            <td>
+                                <span class="badge 
+                                    @if($attendance->status === 'present') bg-success 
+                                    @elseif($attendance->status === 'absent') bg-danger
+                                    @elseif($attendance->status === 'late') bg-warning
+                                    @elseif($attendance->status === 'rescheduled') bg-info
+                                    @else bg-secondary @endif">
+                                    {{ Str::headline($attendance->status) }}
+                                </span>
+                            </td>
+                            <td>{{ $attendance->created_at->format('d M Y h:i A') }}</td>
+                            <td>
+                                @if($attendance->raw)
+                                    <button class="btn btn-sm btn-info view-admin-report-btn" data-report="{{ $attendance->raw }}" data-bs-toggle="modal" data-bs-target="#adminViewReportModal" title="View Report">
+                                        <i class="feather icon-eye"></i> View
+                                    </button>
+                                @else
+                                    <span class="text-muted text-sm">No report</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">No attendance records found</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- View Report Modal for Admin -->
+<div class="modal fade" id="adminViewReportModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Attendance Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="adminReportContent" style="white-space: pre-wrap; word-wrap: break-word; line-height: 1.6;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle view report button click in admin section
+    document.querySelectorAll('.view-admin-report-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const report = this.getAttribute('data-report');
+            document.getElementById('adminReportContent').textContent = report;
+        });
+    });
+});
+</script>
 
 

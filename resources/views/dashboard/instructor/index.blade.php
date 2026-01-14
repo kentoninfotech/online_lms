@@ -165,14 +165,36 @@
                     <div class="card-body">
                         <table class="table table-sm">
                             <thead>
-                                <tr><th>Student</th><th>Status</th><th>Date</th></tr>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
                             </thead>
                             <tbody>
                                 @foreach($recentAttendance as $a)
                                     <tr>
                                         <td>{{ $a->occurrence->lesson->student->name }}</td>
-                                        <td>{{ ucfirst($a->status) }}</td>
+                                        <td>
+                                            <select class="form-select form-select-sm attendance-status" data-attendance-id="{{ $a->id }}" style="width: auto; display: inline-block;">
+                                                <option value="present" {{ $a->status === 'present' ? 'selected' : '' }}>Present</option>
+                                                <option value="absent" {{ $a->status === 'absent' ? 'selected' : '' }}>Absent</option>
+                                                <option value="late" {{ $a->status === 'late' ? 'selected' : '' }}>Late</option>
+                                                <option value="rescheduled" {{ $a->status === 'rescheduled' ? 'selected' : '' }}>Rescheduled</option>
+                                            </select>
+                                        </td>
                                         <td>{{ $a->created_at->format('d M Y h:i A') }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-warning report-btn" data-attendance-id="{{ $a->id }}" data-bs-toggle="modal" data-bs-target="#reportModal" title="Add/Edit Report">
+                                                <i class="feather icon-edit"></i>
+                                            </button>
+                                            @if($a->raw)
+                                                <button class="btn btn-sm btn-info view-report-btn" data-report="{{ $a->raw }}" title="View Report">
+                                                    <i class="feather icon-eye"></i>
+                                                </button>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -380,4 +402,167 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 </script>
+
+<!-- Report Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Lesson Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="reportForm">
+                @csrf
+                <input type="hidden" id="attendanceId" name="attendance_id">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="reportContent" class="form-label">Report <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="reportContent" name="report" rows="6" placeholder="Enter your lesson report here..." required></textarea>
+                        <small class="text-muted">Include notes about student performance, topics covered, and any observations.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- View Report Modal -->
+<div class="modal fade" id="viewReportModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">View Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="reportContent" style="white-space: pre-wrap; word-wrap: break-word;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle attendance status change
+    document.querySelectorAll('.attendance-status').forEach(select => {
+        select.addEventListener('change', function() {
+            const attendanceId = this.getAttribute('data-attendance-id');
+            const status = this.value;
+            
+            fetch(`/attendance/${attendanceId}/status`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ status: status })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to update status');
+                return response.json();
+            })
+            .then(data => {
+                // Show success message
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-success alert-dismissible fade show';
+                alert.innerHTML = `
+                    Status updated successfully!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.body.insertBefore(alert, document.body.firstChild);
+                setTimeout(() => alert.remove(), 3000);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to update status. Please try again.');
+                location.reload();
+            });
+        });
+    });
+
+    // Handle report button click
+    document.querySelectorAll('.report-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const attendanceId = this.getAttribute('data-attendance-id');
+            document.getElementById('attendanceId').value = attendanceId;
+            document.getElementById('reportContent').value = '';
+            
+            // Load existing report if available
+            fetch(`/attendance/${attendanceId}/report`, {
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.report) {
+                    document.getElementById('reportContent').value = data.report;
+                }
+            })
+            .catch(error => console.error('Error loading report:', error));
+        });
+    });
+
+    // Handle report form submission
+    document.getElementById('reportForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const attendanceId = document.getElementById('attendanceId').value;
+        const report = document.getElementById('reportContent').value;
+        
+        fetch(`/attendance/${attendanceId}/report`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ report: report })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to save report');
+            return response.json();
+        })
+        .then(data => {
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('reportModal'));
+            modal.hide();
+            
+            // Show success message
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success alert-dismissible fade show';
+            alert.innerHTML = `
+                Report saved successfully!
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.insertBefore(alert, document.body.firstChild);
+            setTimeout(() => alert.remove(), 3000);
+            
+            // Reload page to show view report button
+            setTimeout(() => location.reload(), 1000);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to save report. Please try again.');
+        });
+    });
+
+    // Handle view report button
+    document.querySelectorAll('.view-report-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const report = this.getAttribute('data-report');
+            document.getElementById('reportContent').textContent = report;
+            const modal = new bootstrap.Modal(document.getElementById('viewReportModal'));
+            modal.show();
+        });
+    });
+});
+</script>
+
 

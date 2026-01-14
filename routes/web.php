@@ -228,3 +228,9 @@ Route::get('/artisan/{secret}/{command}', function ($secret, $command) {
     }
 });
 
+// Attendance routes for instructor dashboard
+Route::middleware(['auth'])->group(function () {
+    Route::patch('/attendance/{attendance}/status', [AttendanceController::class, 'updateStatus'])->name('attendance.update-status');
+    Route::post('/attendance/{attendance}/report', [AttendanceController::class, 'saveReport'])->name('attendance.save-report');
+    Route::get('/attendance/{attendance}/report', [AttendanceController::class, 'getReport'])->name('attendance.get-report');
+});
