@@ -29,6 +29,7 @@ class AttendanceController extends Controller
     {
         // Verify the instructor owns this attendance record
         if ($attendance->occurrence->lesson->instructor_id !== Auth::user()->instructor->id) {
+            dd($attendance->occurrence->lesson->instructor_id, Auth::user()->instructor->id);
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -48,6 +49,7 @@ class AttendanceController extends Controller
     {
         // Verify the instructor owns this attendance record
         if ($attendance->occurrence->lesson->instructor_id !== Auth::user()->instructor->id) {
+
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
