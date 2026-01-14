@@ -28,7 +28,7 @@ class AttendanceController extends Controller
     public function updateStatus(Request $request, Attendance $attendance)
     {
         // Verify the instructor owns this attendance record
-        if ($attendance->occurrence->lesson->instructor_id !== Auth::id()) {
+        if ($attendance->occurrence->lesson->instructor_id !== Auth::user()->instructor->id) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -47,7 +47,7 @@ class AttendanceController extends Controller
     public function saveReport(Request $request, Attendance $attendance)
     {
         // Verify the instructor owns this attendance record
-        if ($attendance->occurrence->lesson->instructor_id !== Auth::id()) {
+        if ($attendance->occurrence->lesson->instructor_id !== Auth::user()->instructor->id) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -66,7 +66,7 @@ class AttendanceController extends Controller
     public function getReport(Request $request, Attendance $attendance)
     {
         // Verify the instructor owns this attendance record
-        if ($attendance->occurrence->lesson->instructor_id !== Auth::id()) {
+        if ($attendance->occurrence->lesson->instructor_id !== Auth::user()->instructor->id || Auth::user()->user_type !== 'admin') {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
