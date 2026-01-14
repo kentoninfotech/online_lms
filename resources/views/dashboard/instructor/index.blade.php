@@ -469,15 +469,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json();
             })
             .then(data => {
-                // Show success message
-                const alert = document.createElement('div');
-                alert.className = 'alert alert-success alert-dismissible fade show';
-                alert.innerHTML = `
-                    Status updated successfully!
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                `;
-                document.body.insertBefore(alert, document.body.firstChild);
-                setTimeout(() => alert.remove(), 3000);
+                // // Show success message
+                // const alert = document.createElement('div');
+                // alert.className = 'alert alert-success alert-dismissible fade show';
+                // alert.innerHTML = `
+                //     Status updated successfully!
+                //     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                // `;
+                // document.body.insertBefore(alert, document.body.firstChild);
+                alert('Status Updated Successfully');
+                // setTimeout(() => alert.remove(), 3000);
             })
             .catch(error => {
                 console.error('Error:', error);
