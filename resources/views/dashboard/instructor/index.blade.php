@@ -163,13 +163,14 @@
                 <div class="card mb-3">
                     <div class="card-header">Recent Attendance</div>
                     <div class="card-body">
-                        <table class="table table-sm">
+                        <table class="table table-sm" style="font-size: 0.8rem;">
                             <thead>
                                 <tr>
                                     <th>Student/Instructor</th>
                                     <th>Subject</th>
                                     <th>Status</th>
-                                    <th>Date</th>
+                                    <th>Scheduled Start Time</th>
+                                    <th>Act. Start Time</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -191,7 +192,8 @@
                                                 <option value="rescheduled" {{ $a->status === 'rescheduled' ? 'selected' : '' }}>Rescheduled</option>
                                             </select>
                                         </td>
-                                        <td>{{ $a->created_at->format('d M Y h:i A') }}</td>
+                                        <td>{{ $a->occurrence->lesson->start_time->format('d M Y h:i A') }}</td>
+                                        <td>{{ $a->join_time ? $a->join_time->format('d M Y h:i A') : 'Not Joined' }}</td>
                                         <td>
                                             <button class="btn btn-sm btn-warning report-btn" data-attendance-id="{{ $a->id }}" data-bs-toggle="modal" data-bs-target="#reportModal" title="Add/Edit Report">
                                                 <i class="feather icon-edit"></i>
