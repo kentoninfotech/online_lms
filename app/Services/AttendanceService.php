@@ -76,7 +76,13 @@ class AttendanceService
 
             if (!$attendance) {
                 // No attendance record, mark as absent
-                Attendance::create([
+                
+                Attendance::updateOrCreate(
+                [
+                    'lesson_occurrence_id' => $occurrence->id,
+                    'attendable_id' => $userId,
+                    'attendable_type' => $userType,
+                ],[
                     'lesson_occurrence_id' => $occurrence->id,
                     'attendable_type'      => $userType,
                     'attendable_id'        => $userId,
