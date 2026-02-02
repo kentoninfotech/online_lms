@@ -166,7 +166,7 @@
                         <table class="table table-sm">
                             <thead>
                                 <tr>
-                                    <th>Student</th>
+                                    <th>Student/Instructor</th>
                                     <th>Status</th>
                                     <th>Date</th>
                                     <th>Actions</th>
@@ -175,7 +175,11 @@
                             <tbody>
                                 @foreach($recentAttendance as $a)
                                     <tr>
-                                        <td>{{ $a->occurrence->lesson->student->name }}</td>
+                                        @if($a->attendable_type === 'App\Models\Student')                                           
+                                            <td>{{ $a->occurrence->lesson->student->name }}</td>
+                                        @else
+                                            <td>{{ $a->occurrence->lesson->instructor->name }}</td>
+                                        @endif
                                         <td>
                                             <select class="form-select form-select-sm attendance-status" data-attendance-id="{{ $a->id }}" style="width: auto; display: inline-block;">
                                                 <option value="present" {{ $a->status === 'present' ? 'selected' : '' }}>Present</option>
@@ -255,7 +259,7 @@
 
                         <p id="countdown" class="lead text-white text-opacity-75"></p>
 
-                        <a href="{{ route('lesson.join', $nextClass) }}" class="btn btn-light" target="_blank">Join Class</a>
+                        <a href="{{ route('lesson.join', $nextClass) }}" class="btn btn-light" target="_blank">Start Class</a>
                         {{-- <!-- @if($nextClass->zoomSession)
                             <a href="{{ $nextClass->zoomSession->start_url }}" class="btn btn-light" target="_blank">Start Class</a>
                         @endif --> --}}
@@ -343,63 +347,63 @@
 
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    // ==============================
-    // Next Class count down
-    // ==============================
-    const targetDate = new Date("{{ $nextClass?->scheduled_start->toIso8601String() }}").getTime();
-    const countdownEl = document.getElementById("countdown");
+    document.addEventListener("DOMContentLoaded", function () {
+        // ==============================
+        // Next Class count down
+        // ==============================
+        const targetDate = new Date("{{ $nextClass?->scheduled_start->toIso8601String() }}").getTime();
+        const countdownEl = document.getElementById("countdown");
 
-    function updateCountdown() {
-        const now = new Date().getTime();
-        const diff = targetDate - now;
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const diff = targetDate - now;
 
-        if (diff <= 0) {
-            countdownEl.innerHTML = "Class is starting!";
-            return;
-        }
-
-        const days = Math.floor(diff / (1000*60*60*24));
-        const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
-        const mins = Math.floor((diff % (1000*60*60)) / (1000*60));
-        const secs = Math.floor((diff % (1000 * 60)) / 1000);
-        countdownEl.innerHTML = `Starts in: ${days}d ${hours}h ${mins}m ${secs}s`;
-    }
-
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
-
-
-    // ==============================
-
-    @if($ongoingClass)
-        // Ongoing Class countdown
-        const endTime = new Date("{{ $ongoingClass?->scheduled_start->copy()->addMinutes((int)$ongoingClass->duration_minutes)->toIso8601String() }}").getTime();
-        const timer = document.getElementById("class-countdown");
-
-        const interval = setInterval(() => {
-            const ongoingNow = new Date().getTime();
-            const ongoingDiff = endTime - ongoingNow;
-
-            if (ongoingDiff <= 0) {
-                clearInterval(interval);
-                timer.innerHTML = "Class ended";
-
-                // Give a short delay, then refresh the dashboard
-                setTimeout(() => {
-                    window.location.reload();
-                }, 2000);
+            if (diff <= 0) {
+                countdownEl.innerHTML = "Class is starting!";
                 return;
             }
 
-            const ongoingMins = Math.floor(ongoingDiff / (1000 * 60));
-            const ongoingSecs = Math.floor((ongoingDiff % (1000 * 60)) / 1000);
-            timer.innerHTML = `Time remaining: ${ongoingMins}m ${ongoingSecs}s`;
-        }, 1000);
+            const days = Math.floor(diff / (1000*60*60*24));
+            const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+            const mins = Math.floor((diff % (1000*60*60)) / (1000*60));
+            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+            countdownEl.innerHTML = `Starts in: ${days}d ${hours}h ${mins}m ${secs}s`;
+        }
 
-    @endif // End if ongoing class countdown
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
 
-});
+
+        // ==============================
+
+        @if($ongoingClass)
+            // Ongoing Class countdown
+            const endTime = new Date("{{ $ongoingClass?->scheduled_start->copy()->addMinutes((int)$ongoingClass->duration_minutes)->toIso8601String() }}").getTime();
+            const timer = document.getElementById("class-countdown");
+
+            const interval = setInterval(() => {
+                const ongoingNow = new Date().getTime();
+                const ongoingDiff = endTime - ongoingNow;
+
+                if (ongoingDiff <= 0) {
+                    clearInterval(interval);
+                    timer.innerHTML = "Class ended";
+
+                    // Give a short delay, then refresh the dashboard
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                    return;
+                }
+
+                const ongoingMins = Math.floor(ongoingDiff / (1000 * 60));
+                const ongoingSecs = Math.floor((ongoingDiff % (1000 * 60)) / 1000);
+                timer.innerHTML = `Time remaining: ${ongoingMins}m ${ongoingSecs}s`;
+            }, 1000);
+
+        @endif // End if ongoing class countdown
+
+    });
 
 </script>
 
