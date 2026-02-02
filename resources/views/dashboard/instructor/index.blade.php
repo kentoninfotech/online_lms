@@ -167,6 +167,7 @@
                             <thead>
                                 <tr>
                                     <th>Student/Instructor</th>
+                                    <th>Subject</th>
                                     <th>Status</th>
                                     <th>Date</th>
                                     <th>Actions</th>
@@ -180,6 +181,8 @@
                                         @else
                                             <td>{{ $a->occurrence->lesson->instructor->name }}</td>
                                         @endif
+                                        <td>{{ $a->occurrence->lesson->subject }}</td>
+
                                         <td>
                                             <select class="form-select form-select-sm attendance-status" data-attendance-id="{{ $a->id }}" style="width: auto; display: inline-block;">
                                                 <option value="present" {{ $a->status === 'present' ? 'selected' : '' }}>Present</option>
