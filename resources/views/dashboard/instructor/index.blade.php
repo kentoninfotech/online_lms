@@ -192,7 +192,7 @@
                                                 <option value="rescheduled" {{ $a->status === 'rescheduled' ? 'selected' : '' }}>Rescheduled</option>
                                             </select>
                                         </td>
-                                        <td>{{ $a->occurrence->lesson->start_time->format('d M Y h:i A') }}</td>
+                                        <td>{{ $a->occurrence->lesson->start_time }}</td>
                                         <td>{{ $a->join_time ? $a->join_time->format('d M Y h:i A') : 'Not Joined' }}</td>
                                         <td>
                                             <button class="btn btn-sm btn-warning report-btn" data-attendance-id="{{ $a->id }}" data-bs-toggle="modal" data-bs-target="#reportModal" title="Add/Edit Report">
