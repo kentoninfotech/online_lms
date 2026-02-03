@@ -75,6 +75,13 @@
                         <option value="Yoruba" {{ old('subject') == 'Yoruba' ? 'selected' : '' }}>Yoruba</option>
                         <option value="Igbo" {{ old('subject') == 'Igbo' ? 'selected' : '' }}>Igbo</option>
                         <option value="Spanish" {{ old('subject') == 'Spanish' ? 'selected' : '' }}>Spanish</option>
+                        <option value="Economics" {{ old('subject') == 'Economics' ? 'selected' : '' }}>Economics</option>
+                        <option value="Social studies" {{ old('subject') == 'Social studies' ? 'selected' : '' }}>Social studies</option>
+                        <option value="Business studies" {{ old('subject') == 'Business studies' ? 'selected' : '' }}>Business studies</option>
+                        <option value="Agricultural science" {{ old('subject') == 'Agricultural science' ? 'selected' : '' }}>Agricultural science</option>
+                        <option value="Verbal reasoning" {{ old('subject') == 'Verbal reasoning' ? 'selected' : '' }}>Verbal reasoning</option>
+                        <option value="Non-Verbal reasoning" {{ old('subject') == 'Non-Verbal reasoning' ? 'selected' : '' }}>Non-Verbal reasoning</option>
+                        <option value="Quantitative reasoning" {{ old('subject') == 'Quantitative reasoning' ? 'selected' : '' }}>Quantitative reasoning</option>
                     </select>
                     @error('subject') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>

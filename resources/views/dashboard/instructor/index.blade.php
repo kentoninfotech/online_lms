@@ -40,14 +40,10 @@
                 <div class="card-body">
                     @forelse($todayLessons as $class)
                         <p>
-                            {{ $class->scheduled_start->format('h:i A') }} — {{ $class->lesson->student->name }}
+                            <x-format-time :date="$class->scheduled_start" format="h:i A" /> — {{ $class->lesson->student->name }}
                             {{ $class->lesson->subject }}
 
                             <a href="{{ route('lesson.join', $class) }}" class="btn btn-sm btn-primary" target="_blank">Start class</a>
-                            {{-- <!--
-                            @if($class->zoomSession)
-                                <a href="{{ $class->zoomSession->start_url }}" target="_blank" class="btn btn-sm btn-primary">Start class</a>
-                            @endif --> --}}
                         </p>
                     @empty
                         <p>No classes scheduled today.</p>
@@ -62,7 +58,7 @@
                     @forelse($reschedules as $req)
                         <p>
                             {{ $req->occurrence->lesson->student->name }} requested 
-                            {{ $req->proposed_start->format('d M Y h:i A') }} <br>
+                            <x-format-time :date="$req->proposed_start" /> <br>
                             <small>{{ $req->reason }}</small>
                             <form action="{{ route('reschedule.approve', $req) }}" method="POST" class="d-inline">
                                 @csrf
@@ -124,7 +120,7 @@
                                 <tr>
                                     <td> {{ $class->lesson->subject }}</td>
                                     <td> {{ $class->lesson->student->name }} </td>
-                                    <td> {{ $class->scheduled_start?->format('d M Y h:i A') }} </td>
+                                    <td> <x-format-time :date="$class->scheduled_start" /> </td>
                                     <td>
                                         <span class="badge bg-success">{{ $class->duration_minutes }}</span>
                                     </td>
@@ -137,11 +133,6 @@
                                     </td>
                                     <td> 
                                         <a href="{{ route('lesson.join', $class) }}" class="btn btn-sm btn-primary" target="_blank">Start Class</a>
-                                        {{-- <!-- @if($class->zoomSession)
-                                            <a href="{{ $class->zoomSession->start_url }}" target="_blank" class="btn btn-sm btn-primary">Start Class</a>
-                                        @else
-                                            <span class="text-muted">Zoom link not ready</span>
-                                        @endif --> --}}
                                     </td>
                                 </tr>
                             @empty
@@ -193,7 +184,7 @@
                                             </select>
                                         </td>
                                         <td>{{ $a->occurrence->scheduled_start }}</td>
-                                        <td>{{ $a->join_time ? $a->join_time->format('d M Y h:i A') : 'Not Joined' }}</td>
+                                        <td><x-format-time :date="$a->join_time" format="d M Y h:i A" /></td>
                                         <td>
                                             <button class="btn btn-sm btn-warning report-btn" data-attendance-id="{{ $a->id }}" data-bs-toggle="modal" data-bs-target="#reportModal" title="Add/Edit Report">
                                                 <i class="feather icon-edit"></i>
@@ -230,20 +221,13 @@
                     <h6 class="fw-bold">{{ $ongoingClass->lesson->subject }}</h6>
                     <p>
                         <strong>Student:</strong> {{ $ongoingClass->lesson->student->name }}<br>
-                        <strong>Start:</strong> {{ $ongoingClass->scheduled_start->format('d M Y h:i A') }}<br>
-                        <strong>End:</strong> {{ $ongoingClass->scheduled_start->copy()->addMinutes((int)$ongoingClass->duration_minutes)->format('h:i A') }}
+                        <strong>Start:</strong> <x-format-time :date="$ongoingClass->scheduled_start" /><br>
+                        <strong>End:</strong> <x-format-time :date="$ongoingClass->scheduled_start->copy()->addMinutes((int)$ongoingClass->duration_minutes)" format="h:i A" />
                     </p>
 
                     <p id="class-countdown" class="fw-bold text-danger"></p>
                     
                     <a href="{{ route('lesson.join', $ongoingClass) }}" class="btn btn-primary" target="_blank">Join Now</a>
-                    <!-- {{-- @if($ongoingClass->zoomSession)
-                        <a href="{{ $ongoingClass->zoomSession->join_url }}" 
-                        target="_blank" 
-                        class="btn btn-primary">Join Now</a>
-                    @else
-                        <span class="text-muted">Zoom link not yet available</span>
-                    @endif --}} -->
                 </div>
             </div>
             @endif
@@ -259,14 +243,12 @@
                             <strong>Student:</strong> {{ $nextClass->lesson->student->name }}
                         </p>
                         <p class="text-white text-opacity-75">
-                            <strong>Scheduled:</strong> {{ $nextClass->scheduled_start->format('d M Y h:i A') }}
+                            <strong>Scheduled:</strong> <x-format-time :date="$nextClass->scheduled_start" />
                         </p>
 
                         <p id="countdown" class="lead text-white text-opacity-75"></p>
 
                         <a href="{{ route('lesson.join', $nextClass) }}" class="btn btn-light" target="_blank">Start Class</a>
-                        {{-- <!-- @if($nextClass->zoomSession)
-                            <a href="{{ $nextClass->zoomSession->start_url }}" class="btn btn-light" target="_blank">Start Class</a>
                         @endif --> --}}
                     </div>
                 </div>

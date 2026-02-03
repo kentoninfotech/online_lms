@@ -58,9 +58,9 @@
                             <span class="badge bg-info">{{ Str::headline($a->status) }}</span>
                             @endif
                         </td>
-                        <td>{{ $a->occurrence->scheduled_start->format('d M Y h:i A') ?? '-' }}</td>
+                        <td><x-format-time :date="$a->occurrence->scheduled_start" /></td>
                         <!-- <td>{{ $a->duration_minutes ?? '-' }}</td> -->
-                        <td>{{ $a->join_time?->format('h:i A') ?? '-' }}</td>
+                        <td><x-format-time :date="$a->join_time" format="h:i A" /></td>
                         <!-- <td>{{ $a->leave_time?->format('h:i A') ?? '-' }}</td> -->
                     </tr>
                 @empty
