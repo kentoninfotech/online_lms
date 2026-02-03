@@ -7,7 +7,7 @@
         <div class="row ps-5">
             <div class="col-12">
                 {{-- text-muted for gray secondary text --}}
-                <p class="mb-1 text-muted">Date: <x-format-time :date="$occurrence->scheduled_start" /></p>
+                <p class="mb-1 text-muted">Date: {{ $occurrence->scheduled_start->format('d M Y h:i A') }}</p>
                 <h2 class="mb-0 fw-bold">{{ $occurrence->lesson->subject }}</h2>
                 <p class="text-muted">Instructor: {{ $occurrence->lesson->instructor->name ?? 'N/A' }}</p>
             </div>

@@ -38,7 +38,7 @@
         <div class="card-header bg-white border-0 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
             <div class="mb-2 mb-md-0">
                 <h5 class="fw-bold mb-1">Payment Details</h5>
-                <small class="text-muted">Date: <x-format-time :date="$payment->created_at" format="d M Y" /></small>
+                <small class="text-muted">Date: {{ $payment->created_at->format('d M Y') ?? 'N/A' }}</small>
             </div>
             <span class="badge bg-{{ $payment->status === 'approved' ? 'success' : ($payment->status === 'pending' ? 'warning' : 'danger') }}
                px-3 py-2 rounded-pill align-self-start align-self-md-center">

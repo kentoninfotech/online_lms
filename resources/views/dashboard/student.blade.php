@@ -173,7 +173,7 @@
                                 <tr>
                                     <td>{{ $lesson->subject }}</td>
                                     <td>{{ $lesson->instructor->name ?? '-' }}</td>
-                                    <td><x-format-time :date="$occurrence->scheduled_start" /></td>
+                                    <td>{{ $occurrence->scheduled_start?->format('d M Y h:i A') }}</td>
                                     <td>{{ $occurrence->duration_minutes }} mins</td>
                                 </tr>
                                 @endforeach
@@ -244,9 +244,9 @@
                                             {{ ucfirst($attendance->status) }}
                                         </span>
                                     </td>
-                                    <td><x-format-time :date="$attendance->join_time" format="h:i A" /></td>
+                                    <td>{{ $attendance->join_time?->format('h:i A') ?? '-' }}</td>
                                     @role('admin|instructor')
-                                        <td><x-format-time :date="$attendance->leave_time" format="h:i A" /></td>
+                                        <td>{{ $attendance->leave_time?->format('h:i A') ?? '-' }}</td>
                                         <td>{{ $attendance->duration_minutes ?? '-' }} mins</td>
                                     @endrole
                                 </tr>

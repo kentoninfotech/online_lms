@@ -39,7 +39,7 @@
     <div class="card-body">
         @forelse($todayLessons as $class)
             <p>
-                <x-format-time :date="$class->scheduled_start" format="h:i A" /> — {{ $class->lesson->student->name }}
+                {{ $class->scheduled_start->format('h:i A') }} — {{ $class->lesson->student->name }}
             </p>
         @empty
             <p>No classes scheduled today.</p>
@@ -71,7 +71,7 @@
                                 $nextOccurrence = $lesson->occurrences->first();
                             @endphp
                             @if($nextOccurrence)
-                                <x-format-time :date="$nextOccurrence->scheduled_start" />
+                                {{ $nextOccurrence->scheduled_start->format('d M Y h:i A') }}
                             @else
                                 <span class="text-muted">No upcoming class</span>
                             @endif
@@ -239,7 +239,7 @@
                                     {{ Str::headline($attendance->status) }}
                                 </span>
                             </td>
-                            <td><x-format-time :date="$attendance->created_at" /></td>
+                            <td>{{ $attendance->created_at->format('d M Y h:i A') }}</td>
                             <td>
                                 @if($attendance->raw)
                                     <button class="btn btn-sm btn-info view-admin-report-btn" data-report="{{ $attendance->raw }}" data-bs-toggle="modal" data-bs-target="#adminViewReportModal" title="View Report">
