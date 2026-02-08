@@ -56,7 +56,7 @@
                     <label class="form-label">Subject</label>
 
                     <select name="subject" class="form-select @error('subject') is-invalid @enderror" required>
-                        @foreach(['Algebra 1', 'Algebra 2', 'Geometry', 'Pre-Calculus', 'Mathematics', 'Science', 'Physics', 'Chemistry', 'Biology', 'Basic Science', 'Basic Technology', 'English', 'French', 'English Literature', 'Reading', 'Music', 'Yoruba', 'Igbo', 'Spanish', 'Business studies', 'Agricultural science', 'Verbal reasoning', 'Non-Verbal reasoning', 'Quantitative reasoning'] as $subject)
+                        @foreach(['Algebra 1', 'Algebra 2', 'Geometry', 'Pre-Calculus', 'Mathematics', 'Science', 'Physics', 'Chemistry', 'Biology', 'Basic Science', 'Basic Technology', 'English', 'French', 'English Literature', 'Reading', 'Music', 'Yoruba', 'Igbo', 'Spanish', 'Business studies', 'Agricultural science', 'Verbal reasoning', 'Non-Verbal reasoning', 'Quantitative reasoning', 'Home Economics'] as $subject)
                             <option value="{{ $subject }}" 
                                 {{ old('subject', $lesson->subject) == $subject ? 'selected' : '' }}>
                                 {{ $subject }}

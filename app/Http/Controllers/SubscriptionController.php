@@ -82,4 +82,26 @@ class SubscriptionController extends Controller
                 ->back()
                 ->with('success', 'Subscription cancelled successfully.');
     }
+
+    public function updateDates(Request $request, Subscription $subscription)
+    {
+        // Check authorization
+        $this->authorize('update', $subscription);
+
+        // Validate the request
+        $validated = $request->validate([
+            'start_date' => 'required|date|date_format:Y-m-d',
+            'end_date' => 'nullable|date|date_format:Y-m-d|after_or_equal:start_date',
+        ]);
+
+        // Update the subscription dates
+        $subscription->update([
+            'start_date' => $validated['start_date'],
+            'end_date' => $validated['end_date'] ?? $subscription->end_date,
+        ]);
+
+        return redirect()
+                ->back()
+                ->with('success', 'Subscription dates updated successfully.');
+    }
 }

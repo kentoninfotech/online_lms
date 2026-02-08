@@ -82,6 +82,7 @@
                         <option value="Verbal reasoning" {{ old('subject') == 'Verbal reasoning' ? 'selected' : '' }}>Verbal reasoning</option>
                         <option value="Non-Verbal reasoning" {{ old('subject') == 'Non-Verbal reasoning' ? 'selected' : '' }}>Non-Verbal reasoning</option>
                         <option value="Quantitative reasoning" {{ old('subject') == 'Quantitative reasoning' ? 'selected' : '' }}>Quantitative reasoning</option>
+                        <option value="Home Economics" {{ old('subject') == 'Home Economics' ? 'selected' : '' }}>Home Economics</option>
                     </select>
                     @error('subject') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
