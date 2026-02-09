@@ -101,7 +101,7 @@
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Start Time</label>
                     <input type="datetime-local" name="start_time" class="form-control @error('start_time') is-invalid @enderror" 
-                        value="{{ old('start_time', \Carbon\Carbon::parse($lesson->start_time)->format('Y-m-d\TH:i')) }}" required>
+                        value="{{ old('start_time', \Carbon\Carbon::parse($lesson->start_time)->setTimezone(getUserTimezone())->format('Y-m-d\TH:i')) }}" required>
                     @error('start_time') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 

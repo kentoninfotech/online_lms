@@ -44,6 +44,12 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" id="main-style-link" />
     <link rel="stylesheet" href="{{ asset('assets/css/style-preset.css') }}" />
 
+    <!-- [Timezone Detector] - Load early to detect timezone before page interactions -->
+    <script>
+        @include('partials.timezone-detector-inline')
+    </script>
+
+
 
 </head>
 <!-- [Head] end -->

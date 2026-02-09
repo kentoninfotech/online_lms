@@ -115,12 +115,15 @@ class LessonController extends Controller
             }
         }
 
-        
+        // Convert start_time from user's timezone to UTC
+        $userTimezone = getUserTimezone();
+        $startTime = Carbon::createFromFormat('Y-m-d H:i', $data['start_time'], $userTimezone)->setTimezone('UTC');
+
         $lesson = Lesson::create([
             'subject'          => $data['subject'],
             'student_id'       => $data['student_id'],
             'instructor_id'    => $data['instructor_id'] ?? Auth::user()->instructor->id,
-            'start_time'       => $data['start_time'],
+            'start_time'       => $startTime,
             'duration_minutes' => $data['duration_minutes'],
             'recurrence_type'  => $data['recurrence_type'],
             'recurrence_meta'  => $recurrenceMeta,
@@ -217,12 +220,15 @@ class LessonController extends Controller
             }
         }
 
-        
+        // Convert start_time from user's timezone to UTC
+        $userTimezone = getUserTimezone();
+        $startTime = Carbon::createFromFormat('Y-m-d H:i', $data['start_time'], $userTimezone)->setTimezone('UTC');
+
         $lesson->update([
             'subject'          => $data['subject'],
             'student_id'       => $data['student_id'],
             'instructor_id'    => $data['instructor_id'] ?? Auth::user()->instructor->id,
-            'start_time'       => $data['start_time'],
+            'start_time'       => $startTime,
             'duration_minutes' => $data['duration_minutes'],
             'recurrence_type'  => $data['recurrence_type'],
             'recurrence_meta'  => $recurrenceMeta,

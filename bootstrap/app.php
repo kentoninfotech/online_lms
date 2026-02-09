@@ -15,6 +15,9 @@ return Application::configure(dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Add timezone detection middleware
+        $middleware->append(\App\Http\Middleware\DetectTimezone::class);
+        
         // Register route middleware aliases
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,

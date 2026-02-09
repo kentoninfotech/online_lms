@@ -39,7 +39,7 @@
     <div class="card-body">
         @forelse($todayLessons as $class)
             <p>
-                {{ $class->scheduled_start->format('h:i A') }} — {{ $class->lesson->student->name }}
+                {{ $class->scheduled_start->setTimezone(getUserTimezone())->format('h:i A') }} — {{ $class->lesson->student->name }}
                 — {{ $class->lesson->subject }}
                 <a href="{{ route('lesson.join', ['occurrence' => $class]) }}" target="_blank" class="btn btn-sm btn-primary">Start class</a>
                 {{-- <!-- @if($class->zoomSession)
@@ -86,7 +86,7 @@
                             @endphp
 
                             @if($nextOccurrence)
-                                {{ $nextOccurrence->scheduled_start->format('d M Y h:i A') }}
+                                <x-format-time :date="$nextOccurrence->scheduled_start" />
                             @else
                                 <span class="text-muted">No upcoming class</span>
                             @endif

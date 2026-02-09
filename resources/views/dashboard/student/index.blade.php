@@ -248,8 +248,8 @@
                     <h6 class="fw-bold">{{ $ongoingClass->lesson->subject }}</h6>
                     <p>
                         <strong>Instructor:</strong> {{ $ongoingClass->lesson->instructor->name }}<br>
-                        <strong>Start:</strong> {{ $ongoingClass->scheduled_start->format('d M Y h:i A') }}<br>
-                        <strong>End:</strong> {{ $ongoingClass->scheduled_start->copy()->addMinutes((int)$ongoingClass->duration_minutes)->format('h:i A') }}
+                        <strong>Start:</strong> <x-format-time :date="$ongoingClass->scheduled_start" /><br>
+                        <strong>End:</strong> <x-format-time :date="$ongoingClass->scheduled_start->copy()->addMinutes((int)$ongoingClass->duration_minutes)" format="d M Y h:i A" />
                     </p>
 
                     <p id="class-countdown" class="fw-bold text-danger"></p>
@@ -278,7 +278,7 @@
                             <strong>Instructor:</strong> {{ $nextClass->lesson->instructor->name }}
                         </p>
                         <p class="text-white text-opacity-75">
-                            <strong>Scheduled:</strong> {{ $nextClass->scheduled_start->format('d M Y h:i A') }}
+                            <strong>Scheduled:</strong> {{ $nextClass->scheduled_start->setTimezone(getUserTimezone())->format('d M Y h:i A') }}
                         </p>
 
                         <p id="countdown" class="lead text-white text-opacity-75"></p>

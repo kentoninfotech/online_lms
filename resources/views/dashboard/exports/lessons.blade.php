@@ -14,7 +14,7 @@
                 <tr>
                     <td>{{ $lesson->subject }}</td>
                     <td>{{ $lesson->instructor->name ?? '-' }}</td>
-                    <td>{{ $occ->scheduled_start->format('d M Y h:i A') }}</td>
+                    <td>{{ $occ->scheduled_start->setTimezone(getUserTimezone())->format('d M Y h:i A') }}</td>
                     <td>{{ $occ->duration_minutes }} mins</td>
                 </tr>
             @endforeach

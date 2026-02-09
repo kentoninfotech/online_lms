@@ -14,8 +14,8 @@
             <tr>
                 <td>{{ $a->occurrence->lesson->subject ?? '-' }}</td>
                 <td>{{ ucfirst($a->status) }}</td>
-                <td>{{ $a->join_time?->format('h:i A') ?? '-' }}</td>
-                <td>{{ $a->leave_time?->format('h:i A') ?? '-' }}</td>
+                <td>{{ $a->join_time?->setTimezone(getUserTimezone())->format('h:i A') ?? '-' }}</td>
+                <td>{{ $a->leave_time?->setTimezone(getUserTimezone())->format('h:i A') ?? '-' }}</td>
                 <td>{{ $a->duration_minutes ?? '-' }} mins</td>
             </tr>
         @endforeach

@@ -62,7 +62,7 @@
                                 }
                             @endphp
                             @if($nextOccurrence)
-                                {{ $nextOccurrence->scheduled_start->format('d M Y h:i A') }}
+                                <x-format-time :date="$nextOccurrence->scheduled_start" />
                             @else
                                 <span class="text-muted">No upcoming class</span>
                             @endif
