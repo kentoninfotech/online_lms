@@ -67,15 +67,6 @@ class SettingController extends Controller
             }
         }
 
-        $tz = function_exists('getUserTimezone') ? getUserTimezone() : config('app.timezone');
-        $now = \Carbon\Carbon::now($tz);
-        dd([
-            'function_exists' => function_exists('getUserTimezone'),
-            'timezone' => $tz,
-            'now_iso' => $now->toIso8601String(),
-            'now_formatted' => $now->format('d M Y h:i A'),
-        ]);
-
         return view('dashboard.admin.settings', [
             'settings' => $settings,
             'descriptions' => $this->descriptions,
