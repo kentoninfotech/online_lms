@@ -87,6 +87,13 @@
             <span class="pc-mtext">Settings</span>
         </a>
     </li>
+    <!-- Local Time (client-side) -->
+    <li class="pc-item">
+        <div class="pc-link" style="flex-direction:column; align-items:flex-start; gap:4px;">
+            <span class="pc-mtext" style="font-weight:600;">Local Time</span>
+            <span id="local-time-display" class="pc-mtext">--:--:--</span>
+        </div>
+    </li>
     <li class="pc-item">
     <a href="{{ route('settings.index') }}" target="_blank" class="pc-link">
         <span class="pc-micon"><i class="bi bi-sliders" style="color: #f0c221;"></i></span>
@@ -95,3 +102,24 @@
     </li>
 
 </ul>
+@php
+    $serverTz = function_exists('getUserTimezone') ? getUserTimezone() : config('app.timezone');
+@endphp
+<script>
+    (function(){
+        const el = document.getElementById('local-time-display');
+        if (!el) return;
+        const tz = {!! json_encode($serverTz) !!} || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+        function update() {
+            const now = new Date();
+            const opts = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true, timeZone: tz };
+            try {
+                el.textContent = now.toLocaleTimeString(undefined, opts) + ' (' + tz + ')';
+            } catch (e) {
+                el.textContent = now.toLocaleTimeString() + ' (' + tz + ')';
+            }
+        }
+        update();
+        setInterval(update, 1000);
+    })();
+</script>
