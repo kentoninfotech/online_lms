@@ -11,6 +11,11 @@ if (!function_exists('getUserTimezone')) {
             return session('user_timezone');
         }
 
+        // Then try cookie fallback (useful when session middleware hasn't run yet)
+        if (isset($_COOKIE['user_timezone']) && $_COOKIE['user_timezone']) {
+            return urldecode($_COOKIE['user_timezone']);
+        }
+
         // Try authenticated user attribute if it exists
         if (auth()->check() && auth()->user() && property_exists(auth()->user(), 'timezone') && auth()->user()->timezone) {
             return auth()->user()->timezone;

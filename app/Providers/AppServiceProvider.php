@@ -45,6 +45,12 @@ class AppServiceProvider extends ServiceProvider
                 if (session('user_timezone')) {
                     return session('user_timezone');
                 }
+
+                // cookie fallback when session isn't available yet
+                if (isset($_COOKIE['user_timezone']) && $_COOKIE['user_timezone']) {
+                    return urldecode($_COOKIE['user_timezone']);
+                }
+
                 return config('app.timezone');
             }
         }
