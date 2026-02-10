@@ -67,6 +67,8 @@ class SettingController extends Controller
             }
         }
 
+        dd(function_exists('getUserTimezone'));
+
         return view('dashboard.admin.settings', [
             'settings' => $settings,
             'descriptions' => $this->descriptions,
