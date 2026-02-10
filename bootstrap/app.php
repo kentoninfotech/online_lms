@@ -6,7 +6,6 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Console\Scheduling\Schedule;
 use App\Jobs\SendSubscriptionExpiryWarnings;
 use App\Jobs\SendBillingOverdueReminders;
-use Throwable;
 
 return Application::configure(dirname(__DIR__))
     ->withRouting(
@@ -50,7 +49,7 @@ return Application::configure(dirname(__DIR__))
     
     ->withExceptions(function (Exceptions $exceptions): void {
         // Handle TokenMismatchException (419 Page Expired)
-        $exceptions->render(function (Throwable $e, $request) {
+        $exceptions->render(function (\Throwable $e, $request) {
             // Handle TokenMismatchException (CSRF token mismatch / session expired)
             if ($e instanceof \Illuminate\Session\TokenMismatchException) {
                 // Logout the user
