@@ -15,8 +15,8 @@ class DetectTimezone
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Get timezone from request header (sent by JavaScript)
-        $timezone = $request->header('X-User-Timezone');
+        // Get timezone from request header (sent by JavaScript) or cookie fallback
+        $timezone = $request->header('X-User-Timezone') ?? $request->cookie('user_timezone');
         
         if ($timezone && $this->isValidTimezone($timezone)) {
             session(['user_timezone' => $timezone]);
