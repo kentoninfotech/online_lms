@@ -1,7 +1,7 @@
 @props(['date', 'format' => 'd M Y h:i A'])
 
 @if($date)
-    {{ $date->setTimezone(getUserTimezone())->format($format) }}
+    {{ $date->setTimezone(function_exists('getUserTimezone') ? getUserTimezone() : config('app.timezone'))->format($format) }}
 @else
     Not Available
 @endif

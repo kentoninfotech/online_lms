@@ -39,13 +39,9 @@ class AppServiceProvider extends ServiceProvider
             });
         });
 
-        Lesson::observe(LessonObserver::class);
-        LessonOccurrence::observe(LessonOccurrenceObserver::class);
-
-        // Define timezone helper functions
+        // Fallback timezone helper functions (in case Composer autoload fails on production)
         if (!function_exists('getUserTimezone')) {
-            function getUserTimezone(): string
-            {
+            function getUserTimezone(): string {
                 if (session('user_timezone')) {
                     return session('user_timezone');
                 }
@@ -54,34 +50,29 @@ class AppServiceProvider extends ServiceProvider
         }
 
         if (!function_exists('toUserTimezone')) {
-            function toUserTimezone($datetime, $format = 'd M Y h:i A'): string
-            {
-                if (!$datetime) {
-                    return 'Not Available';
-                }
+            function toUserTimezone($datetime, $format = 'd M Y h:i A'): string {
                 try {
-                    $tz = getUserTimezone();
-                    return \Carbon\Carbon::parse($datetime)
-                        ->setTimezone($tz)
-                        ->format($format);
-                } catch (\Exception) {
-                    return 'Invalid Date';
+                    $userTz = getUserTimezone();
+                    $carbon = \Carbon\Carbon::parse($datetime)->setTimezone($userTz);
+                    return $carbon->format($format);
+                } catch (\Exception $e) {
+                    return $datetime instanceof \Carbon\Carbon ? $datetime->format($format) : (string)$datetime;
                 }
             }
         }
 
         if (!function_exists('toUtcTimezone')) {
-            function toUtcTimezone($datetime, $userTimezone = null): \Carbon\Carbon
-            {
-                if (!$userTimezone) {
-                    $userTimezone = getUserTimezone();
-                }
+            function toUtcTimezone($datetime, $userTimezone = null): \Carbon\Carbon {
                 try {
-                    return \Carbon\Carbon::createFromFormat('Y-m-d H:i', $datetime, $userTimezone)->setTimezone('UTC');
-                } catch (\Exception) {
+                    $tz = $userTimezone ?: getUserTimezone();
+                    return \Carbon\Carbon::parse($datetime, $tz)->setTimezone('UTC');
+                } catch (\Exception $e) {
                     return \Carbon\Carbon::parse($datetime)->setTimezone('UTC');
                 }
             }
         }
+
+        Lesson::observe(LessonObserver::class);
+        LessonOccurrence::observe(LessonOccurrenceObserver::class);
     }
 }
