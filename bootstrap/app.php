@@ -1,5 +1,41 @@
 <?php
 
+// Early fallback timezone helper functions — define these as a last-resort
+// fallback so that views/middleware/controllers can safely call them
+// even if Composer autoload or deployment hasn't been run.
+if (!function_exists('getUserTimezone')) {
+    function getUserTimezone(): string {
+        try {
+            return session('user_timezone', config('app.timezone'));
+        } catch (\Throwable $e) {
+            return config('app.timezone');
+        }
+    }
+}
+
+if (!function_exists('toUserTimezone')) {
+    function toUserTimezone($datetime, $format = 'd M Y h:i A'): string {
+        try {
+            $tz = getUserTimezone();
+            $c = \Carbon\Carbon::parse($datetime)->setTimezone($tz);
+            return $c->format($format);
+        } catch (\Throwable $e) {
+            return is_string($datetime) ? $datetime : (string)$datetime;
+        }
+    }
+}
+
+if (!function_exists('toUtcTimezone')) {
+    function toUtcTimezone($datetime, $userTimezone = null): \Carbon\Carbon {
+        $tz = $userTimezone ?: (function_exists('getUserTimezone') ? getUserTimezone() : config('app.timezone'));
+        try {
+            return \Carbon\Carbon::parse($datetime, $tz)->setTimezone('UTC');
+        } catch (\Throwable $e) {
+            return \Carbon\Carbon::parse($datetime)->setTimezone('UTC');
+        }
+    }
+}
+
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
