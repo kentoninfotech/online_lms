@@ -117,7 +117,15 @@ class LessonController extends Controller
 
         // Convert start_time from user's timezone to UTC
         $userTimezone = getUserTimezone();
-        $startTime = Carbon::createFromFormat('Y-m-d H:i', $data['start_time'], $userTimezone)->setTimezone('UTC');
+        
+        // Handle various datetime formats
+        try {
+            $startTime = $this->parseDateTime($data['start_time'], $userTimezone);
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['start_time' => 'Invalid date/time format. Please use YYYY-MM-DD HH:MM format.']);
+        }
 
         $lesson = Lesson::create([
             'subject'          => $data['subject'],
@@ -267,5 +275,38 @@ class LessonController extends Controller
                  ->back()
                  ->with('success', 'Lesson deleted successfully.');
     }
+
+    /**
+     * Parse datetime from various formats with timezone conversion
+     */
+    private function parseDateTime($dateString, $timezone)
+    {
+        // Trim whitespace
+        $dateString = trim($dateString);
+        
+        // Extract date and time using regex to handle unexpected characters
+        // Pattern: YYYY-MM-DD HH:MM or YYYY-MM-DDTHH:MM or variations
+        if (preg_match('/(\d{4}-\d{2}-\d{2})\s*[T\s]+(\d{2}:\d{2})(?::\d{2})?/', $dateString, $matches)) {
+            $dateString = $matches[1] . ' ' . $matches[2];
+        }
+        
+        // Array of formats to try (most specific to least specific)
+        $formats = [
+            'Y-m-d H:i:s',  // 2025-01-15 14:30:45
+            'Y-m-d H:i',    // 2025-01-15 14:30
+        ];
+        
+        foreach ($formats as $format) {
+            try {
+                return Carbon::createFromFormat($format, $dateString, $timezone)->setTimezone('UTC');
+            } catch (\Exception $e) {
+                continue;
+            }
+        }
+        
+        // If no format matched, throw an exception
+        throw new \Exception("Unable to parse date: '$dateString'. Expected format: YYYY-MM-DD HH:MM");
+    }
+
 
 }
