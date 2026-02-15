@@ -151,7 +151,7 @@
                                 <tr>
                                     <td> {{ $class->lesson->subject }}</td>
                                     <td> {{ $class->lesson->instructor->name }} </td>
-                                    <td> {{ $class->scheduled_start?->format('d M Y h:i A') }} </td>
+                                    <td> <x-format-time :date="$class->scheduled_start" /> </td>
                                     <td>
                                         <span class="badge bg-success">{{ $class->duration_minutes }}</span>
                                     </td>
@@ -278,7 +278,7 @@
                             <strong>Instructor:</strong> {{ $nextClass->lesson->instructor->name }}
                         </p>
                         <p class="text-white text-opacity-75">
-                            <strong>Scheduled:</strong> {{ $nextClass->scheduled_start->copy()->setTimezone(function_exists('getUserTimezone') ? getUserTimezone() : config('app.timezone'))->format('d M Y h:i A') }}
+                            <strong>Scheduled:</strong> <x-format-time :date="$nextClass->scheduled_start" />
                         </p>
 
                         <p id="countdown" class="lead text-white text-opacity-75"></p>

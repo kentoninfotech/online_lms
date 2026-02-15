@@ -119,7 +119,7 @@
                                     <tr>
                                         <td>{{ $class->lesson->subject }}</td>
                                         <td>{{ $class->lesson->instructor->name }}</td>
-                                        <td>{{ $class->scheduled_start->format('d M Y h:i A') }}</td>
+                                        <td><x-format-time :date="$class->scheduled_start" /></td>
                                         <td><span class="badge bg-success">{{ $class->duration_minutes }}m</span></td>
                                         <td><span class="badge bg-primary">{{ ucfirst($class->status) }}</span></td>
                                     </tr>

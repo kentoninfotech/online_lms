@@ -137,7 +137,7 @@
                                             {{ $lesson->student->name }}
                                         </a>
                                     </td>
-                                    <td>{{ $occurrence->scheduled_start->format('d M Y h:i A') }}</td>
+                                    <td><x-format-time :date="$occurrence->scheduled_start" /></td>
                                     <td>{{ $occurrence->duration_minutes }} mins</td>
                                 </tr>
                                 @endforeach

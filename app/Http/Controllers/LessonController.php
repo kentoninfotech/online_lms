@@ -115,14 +115,23 @@ class LessonController extends Controller
             }
         }
 
-        // Convert start_time from Nigeria timezone (default) to UTC
-        // Always use Africa/Lagos as the timezone context for lesson times
+        // Convert start_time from Nigeria timezone (Africa/Lagos - UTC+1) to UTC for storage
+        // The datetime-local input sends local time without timezone info
         $userTimezone = 'Africa/Lagos';
         
-        // Handle various datetime formats
         try {
             $startTime = $this->parseDateTime($data['start_time'], $userTimezone);
+            \Log::info('Lesson Start Time Conversion', [
+                'input' => $data['start_time'],
+                'timezone' => $userTimezone,
+                'converted_utc' => $startTime->toIso8601String(),
+                'for_display_in_app_tz' => $startTime->copy()->setTimezone($userTimezone)->toIso8601String(),
+            ]);
         } catch (\Exception $e) {
+            \Log::error('Failed to parse lesson start time', [
+                'error' => $e->getMessage(),
+                'input' => $data['start_time']
+            ]);
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['start_time' => 'Invalid date/time format. Please use YYYY-MM-DD HH:MM format.']);
@@ -229,11 +238,22 @@ class LessonController extends Controller
             }
         }
 
-        // Convert start_time from Nigeria timezone to UTC
+        // Convert start_time from Nigeria timezone (Africa/Lagos - UTC+1) to UTC for storage
+        // The datetime-local input sends local time without timezone info
         $userTimezone = 'Africa/Lagos';
         try {
             $startTime = $this->parseDateTime($data['start_time'], $userTimezone);
+            \Log::info('Lesson Start Time Conversion (Update)', [
+                'input' => $data['start_time'],
+                'timezone' => $userTimezone,
+                'converted_utc' => $startTime->toIso8601String(),
+                'for_display_in_app_tz' => $startTime->copy()->setTimezone($userTimezone)->toIso8601String(),
+            ]);
         } catch (\Exception $e) {
+            \Log::error('Failed to parse lesson start time on update', [
+                'error' => $e->getMessage(),
+                'input' => $data['start_time']
+            ]);
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['start_time' => 'Invalid date/time format. Please use YYYY-MM-DD HH:MM format.']);
@@ -285,6 +305,7 @@ class LessonController extends Controller
 
     /**
      * Parse datetime from various formats with timezone conversion
+     * Converts local time (in the specified timezone) to UTC for storage
      */
     private function parseDateTime($dateString, $timezone)
     {
@@ -293,6 +314,7 @@ class LessonController extends Controller
         
         // Extract date and time using regex to handle unexpected characters
         // Pattern: YYYY-MM-DD HH:MM or YYYY-MM-DDTHH:MM or variations
+        // This handles both HTML5 datetime-local format (2025-01-15T20:54) and standard formats
         if (preg_match('/(\d{4}-\d{2}-\d{2})\s*[T\s]+(\d{2}:\d{2})(?::\d{2})?/', $dateString, $matches)) {
             $dateString = $matches[1] . ' ' . $matches[2];
         }
@@ -303,16 +325,23 @@ class LessonController extends Controller
             'Y-m-d H:i',    // 2025-01-15 14:30
         ];
         
+        $carbonInstance = null;
         foreach ($formats as $format) {
             try {
-                return Carbon::createFromFormat($format, $dateString, $timezone)->setTimezone('UTC');
+                $carbonInstance = Carbon::createFromFormat($format, $dateString, $timezone);
+                break;
             } catch (\Exception $e) {
                 continue;
             }
         }
         
-        // If no format matched, throw an exception
-        throw new \Exception("Unable to parse date: '$dateString'. Expected format: YYYY-MM-DD HH:MM");
+        if ($carbonInstance === null) {
+            throw new \Exception("Unable to parse date: '$dateString'. Expected format: YYYY-MM-DD HH:MM");
+        }
+        
+        // Convert from local timezone to UTC for storage in database
+        // This is crucial: local time (Africa/Lagos) -> UTC
+        return $carbonInstance->setTimezone('UTC');
     }
 
 

@@ -49,8 +49,8 @@
                     <tr>
                         <td>{{ $req->occurrence->lesson->student->name }}</td>
                         <td>{{ $req->occurrence->lesson->instructor->name }}</td>
-                        <td>{{ $req->occurrence->scheduled_start->format('d M Y h:i A') }}</td>
-                        <td>{{ $req->proposed_start->format('d M Y h:i A') }}</td>
+                        <td><x-format-time :date="$req->occurrence->scheduled_start" /></td>
+                        <td><x-format-time :date="$req->proposed_start" /></td>
                         <td>{{ $req->reason }}</td>
                         <td>
                             <span class="badge bg-{{ $req->status === 'approved' ? 'success' : ($req->status === 'pending' ? 'warning' : 'danger') }}">

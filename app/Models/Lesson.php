@@ -27,6 +27,7 @@ class Lesson extends Model
 
     protected $casts = [
         'recurrence_meta' => 'array',
+        'start_time' => 'datetime',
     ];
 
     // Lesson → Instructor

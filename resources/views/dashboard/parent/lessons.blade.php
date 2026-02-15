@@ -48,7 +48,7 @@
                     <td>{{ $occ->lesson->student->user->name }}</td>
                     <td>{{ $occ->lesson->subject }}</td>
                     <td>{{ $occ->lesson->instructor->user->name }}</td>
-                    <td>{{ $occ->scheduled_start->format('d M Y h:i A') }}</td>
+                    <td><x-format-time :date="$occ->scheduled_start" /></td>
                     <td>
                         <!-- Trigger Modal -->
                         <button class="btn btn-sm btn-outline-primary" 
@@ -56,7 +56,7 @@
                                 data-bs-target="#rescheduleModal"
                                 data-occurrence-id="{{ $occ->id }}"
                                 data-subject="{{ $occ->lesson->subject }}"
-                                data-time="{{ $occ->scheduled_start->format('d M Y h:i A') }}">
+                                data-time="{{ $occ->scheduled_start->copy()->setTimezone(function_exists('getUserTimezone') ? getUserTimezone() : config('app.timezone'))->format('d M Y h:i A') }}">  
                             Request Reschedule
                         </button>
                     </td>
