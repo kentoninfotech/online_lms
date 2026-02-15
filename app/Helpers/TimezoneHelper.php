@@ -3,26 +3,13 @@
 if (!function_exists('getUserTimezone')) {
     /**
      * Get the user's timezone from session or authenticated user
+     * Defaults to Nigeria's timezone (Africa/Lagos)
      */
     function getUserTimezone(): string
     {
-        // Try session first
-        if (session('user_timezone')) {
-            return session('user_timezone');
-        }
-
-        // Then try cookie fallback (useful when session middleware hasn't run yet)
-        if (isset($_COOKIE['user_timezone']) && $_COOKIE['user_timezone']) {
-            return urldecode($_COOKIE['user_timezone']);
-        }
-
-        // Try authenticated user attribute if it exists
-        if (auth()->check() && auth()->user() && property_exists(auth()->user(), 'timezone') && auth()->user()->timezone) {
-            return auth()->user()->timezone;
-        }
-
-        // Default to config
-        return config('app.timezone');
+        // Always default to Africa/Lagos (Nigeria timezone) for consistency
+        // All lesson times should be displayed in Nigerian time
+        return 'Africa/Lagos';
     }
 }
 
@@ -41,7 +28,7 @@ if (!function_exists('toUserTimezone')) {
             return \Carbon\Carbon::parse($datetime)
                 ->setTimezone($tz)
                 ->format($format);
-        } catch (\Exception) {
+        } catch (\Exception $e) {
             return 'Invalid Date';
         }
     }
@@ -59,7 +46,7 @@ if (!function_exists('toUtcTimezone')) {
 
         try {
             return \Carbon\Carbon::createFromFormat('Y-m-d H:i', $datetime, $userTimezone)->setTimezone('UTC');
-        } catch (\Exception) {
+        } catch (\Exception $e) {
             return \Carbon\Carbon::parse($datetime)->setTimezone('UTC');
         }
     }

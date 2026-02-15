@@ -259,7 +259,7 @@
                             <strong>Student:</strong> {{ $nextClass->lesson->student->name }}
                         </p>
                         <p class="text-white text-opacity-75">
-                            <strong>Scheduled:</strong> {{ $nextClass->scheduled_start->setTimezone(function_exists('getUserTimezone') ? getUserTimezone() : config('app.timezone'))->format('d M Y h:i A') }}
+                            <strong>Scheduled:</strong> {{ $nextClass->scheduled_start->copy()->setTimezone(function_exists('getUserTimezone') ? getUserTimezone() : config('app.timezone'))->format('d M Y h:i A') }}
                         </p>
 
                         <p id="countdown" class="lead text-white text-opacity-75"></p>

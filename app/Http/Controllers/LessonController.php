@@ -115,8 +115,9 @@ class LessonController extends Controller
             }
         }
 
-        // Convert start_time from user's timezone to UTC
-        $userTimezone = getUserTimezone();
+        // Convert start_time from Nigeria timezone (default) to UTC
+        // Always use Africa/Lagos as the timezone context for lesson times
+        $userTimezone = 'Africa/Lagos';
         
         // Handle various datetime formats
         try {
@@ -228,9 +229,15 @@ class LessonController extends Controller
             }
         }
 
-        // Convert start_time from user's timezone to UTC
-        $userTimezone = getUserTimezone();
-        $startTime = Carbon::createFromFormat('Y-m-d H:i', $data['start_time'], $userTimezone)->setTimezone('UTC');
+        // Convert start_time from Nigeria timezone to UTC
+        $userTimezone = 'Africa/Lagos';
+        try {
+            $startTime = $this->parseDateTime($data['start_time'], $userTimezone);
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['start_time' => 'Invalid date/time format. Please use YYYY-MM-DD HH:MM format.']);
+        }
 
         $lesson->update([
             'subject'          => $data['subject'],

@@ -39,7 +39,7 @@
     <div class="card-body">
         @forelse($todayLessons as $class)
             <p>
-                {{ $class->scheduled_start->setTimezone(function_exists('getUserTimezone') ? getUserTimezone() : config('app.timezone'))->format('h:i A') }} — {{ $class->lesson->student->name }}
+                {{ $class->scheduled_start->copy()->setTimezone(function_exists('getUserTimezone') ? getUserTimezone() : config('app.timezone'))->format('h:i A') }} — {{ $class->lesson->student->name }}
                 — {{ $class->lesson->subject }}
                 <a href="{{ route('lesson.join', ['occurrence' => $class]) }}" target="_blank" class="btn btn-sm btn-primary">Start class</a>
                 {{-- <!-- @if($class->zoomSession)
