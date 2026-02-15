@@ -117,9 +117,10 @@
                 </div>
                 <!-- Start time -->
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Start Time</label>
-                    {{-- Repopulate datetime-local field --}}
+                    <label class="form-label">Start Time (Africa/Lagos - UTC+1)</label>
+                    {{-- All lessons are created in Africa/Lagos time for instructors in Nigeria --}}
                     <input type="datetime-local" name="start_time" class="form-control @error('start_time') is-invalid @enderror" value="{{ old('start_time') }}" required>
+                    <small class="text-muted">Enter class time in your local timezone (Africa/Lagos)</small>
                     @error('start_time') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 

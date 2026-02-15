@@ -11,6 +11,10 @@ class RecurrenceService
 {
     /**
      * Generate occurrences for a given lesson up to the allowed horizon.
+     * 
+     * IMPORTANT: All lesson times are in Africa/Lagos (UTC+1) timezone
+     * This service works directly with those times - no timezone conversion needed
+     * Cron jobs will use these occurrence times directly for scheduling
      */
     public function generateOccurrences(Lesson $lesson, ?int $horizonDays = null): void
     {
@@ -25,10 +29,10 @@ class RecurrenceService
             return;
         }
 
-        $start    = Carbon::parse($lesson->start_time);
+        // Get start time from lesson - already in Africa/Lagos (UTC+1) from database
+        $start    = Carbon::parse($lesson->start_time)->setTimezone('Africa/Lagos');
         $duration = $lesson->duration_minutes;
         $meta     = $this->sanitizeMeta($lesson->recurrence_meta ?? []);
-        // $meta     = $lesson->recurrence_meta ?? [];
 
         // Expand recurrence dates
         $occurrences = $this->expandRecurrence(

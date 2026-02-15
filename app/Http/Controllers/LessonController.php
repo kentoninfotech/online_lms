@@ -121,11 +121,11 @@ class LessonController extends Controller
         
         try {
             $startTime = $this->parseDateTime($data['start_time'], $userTimezone);
-            \Log::info('Lesson Start Time Conversion', [
+            \Log::info('Lesson Start Time Parsed (Create)', [
                 'input' => $data['start_time'],
                 'timezone' => $userTimezone,
-                'converted_utc' => $startTime->toIso8601String(),
-                'for_display_in_app_tz' => $startTime->copy()->setTimezone($userTimezone)->toIso8601String(),
+                'stored_time' => $startTime->toIso8601String(),
+                'note' => 'Time stored in Africa/Lagos (UTC+1) for consistent cron/activity operations',
             ]);
         } catch (\Exception $e) {
             \Log::error('Failed to parse lesson start time', [
@@ -243,11 +243,11 @@ class LessonController extends Controller
         $userTimezone = 'Africa/Lagos';
         try {
             $startTime = $this->parseDateTime($data['start_time'], $userTimezone);
-            \Log::info('Lesson Start Time Conversion (Update)', [
+            \Log::info('Lesson Start Time Parsed (Update)', [
                 'input' => $data['start_time'],
                 'timezone' => $userTimezone,
-                'converted_utc' => $startTime->toIso8601String(),
-                'for_display_in_app_tz' => $startTime->copy()->setTimezone($userTimezone)->toIso8601String(),
+                'stored_time' => $startTime->toIso8601String(),
+                'note' => 'Time stored in Africa/Lagos (UTC+1) for consistent cron/activity operations',
             ]);
         } catch (\Exception $e) {
             \Log::error('Failed to parse lesson start time on update', [
@@ -304,10 +304,14 @@ class LessonController extends Controller
     }
 
     /**
-     * Parse datetime from various formats with timezone conversion
-     * Converts local time (in the specified timezone) to UTC for storage
+     * Parse datetime and return Carbon instance in Africa/Lagos timezone
+     * 
+     * IMPORTANT: Lessons are stored in Africa/Lagos (UTC+1) in the database
+     * This is because cron jobs and scheduled activities use this timezone
+     * 
+     * When displaying to users, convert FROM Africa/Lagos to their local timezone
      */
-    private function parseDateTime($dateString, $timezone)
+    private function parseDateTime($dateString, $timezone = 'Africa/Lagos')
     {
         // Trim whitespace
         $dateString = trim($dateString);
@@ -328,6 +332,8 @@ class LessonController extends Controller
         $carbonInstance = null;
         foreach ($formats as $format) {
             try {
+                // Create instance in Africa/Lagos timezone - DO NOT convert to UTC
+                // This time will be stored as-is in the database
                 $carbonInstance = Carbon::createFromFormat($format, $dateString, $timezone);
                 break;
             } catch (\Exception $e) {
@@ -339,9 +345,9 @@ class LessonController extends Controller
             throw new \Exception("Unable to parse date: '$dateString'. Expected format: YYYY-MM-DD HH:MM");
         }
         
-        // Convert from local timezone to UTC for storage in database
-        // This is crucial: local time (Africa/Lagos) -> UTC
-        return $carbonInstance->setTimezone('UTC');
+        // Return the time in Africa/Lagos (UTC+1) - ready to store in DB
+        // Do NOT convert to UTC - we store everything in Africa/Lagos for consistent operations
+        return $carbonInstance;
     }
 
 

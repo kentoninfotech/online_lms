@@ -3,6 +3,20 @@
 // Early fallback timezone helper functions — define these as a last-resort
 // fallback so that views/middleware/controllers can safely call them
 // even if Composer autoload or deployment hasn't been run.
+
+/**
+ * IMPORTANT TIMEZONE ARCHITECTURE:
+ * 
+ * Database: All lesson times are stored in Africa/Lagos (UTC+1) timezone
+ * Cron/Jobs: Use Africa/Lagos times directly from database
+ * Display: Convert FROM Africa/Lagos TO user's local timezone
+ * 
+ * This ensures:
+ * - Consistent scheduling for Nigerian instructors
+ * - Accurate displays for learners in any timezone
+ * - Reliable cron job execution
+ */
+
 if (!function_exists('getUserTimezone')) {
     function getUserTimezone(): string {
         try {
@@ -16,8 +30,11 @@ if (!function_exists('getUserTimezone')) {
 if (!function_exists('toUserTimezone')) {
     function toUserTimezone($datetime, $format = 'd M Y h:i A'): string {
         try {
+            // Convert FROM Africa/Lagos (as stored in DB) TO user's timezone
             $tz = getUserTimezone();
-            $c = \Carbon\Carbon::parse($datetime)->setTimezone($tz);
+            $c = \Carbon\Carbon::parse($datetime)
+                ->setTimezone('Africa/Lagos')  // Start from Africa/Lagos (DB storage)
+                ->setTimezone($tz);             // Convert to user's timezone
             return $c->format($format);
         } catch (\Throwable $e) {
             return is_string($datetime) ? $datetime : (string)$datetime;
@@ -27,11 +44,12 @@ if (!function_exists('toUserTimezone')) {
 
 if (!function_exists('toUtcTimezone')) {
     function toUtcTimezone($datetime, $userTimezone = null): \Carbon\Carbon {
+        // Convert user input TO Africa/Lagos for storage
         $tz = $userTimezone ?: (function_exists('getUserTimezone') ? getUserTimezone() : config('app.timezone'));
         try {
-            return \Carbon\Carbon::parse($datetime, $tz)->setTimezone('UTC');
+            return \Carbon\Carbon::parse($datetime, $tz)->setTimezone('Africa/Lagos');
         } catch (\Throwable $e) {
-            return \Carbon\Carbon::parse($datetime)->setTimezone('UTC');
+            return \Carbon\Carbon::parse($datetime)->setTimezone('Africa/Lagos');
         }
     }
 }
