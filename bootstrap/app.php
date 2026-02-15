@@ -6,10 +6,9 @@
 if (!function_exists('getUserTimezone')) {
     function getUserTimezone(): string {
         try {
-            // Always use Africa/Lagos (Nigeria timezone) for consistency
-            return 'Africa/Lagos';
+            return session('user_timezone', config('app.timezone'));
         } catch (\Throwable $e) {
-            return 'Africa/Lagos';
+            return config('app.timezone');
         }
     }
 }
@@ -45,12 +44,11 @@ use App\Jobs\SendSubscriptionExpiryWarnings;
 use App\Jobs\SendBillingOverdueReminders;
 
 return Application::configure(dirname(__DIR__))
-    ->withRouting([
-        'web' => __DIR__.'/../routes/web.php',
-        'api' => __DIR__.'/../routes/api.php',
-        'commands' => __DIR__.'/../routes/console.php',
-        'health' => '/up',
-    ])
+    ->withRouting(
+        web: __DIR__.'/../routes/web.php',
+        commands: __DIR__.'/../routes/console.php',
+        health: '/up',
+    )
     ->withMiddleware(function (Middleware $middleware): void {
         // Add timezone detection middleware
         $middleware->append(\App\Http\Middleware\DetectTimezone::class);

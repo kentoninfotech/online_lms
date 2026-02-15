@@ -15,11 +15,17 @@ class DetectTimezone
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Always use the configured app timezone (Africa/Lagos for Nigeria)
-        // Ignore browser timezone detection to ensure consistency
-        $defaultTimezone = config('app.timezone');
+        // Get timezone from request header (sent by JavaScript) or cookie fallback
+        $timezone = $request->header('X-User-Timezone') ?? $request->cookie('user_timezone');
         
-        session(['user_timezone' => $defaultTimezone]);
+        if ($timezone && $this->isValidTimezone($timezone)) {
+            session(['user_timezone' => $timezone]);
+        } else {
+            // Default to config if not provided or invalid
+            if (!session('user_timezone')) {
+                session(['user_timezone' => config('app.timezone')]);
+            }
+        }
 
         return $next($request);
     }
@@ -32,7 +38,7 @@ class DetectTimezone
         try {
             new \DateTimeZone($timezone);
             return true;
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
     }
