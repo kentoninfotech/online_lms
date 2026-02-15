@@ -119,6 +119,7 @@
                             @endif --}}
 
                             <!-- Add Lesson zoomlink Modal -->
+                            @if($nextOccurrence)
                             <div class="modal fade" id="addZoomModal{{ $nextOccurrence?->id }}" tabindex="-1" aria-labelledby="createMeetingLabel" aria-hidden="true">
                               <div class="modal-dialog modal-lg">
                                 <form action="{{ route('add.zoom', ['occurrence' => $nextOccurrence?->id]) }}" method="POST">
@@ -186,6 +187,7 @@
                                 </form>
                               </div>
                             </div>
+                            @endif
                         </td>
                     </tr>
                 @empty
