@@ -15,17 +15,33 @@ class DetectTimezone
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Priority 1: If user is authenticated, use their stored timezone
-        if (auth()->check() && auth()->user()->timezone) {
-            session(['user_timezone' => auth()->user()->timezone]);
+        // Priority 1: Get timezone from request header (sent by JavaScript)
+        $detectedTimezone = $request->header('X-User-Timezone');
+        
+        // If user is authenticated
+        if (auth()->check()) {
+            $user = auth()->user();
+            $userTimezone = $user->timezone ?? config('app.timezone');
+            
+            // If we detected a timezone from the browser and it's different from stored one, update it
+            if ($detectedTimezone && $this->isValidTimezone($detectedTimezone) && $detectedTimezone !== $userTimezone) {
+                $user->update(['timezone' => $detectedTimezone]);
+                \Log::debug('User timezone auto-updated', [
+                    'user_id' => $user->id,
+                    'old_timezone' => $userTimezone,
+                    'new_timezone' => $detectedTimezone,
+                ]);
+                $userTimezone = $detectedTimezone;
+            }
+            
+            session(['user_timezone' => $userTimezone]);
         } else {
-            // Priority 2: Get timezone from request header (sent by JavaScript)
-            $timezone = $request->header('X-User-Timezone') ?? $request->cookie('user_timezone');
+            // For guests, use detected timezone or default
+            $timezone = $detectedTimezone ?? config('app.timezone');
             
             if ($timezone && $this->isValidTimezone($timezone)) {
                 session(['user_timezone' => $timezone]);
             } else {
-                // Priority 3: Default to config timezone
                 if (!session('user_timezone')) {
                     session(['user_timezone' => config('app.timezone')]);
                 }

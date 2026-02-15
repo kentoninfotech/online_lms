@@ -44,6 +44,10 @@
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
     
+    <!-- [Timezone Detector] - Load early to detect timezone before login -->
+    <script>
+        @include('partials.timezone-detector-inline')
+    </script>
   </head>
   <!-- [Head] end -->
 
