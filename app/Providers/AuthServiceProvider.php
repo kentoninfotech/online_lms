@@ -20,6 +20,7 @@ class AuthServiceProvider extends ServiceProvider
         \App\Models\Subscription::class      => \App\Policies\SubscriptionPolicy::class,
         \App\Models\Payment::class           => \App\Policies\PaymentPolicy::class,
         \App\Models\RescheduleRequest::class => \App\Policies\ReschedulePolicy::class,
+        \App\Models\CourseContent::class     => \App\Policies\CourseContentPolicy::class,
     ];
 
     /**
@@ -29,6 +30,9 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        // Optionally define any Gate::define statements here
+        // Define isAdmin gate for admin authorization checks
+        Gate::define('isAdmin', function ($user) {
+            return $user->hasRole('admin');
+        });
     }
 }

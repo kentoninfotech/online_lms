@@ -8,16 +8,29 @@
         </a>
     </li>
 
+    <li class="pc-item pc-hasmenu">
+        <a href="#" class="pc-link">
+            <span class="pc-micon"><i class="bi bi-book-fill" style="color: #f0c221;"></i></span>
+            <span class="pc-mtext">My Courses</span>
+            <span class="pc-arrow"><i class="ph ph-caret-down"></i></span>
+        </a>
+        <ul class="pc-submenu">
+            <li class="pc-item">
+                <a href="{{ route('courses.index') }}" class="pc-link">All Courses</a>
+            </li>
+            <li class="pc-item">
+                <a href="{{ route('instructor.lessons') }}" class="pc-link">My Lessons</a>
+            </li>
+            <li class="pc-item">
+                <a href="#" class="pc-link">Course Analytics</a>
+            </li>
+        </ul>
+    </li>
+
     <li class="pc-item">
         <a href="{{ route('instructor.students') }}" class="pc-link">
             <span class="pc-micon"><i class="bi bi-people-fill" style="color: #330952;"></i></span>
             <span class="pc-mtext">Students</span>
-        </a>
-    </li>
-    <li class="pc-item">
-        <a href="{{ route('instructor.lessons') }}" class="pc-link">
-            <span class="pc-micon"><i class="ph ph-book" style="color: #f0c221;"></i></span>
-            <span class="pc-mtext">Lessons</span>
         </a>
     </li>
     <li class="pc-item">

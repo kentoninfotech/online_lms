@@ -12,6 +12,8 @@ use App\Models\Payment;
 use App\Models\plan;
 use App\Models\LessonOccurrence;
 use App\Models\RescheduleRequest;
+use App\Models\Course;
+use App\Models\Facilitator;
 
 class AdminDashboardController extends Controller
 {
@@ -20,6 +22,8 @@ class AdminDashboardController extends Controller
         // Top KPIs
         $totalStudents     = Student::count();
         $totalInstructors  = Instructor::count();
+        $totalCourses      = Course::count();
+        $totalTutors       = Facilitator::count();
         $activeSubs        = Subscription::where('status', 'active')->count();
         $pendingPayments   = Payment::where('status', 'pending')->count();
 
@@ -43,6 +47,11 @@ class AdminDashboardController extends Controller
             ->take(5)
             ->get();
 
+        // Recent courses
+        $recentCourses = Course::latest()->take(5)->get();
+
+        // Recent tutors
+        $recentTutors = Facilitator::latest()->take(5)->get();
 
         // Notifications
         $notifications = Auth::user()->notifications()->latest()->take(5)->get();
@@ -50,11 +59,15 @@ class AdminDashboardController extends Controller
         return view('dashboard.admin.index', compact(
             'totalStudents',
             'totalInstructors',
+            'totalCourses',
+            'totalTutors',
             'activeSubs',
             'pendingPayments',
             'upcomingLessons',
             'recentPayments',
             'pendingReschedules',
+            'recentCourses',
+            'recentTutors',
             'notifications'
         ));
     }

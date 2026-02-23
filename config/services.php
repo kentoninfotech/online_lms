@@ -52,4 +52,21 @@ return [
         'default_timezone'  => env('ZOOM_DEFAULT_TIMEZONE', 'UTC'),
     ],
 
+    'tinymce' => [
+        'api_key' => env('TINY_MCE_API_KEY'),
+    ],
+
+    'disqus' => [
+        'shortname' => 'learnhub-ng',
+        'sso_secret' => 'your-sso-secret', // optional
+    ],
+
+    'jitsi' => [
+        'domain' => env('JITSI_DOMAIN', 'meet.jitsi'),
+        'app_id' => env('JITSI_APP_ID'),
+        'app_secret' => env('JITSI_APP_SECRET'),
+        'self_hosted' => env('JITSI_SELF_HOSTED', false), // Set to true for self-hosted Jitsi
+        'server_url' => env('JITSI_SERVER_URL', 'https://meet.jitsi'),
+    ],
+
 ];

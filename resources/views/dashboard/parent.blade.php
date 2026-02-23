@@ -14,7 +14,7 @@
     <div class="card-body position-relative">
         <!-- Avatar & Basic Info -->
         <div class="d-flex align-items-center">
-            <img src="{{ $parent->user->profile ? asset('storage/'. $parent->user->profile) : asset('storage/profiles/profile.png') ?? 'https://ui-avatars.com/api/?name='.$parent->name }}" 
+            <img src="{{ $parent->user->profile ? asset($parent->user->profile) : asset('storage/profiles/profile.png') ?? 'https://ui-avatars.com/api/?name='.$parent->name }}" 
                  alt="{{ $parent->name }}"
                  class="rounded-circle border border-3 border-white shadow"
                  style="width: 110px; height: 110px; margin-top:-80px;">

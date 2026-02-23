@@ -82,9 +82,16 @@ class ProfileController extends Controller
         }
 
         // Store new profile
-        $path = $request->file('profile')->store('profiles', 'public');
-
-        $user->update(['profile' => $path]);
+        if ($request->hasFile('profile')) {
+            $file = $request->file('profile');
+            $uploadDir = public_path('uploads/profiles');
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $filename = $user->id . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move($uploadDir, $filename);
+            $user->update(['profile' => 'uploads/profiles/' . $filename]);
+        }
 
         return redirect()
                ->back()

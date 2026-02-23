@@ -1,0 +1,172 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Course;
+use App\Models\CourseEnrollee;
+use App\Models\CourseVenue;
+use App\Models\CoursePayment;
+use App\Http\Requests\EnrollmentRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
+class CourseEnrollmentController extends Controller
+{
+    /**
+     * Show enrollment form
+     */
+    public function create(Course $course)
+    {
+        $courseDates = $course->courseDates()->with('venues')->get();
+
+        return view('courses.enrollment', compact('course', 'courseDates'));
+    }
+
+    /**
+     * Process enrollment
+     */
+    public function store(Request $request, Course $course)
+    {
+        $validated = $request->validate([
+            'course_date_id' => 'required|exists:course_dates,id',
+            'course_venue_id' => 'required|exists:course_venues,id',
+        ]);
+
+
+        // Check if user is already enrolled in this course/date/venue
+        $exists = CourseEnrollee::where([
+            'user_id' => Auth::id(),
+            'course_id' => $course->id,
+            'course_date_id' => $validated['course_date_id'],
+            'course_venue_id' => $validated['course_venue_id'],
+        ])->exists();
+
+        if ($exists) {
+            return redirect()->route('courses.show', $course)
+                ->with('error', 'You are already enrolled in this course session.');
+        }
+
+        // Check venue capacity
+        $venue = CourseVenue::findOrFail($validated['course_venue_id']);
+        if ($venue->isAtCapacity()) {
+            return redirect()->route('courses.show', $course)
+                ->with('error', 'This venue is at full capacity.');
+        }
+
+        DB::beginTransaction();
+
+        try {
+            // Determine enrollment status based on whether course is free
+            // Free courses require admin approval, paid courses require payment
+            $enrollmentStatus = $course->is_free ? 'pending' : 'pending';
+            $paymentStatus = $course->is_free ? 'completed' : 'pending';
+            
+            // Create enrollment
+            $enrollment = CourseEnrollee::create([
+                'user_id' => Auth::id(),
+                'course_id' => $course->id,
+                'course_date_id' => $validated['course_date_id'],
+                'course_venue_id' => $validated['course_venue_id'],
+                'status' => $enrollmentStatus,
+                'payment_status' => $paymentStatus,
+                'enrolled_at' => now(),
+            ]);
+
+            $payment = null;
+            
+            // Only create payment record if course is not free
+            if (!$course->is_free) {
+                $payment = CoursePayment::create([
+                    'course_enrollee_id' => $enrollment->id,
+                    'user_id' => Auth::id(),
+                    'course_id' => $course->id,
+                    'amount' => $course->fee,
+                    'currency' => $course->currency,
+                    'reference_id' => 'CRS-' . time() . '-' . Auth::id(),
+                    'payment_method' => 'pending',
+                    'status' => 'pending',
+                ]);
+            }
+
+            // Update venue enrolled count
+            $venue->increment('enrolled_count');
+
+            // Update course enrolled count
+            $course->increment('enrolled_count');
+
+            DB::commit();
+
+            // Redirect based on whether course is free
+            if ($course->is_free) {
+                return redirect()->route('my-enrollments')
+                    ->with('success', 'Enrollment submitted! Admin will review your enrollment shortly.');
+            } else {
+                return redirect()->route('course.payment.show', $payment)
+                    ->with('success', 'Enrollment created. Please proceed to payment.');
+            }
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return redirect()->route('courses.show', $course)
+                ->with('error', 'An error occurred during enrollment: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Show user enrollments
+     */
+    public function myEnrollments()
+    {
+        $enrollments = CourseEnrollee::where('user_id', Auth::id())
+            ->with('course', 'courseDate', 'venue')
+            ->paginate(12);
+
+        return view('courses.my-enrollments', compact('enrollments'));
+    }
+
+    /**
+     * Admin: View all enrollments
+     */
+    public function adminIndex()
+    {
+        $this->authorize('isAdmin');
+
+        $enrollments = CourseEnrollee::with('user', 'course', 'courseDate', 'venue')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('admin.course-enrollments.index', compact('enrollments'));
+    }
+
+    /**
+     * Admin: Show single enrollment
+     */
+    public function adminShow(CourseEnrollee $enrollment)
+    {
+        $this->authorize('isAdmin');
+
+        $enrollment->load('user', 'course', 'courseDate', 'venue');
+
+        return view('admin.course-enrollments.show', compact('enrollment'));
+    }
+
+    /**
+     * Admin: Update enrollment status
+     */
+    public function adminUpdate(Request $request, CourseEnrollee $enrollment)
+    {
+        $this->authorize('isAdmin');
+
+        $validated = $request->validate([
+            'status' => 'required|in:pending,active,completed,cancelled',
+        ]);
+
+        $enrollment->update($validated);
+
+        return redirect()->route('admin.course-enrollments.show', $enrollment)
+            ->with('success', 'Enrollment status updated successfully.');
+    }
+}

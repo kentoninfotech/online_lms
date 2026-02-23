@@ -7,7 +7,24 @@
             <span class="pc-micon"> <i class="ph ph-gauge" style="color: #f0c221;"></i></span><span class="pc-mtext">Dashboard</span>
         </a>
     </li>
-
+    <li class="pc-item pc-hasmenu">
+        <a href="#" class="pc-link">
+            <span class="pc-micon"><i class="bi bi-book-fill" style="color: #330952;"></i></span>
+            <span class="pc-mtext">Courses</span>
+            <span class="pc-arrow"><i class="ph ph-caret-down"></i></span>
+        </a>
+        <ul class="pc-submenu">
+            <li class="pc-item">
+                <a href="{{ route('courses.my-enrollments') }}" class="pc-link">My Courses</a>
+            </li>
+            <li class="pc-item">
+                <a href="{{ route('courses.all') }}" class="pc-link">Browse Courses</a>
+            </li>
+            <!-- <li class="pc-item">
+                <a href="{{ route('courses.index') }}#featured-courses" class="pc-link">Featured Courses</a>
+            </li> -->
+        </ul>
+    </li>
     <li class="pc-item">
         <a href="{{ route('student.lessons') }}" class="pc-link">
             <span class="pc-micon"><i class="bi bi-book-half" style="color: #330952;"></i></span>

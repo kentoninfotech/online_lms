@@ -23,7 +23,9 @@ class StoreStudentRequest extends BaseUserRequest
     public function rules(): array
     {
         return array_merge($this->commonRules(), [
-            //
+            'parent_id' => 'nullable|exists:users,id',
+            'dob'       => 'nullable|date',
+            'gender'    => 'nullable|in:male,female',
         ]);
     }
 }

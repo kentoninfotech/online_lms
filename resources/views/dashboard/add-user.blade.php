@@ -70,11 +70,11 @@
                             </select>
                         </div>
                     </div>
-                    <h5>Student Parent</h5>
+                    <h5>Student Parent (Optional)</h5>
                     <div class="col-md-6 m-3">
-                        <label class="form-label">Student Parent</label>
+                        <label class="form-label">Student Parent <span class="text-muted">(optional)</span></label>
                         <select name="parent_id" id="parent_id" class="form-control">
-                            <option value="">Select Parent</option>
+                            <option value="">-- No Parent --</option>
                             @foreach($parent_list as $parent)
                             <option value="{{ $parent->id }}" 
                                 {{ old('parent_id') == $parent->id ? 'selected' : '' }}>

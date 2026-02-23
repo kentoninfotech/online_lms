@@ -26,7 +26,7 @@
                 <div class="col-md-6 col-xl-6">
                 <div class="card statistics-card-1">
                     <div class="card-body">
-                        <img src="../assets/images/widget/img-status-5.svg" alt="img" class="img-fluid img-bg" />
+                        <img src="{{ asset('assets/images/widget/img-status-5.svg') }}" alt="img" class="img-fluid img-bg" />
                         <div class="d-flex align-items-center justify-content-between mb-3 drp-div">
                         <h6 class="mb-0">Monthly Attendance</h6>
                         </div>

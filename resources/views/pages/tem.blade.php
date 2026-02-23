@@ -117,7 +117,7 @@
     <div class="col-md-4 col-sm-6">
         <div class="card statistics-card-1">
         <div class="card-body">
-            <img src="../assets/images/widget/img-status-4.svg" alt="img" class="img-fluid img-bg" />
+            <img src="{{ asset('assets/images/widget/img-status-4.svg') }}" alt="img" class="img-fluid img-bg" />
             <div class="d-flex align-items-center justify-content-between mb-3 drp-div">
             <h6 class="mb-0">Daily Sales</h6>
             </div>
@@ -142,7 +142,7 @@
     <div class="col-md-4 col-sm-6">
         <div class="card statistics-card-1">
         <div class="card-body">
-            <img src="../assets/images/widget/img-status-5.svg" alt="img" class="img-fluid img-bg" />
+            <img src="{{ asset('assets/images/widget/img-status-5.svg') }}" alt="img" class="img-fluid img-bg" />
             <div class="d-flex align-items-center justify-content-between mb-3 drp-div">
             <h6 class="mb-0">Monthly Sales</h6>
             </div>
@@ -167,7 +167,7 @@
     <div class="col-md-4 col-sm-12">
         <div class="card statistics-card-1 bg-brand-color-1">
         <div class="card-body">
-            <img src="../assets/images/widget/img-status-6.svg" alt="img" class="img-fluid img-bg" />
+            <img src="{{ asset('assets/images/widget/img-status-6.svg') }}" alt="img" class="img-fluid img-bg" />
             <div class="d-flex align-items-center justify-content-between mb-3 drp-div">
             <h6 class="mb-0 text-white">Yearly Sales</h6>
             </div>
@@ -206,7 +206,7 @@
                 <th>Transaction ID</th>
                 </tr>
                 <tr>
-                <td><img src="../assets/images/widget/p1.jpg" alt="prod img" class="img-fluid" /></td>
+                <td><img src="{{ asset('assets/images/widget/p1.jpg') }}" alt="prod img" class="img-fluid" /></td>
                 <td>PNG002413</td>
                 <td>Jane Elliott</td>
                 <td>06-01-2017</td>
@@ -214,7 +214,7 @@
                 <td>#7234421</td>
                 </tr>
                 <tr>
-                <td><img src="../assets/images/widget/p2.jpg" alt="prod img" class="img-fluid" /></td>
+                <td><img src="{{ asset('assets/images/widget/p2.jpg') }}" alt="prod img" class="img-fluid" /></td>
                 <td>PNG002344</td>
                 <td>John Deo</td>
                 <td>05-01-2017</td>
@@ -222,7 +222,7 @@
                 <td>#7234486</td>
                 </tr>
                 <tr>
-                <td><img src="../assets/images/widget/p3.jpg" alt="prod img" class="img-fluid" /></td>
+                <td><img src="{{ asset('assets/images/widget/p3.jpg') }}" alt="prod img" class="img-fluid" /></td>
                 <td>PNG002653</td>
                 <td>Eugine Turner</td>
                 <td>04-01-2017</td>
@@ -230,7 +230,7 @@
                 <td>#7234417</td>
                 </tr>
                 <tr>
-                <td><img src="../assets/images/widget/p4.jpg" alt="prod img" class="img-fluid" /></td>
+                <td><img src="{{ asset('assets/images/widget/p4.jpg') }}" alt="prod img" class="img-fluid" /></td>
                 <td>PNG002156</td>
                 <td>Jacqueline Howell</td>
                 <td>03-01-2017</td>

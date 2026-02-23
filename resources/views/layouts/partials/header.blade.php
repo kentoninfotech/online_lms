@@ -1,8 +1,8 @@
 ﻿<div class="m-header">
         <a href="/" class="b-brand text-primary">
         <!-- ========   Change your logo from here   ============ -->
-        <img src="../assets/images/logo.png" width="120" alt="logo image" class="logo-lg" />
-        <!-- <img src="../assets/images/logo-white.svg" alt="logo image" class="logo-lg" /> -->
+        <img src="{{ asset('assets/images/logo.png') }}" width="120" alt="logo image" class="logo-lg" />
+        <!-- <img src="{{ asset('assets/images/logo-white.svg') }}" alt="logo image" class="logo-lg" /> -->
         </a>
     </div>
     <div class="header-wrapper"> <!-- [Mobile Media Block] start -->
@@ -54,7 +54,7 @@
             aria-haspopup="false"
             data-bs-auto-close="outside"
             aria-expanded="false">
-            <img src="{{ Auth::user()->profile ? asset('storage/'. Auth::user()->profile) : asset('storage/profiles/profile.png') ?? 'https://ui-avatars.com/api/?name='. Auth::user()->name }}" 
+            <img src="{{ Auth::user()->profile ? asset(Auth::user()->profile) : asset('storage/profiles/profile.png') ?? 'https://ui-avatars.com/api/?name='. Auth::user()->name }}" 
                 alt="{{ Auth::user()->name }}" class="user-avtar" />
          </a>
     

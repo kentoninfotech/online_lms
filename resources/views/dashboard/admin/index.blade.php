@@ -7,12 +7,65 @@
 <div class="container">
     <h5>Welcome back {{ Auth::user()->name }}</h5>
 
+    <!-- Quick Action Buttons -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h6>Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="{{ route('admin.courses.index') }}" class="btn btn-outline-primary">
+                            <i class="bi bi-book-fill me-2"></i>Manage Courses
+                        </a>
+                        <a href="{{ route('admin.facilitators.index') }}" class="btn btn-outline-success">
+                            <i class="bi bi-laptop me-2"></i>Manage Tutors
+                        </a>
+                        <a href="{{ route('admin.students') }}" class="btn btn-outline-info">
+                            <i class="bi bi-people-fill me-2"></i>Manage Students
+                        </a>
+                        <a href="{{ route('admin.instructors') }}" class="btn btn-outline-warning">
+                            <i class="bi bi-person-badge me-2"></i>Manage Instructors
+                        </a>
+                        <a href="{{ route('admin.courses.create') }}" class="btn btn-success">
+                            <i class="bi bi-plus-circle me-2"></i>New Course
+                        </a>
+                        <a href="{{ route('admin.facilitators.create') }}" class="btn btn-success">
+                            <i class="bi bi-plus-circle me-2"></i>New Tutor
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <!-- [col-8] start -->
         <div class="col-lg-8">
 
            <div class="row">
                <div class="col-md-6 col-xl-6">
+                    <div class="card virtual-secondary order-card">
+                    <div class="card-body">
+                        <h6 class="text-white">Total Courses</h6>
+                        <h2 class="text-end text-white"><i class="bi bi-book-fill float-start"></i>
+                             <span>{{ $totalCourses }}</span> 
+                        </h2>
+                        <p class="m-b-0">Active Courses<span class="float-end">{{ $totalCourses }}</span></p>
+                    </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-6">
+                    <div class="card bg-grd-primary order-card">
+                    <div class="card-body">
+                        <h6 class="text-white">Total Tutors</h6>
+                        <h2 class="text-end text-white"><i class="bi bi-laptop float-start"></i><span>{{ $totalTutors }}</span> </h2>
+                        <p class="m-b-0">Online Tutors<span class="float-end"> {{ $totalTutors }} </span></p>
+                    </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-6">
                     <div class="card virtual-secondary order-card">
                     <div class="card-body">
                         <h6 class="text-white">Total Student</h6>
@@ -43,8 +96,89 @@
                 </div>
             </div> <!-- row end -->
 
-            <!-- Recent Payments -->
+            <!-- Recent Courses -->
             <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Recent Courses</h5>
+                    <a href="{{ route('admin.courses.index') }}" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Course Name</th>
+                                <th>Category</th>
+                                <th>Facilitator</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($recentCourses as $course)
+                                <tr>
+                                    <td><strong>{{ $course->name }}</strong></td>
+                                    <td>{{ $course->category->name ?? 'N/A' }}</td>
+                                    <td>{{ $course->facilitator->name ?? 'N/A' }}</td>
+                                    <td>₦{{ number_format($course->price ?? 0, 2) }}</td>
+                                    <td>
+                                        <span class="badge {{ $course->is_active ? 'bg-success' : 'bg-danger' }}">
+                                            {{ $course->is_active ? 'Active' : 'Inactive' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('admin.courses.edit', $course) }}" class="btn btn-sm btn-info">Edit</a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="6" class="text-center">No courses yet.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recent Tutors -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Recent Online Tutors</h5>
+                    <a href="{{ route('admin.facilitators.index') }}" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Tutor Name</th>
+                                <th>Expertise</th>
+                                <th>Qualifications</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($recentTutors as $tutor)
+                                <tr>
+                                    <td><strong>{{ $tutor->name }}</strong></td>
+                                    <td>{{ $tutor->expertise ?? 'N/A' }}</td>
+                                    <td>{{ Str::limit($tutor->qualification ?? 'N/A', 30) }}</td>
+                                    <td>
+                                        <span class="badge {{ $tutor->is_active ? 'bg-success' : 'bg-danger' }}">
+                                            {{ $tutor->is_active ? 'Active' : 'Inactive' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('admin.facilitators.edit', $tutor) }}" class="btn btn-sm btn-info">Edit</a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="5" class="text-center">No tutors yet.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recent Payments -->\n            <div class="card mb-4">
                 <div class="card-header">Recent Payments</div>
                 <div class="card-body table-responsive">
                     <table class="table">

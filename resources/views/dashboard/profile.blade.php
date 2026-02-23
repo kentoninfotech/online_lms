@@ -14,7 +14,7 @@
     <div class="card-body position-relative">
         <!-- Avatar & Basic Info -->
         <div class="d-flex align-items-center">
-            <img src="{{ $user->profile ? asset('storage/'. $user->profile) : asset('storage/profiles/profile.png') ?? 'https://ui-avatars.com/api/?name='.$user->name }}" 
+            <img src="{{ $user->profile ? asset($user->profile) : asset('storage/profiles/profile.png') ?? 'https://ui-avatars.com/api/?name='.$user->name }}" 
                     alt="{{ $user->name }}"
                     class="rounded-circle border border-3 border-white shadow"
                     style="width: 110px; height: 110px; margin-top:-80px;">
@@ -148,7 +148,7 @@
         <div class="modal-body text-center">
             <!-- Preview Avatar -->
             <img id="profilePreview"
-                 src="{{ $user->profile ? asset('storage/'.$user->profile) : 'https://ui-avatars.com/api/?name='.urlencode($user->name) }}"
+                 src="{{ $user->profile ? asset($user->profile) : 'https://ui-avatars.com/api/?name='.urlencode($user->name) }}"
                  class="rounded-circle border shadow mb-3"
                  style="width: 120px; height: 120px; object-fit: cover; display:block; margin:0 auto;">
             

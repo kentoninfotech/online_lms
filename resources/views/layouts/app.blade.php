@@ -67,9 +67,18 @@
     <nav class="pc-sidebar">
     <div class="navbar-wrapper">
         <div class="m-header">
-        <a href="/" class="b-brand text-primary">
-            <!-- ========   Change your logo from here   ============ -->
-            <img src="../assets/images/logo.svg" alt="logo image" class="logo-lg" />
+        <a href="/" class="b-brand text-primary d-flex align-items-center gap-2">
+            <!-- ========   Admin uploaded logo from Site Settings   ============ -->
+            @php
+                $logo = \App\Models\HomepageSetting::getImagePath('branding', 'logo_light', asset('assets/images/logo.svg'));
+                $siteName = \App\Models\HomepageSetting::getSetting('branding', 'site_name', 'LearnSmart');
+            @endphp
+            @if($logo && $logo !== asset('assets/images/logo.svg'))
+                <img src="{{ $logo }}" alt="logo" class="logo-lg" style="height: 32px; width: auto;" />
+            @else
+                <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" class="logo-lg" />
+            @endif
+            <span class="d-none d-md-inline" style="font-weight: 600; font-size: 0.9rem;">{{ $siteName }}</span>
         </a>
         </div>
         <div class="navbar-content">

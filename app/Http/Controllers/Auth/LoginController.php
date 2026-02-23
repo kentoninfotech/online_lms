@@ -41,7 +41,7 @@ class LoginController extends Controller
 
     /**
      * The user has been authenticated.
-     * Update their timezone based on browser detection.
+     * Check email verification status and update timezone.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  mixed  $user
@@ -49,6 +49,15 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
+        // Check if email is verified
+        if (!$user->hasVerifiedEmail()) {
+            auth()->logout();
+            return redirect()->route('verification.notice')
+                ->with('email', $user->email)
+                ->withInput(['email' => $user->email])
+                ->with('warning', 'Please verify your email address before accessing your dashboard.');
+        }
+
         // Get timezone from multiple sources (priority order):
         // 1. Request header (from AJAX/XHR)
         // 2. Form input (hidden field added by JavaScript)
