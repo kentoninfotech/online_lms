@@ -1,7 +1,7 @@
 # Email Verification Setup Guide
 
 ## Overview
-The LearnSmart LMS now requires users to verify their email address before logging in. This enhances security and ensures valid communication channels.
+The COINMAC LMS now requires users to verify their email address before logging in. This enhances security and ensures valid communication channels.
 
 ## What Changed
 
@@ -44,7 +44,7 @@ MAIL_USERNAME=your-email@gmail.com
 MAIL_PASSWORD=your-app-password
 MAIL_ENCRYPTION=tls
 MAIL_FROM_ADDRESS=your-email@gmail.com
-MAIL_FROM_NAME="LearnSmart Academy"
+MAIL_FROM_NAME="COINMAC Inc"
 ```
 
 ### Option 2: Mailgun
@@ -58,7 +58,7 @@ MAIL_MAILER=mailgun
 MAILGUN_DOMAIN=your-domain.mailgun.org
 MAILGUN_SECRET=your-api-key
 MAIL_FROM_ADDRESS=noreply@your-domain.mailgun.org
-MAIL_FROM_NAME="LearnSmart Academy"
+MAIL_FROM_NAME="COINMAC Inc"
 ```
 
 ### Option 3: SendGrid
@@ -71,7 +71,7 @@ MAIL_FROM_NAME="LearnSmart Academy"
 MAIL_MAILER=sendgrid
 SENDGRID_API_KEY=your-sendgrid-api-key
 MAIL_FROM_ADDRESS=noreply@yourdomain.com
-MAIL_FROM_NAME="LearnSmart Academy"
+MAIL_FROM_NAME="COINMAC Inc"
 ```
 
 ### Option 4: Local Testing with Mailtrap
@@ -88,7 +88,7 @@ MAIL_USERNAME=your-username
 MAIL_PASSWORD=your-password
 MAIL_ENCRYPTION=tls
 MAIL_FROM_ADDRESS=test@example.com
-MAIL_FROM_NAME="LearnSmart Academy"
+MAIL_FROM_NAME="COINMAC Inc"
 ```
 
 ### Option 5: Development Only (Mailtrap Log)
@@ -134,7 +134,7 @@ php artisan tinker
 php artisan tinker
 > Mail::raw('Test email', function($m) {
     $m->to('your-email@example.com')
-      ->subject('Test from LearnSmart');
+      ->subject('Test from COINMAC');
   })
 ```
 

@@ -1,15 +1,38 @@
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
+    @php
+        // Fetch design settings from database
+        $designSettings = [
+            'main_bg_color' => \App\Models\HomepageSetting::getSetting('design', 'main_bg_color') ?? '#ffffff',
+            'main_bg_image' => \App\Models\HomepageSetting::getSetting('design', 'main_bg_image'),
+            'main_bg_opacity' => \App\Models\HomepageSetting::getSetting('design', 'main_bg_opacity') ?? '100',
+            'navbar_bg_color' => \App\Models\HomepageSetting::getSetting('design', 'navbar_bg_color') ?? 'linear-gradient(135deg, #fff 0%, #f8f9fa 100%)',
+            'navbar_text_color' => \App\Models\HomepageSetting::getSetting('design', 'navbar_text_color') ?? '#333',
+            'container_bg_color' => \App\Models\HomepageSetting::getSetting('design', 'container_bg_color') ?? '#f8f9fa',
+        ];
+        
+        // Fetch branding settings from database
+        $brandingSettings = [
+            'site_name' => \App\Models\HomepageSetting::getSetting('branding', 'site_name') ?? 'COINMAC Inc',
+            'site_tagline' => \App\Models\HomepageSetting::getSetting('branding', 'site_tagline'),
+            'logo_light' => \App\Models\HomepageSetting::getImagePath('branding', 'logo_light'),
+            'logo_dark' => \App\Models\HomepageSetting::getImagePath('branding', 'logo_dark'),
+            'logo_height' => \App\Models\HomepageSetting::getSetting('branding', 'logo_height') ?? '50',
+            'show_logo' => \App\Models\HomepageSetting::getSetting('branding', 'show_logo') ?? '1',
+            'show_site_name' => \App\Models\HomepageSetting::getSetting('branding', 'show_site_name') ?? '1',
+            'show_site_tagline' => \App\Models\HomepageSetting::getSetting('branding', 'show_site_tagline') ?? '1',
+        ];
+    @endphp
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description" content="COINMAC Inc - Professional Online Learning Platform. Access world-class courses from expert instructors."/>
+    <meta name="description" content="{{ $brandingSettings['site_name'] }} - Professional Online Learning Platform. Access world-class courses from expert instructors."/>
     <meta name="keywords" content="online learning, courses, education, professional development, training"/>
-    <meta name="author" content="COINMAC Inc"/>
+    <meta name="author" content="{{ $brandingSettings['site_name'] }}"/>
 
-    <title>@yield('title', 'COINMAC Inc - Professional Online Learning Platform')</title>
+<title>@yield('title', $brandingSettings['site_name'] . ' - Professional Online Learning Platform')</title>
 
     <!-- Favicon -->
     <link rel="icon" href="{{ asset('assets/images/favicon.png') }}" type="image/x-icon" />
@@ -50,7 +73,7 @@
 
         /* Navbar Styles */
         .navbar {
-            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+            background: {{ $designSettings['navbar_bg_color'] }};
             backdrop-filter: blur(10px);
             box-shadow: 0 2px 15px rgba(0,0,0,0.08);
             padding: 1rem 0;
@@ -77,6 +100,41 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+            z-index: 10000;
+        }
+
+        .navbar-brand img {
+            max-height: {{ $brandingSettings['logo_height'] }}px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.1));
+        }
+
+        .navbar-brand-text {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .navbar-brand-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2563EB 0%, #4F46E5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            whitespace: nowrap;
+        }
+
+        .navbar-brand-tagline {
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: #666;
+            letter-spacing: 0.5px;
         }
 
         .navbar-toggler {
@@ -105,7 +163,7 @@
 
         .nav-link {
             font-weight: 500;
-            color: #333 !important;
+            color: {{ $designSettings['navbar_text_color'] }} !important;
             margin: 0 0.5rem;
             padding: 0.5rem 0 !important;
             transition: all 0.3s ease;
@@ -669,7 +727,19 @@
     <nav class="navbar navbar-expand-lg fixed-top navbar-light" id="mainNavbar">
         <div class="container-lg">
             <a class="navbar-brand" href="{{ route('courses.index') }}">
-                <i class="bi bi-book"></i> COINMAC Inc
+                @if($brandingSettings['show_logo'] && $brandingSettings['logo_light'])
+                    <img src="{{ $brandingSettings['logo_light'] }}" alt="{{ $brandingSettings['site_name'] }}">
+                @elseif($brandingSettings['show_logo'])
+                    <i class="bi bi-book" style="font-size: 2rem; margin-right: 0.5rem;"></i>
+                @endif
+                <div class="navbar-brand-text">
+                    @if($brandingSettings['show_site_name'])
+                        <span class="navbar-brand-name">{{ $brandingSettings['site_name'] }}</span>
+                    @endif
+                    @if($brandingSettings['show_site_tagline'] && $brandingSettings['site_tagline'])
+                        <span class="navbar-brand-tagline">{{ $brandingSettings['site_tagline'] }}</span>
+                    @endif
+                </div>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -688,21 +758,61 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                <div class="px-3 py-2">
+                                <div class="px-3 py-2" style="position: relative;">
                                     <input type="text" id="navSearchInput" class="form-control form-control-sm" placeholder="🔍 Search courses...">
-                                    <div id="navSearchResults" class="position-absolute bg-white rounded mt-1" style="width: calc(100% - 30px); display: none; max-height: 300px; overflow-y: auto; z-index: 1001;"></div>
+                                    <div id="navSearchResults" class="position-absolute bg-white rounded shadow-lg" style="width: 320px; min-width: 100%; display: none; max-height: 350px; overflow-y: auto; overflow-x: visible; z-index: 10001; top: 45px; left: 12px; border: 1px solid #e5e7eb;"></div>
                                 </div>
                             </li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ route('courses.all') }}"><strong>All Courses</strong></a></li>
                             <li><hr class="dropdown-divider"></li>
-                            @foreach(\App\Models\CourseCategory::where('is_active', true)->orderBy('sort_order')->get() as $category)
-                            <li><a class="dropdown-item" href="{{ route('courses.by-category', $category) }}">{{ $category->name }}</a></li>
+                            
+                            <!-- Course Levels Dropdown -->
+                            @php
+                                $levels = ['Local', 'International', 'Diploma'];
+                            @endphp
+                            @foreach($levels as $level)
+                            <li class="dropdown-submenu">
+                                <a class="dropdown-item dropdown-toggle" href="#">{{ $level }}</a>
+                                <ul class="dropdown-menu">
+                                    @php
+                                        $levelCategories = \App\Models\CourseCategory::where('is_active', true)
+                                            ->whereIn('id', \App\Models\Course::where('level', $level)->pluck('category_id')->toArray())
+                                            ->orderBy('sort_order')
+                                            ->distinct()
+                                            ->get();
+                                    @endphp
+                                    @forelse($levelCategories as $category)
+                                    <li><a class="dropdown-item" href="{{ route('courses.by-level-category', ['level' => $level, 'category' => $category]) }}">{{ $category->name }}</a></li>
+                                    @empty
+                                    <li><a class="dropdown-item disabled">No categories</a></li>
+                                    @endforelse
+                                </ul>
+                            </li>
                             @endforeach
                         </ul>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="{{ route('services.index') }}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Services
+                        </a>
+                        <ul class="dropdown-menu">
+                            @php
+                                $services = \App\Models\Service::where('published', true)->limit(8)->get();
+                            @endphp
+                            @forelse($services as $service)
+                            <li><a class="dropdown-item" href="{{ route('services.show', $service) }}">{{ $service->title }}</a></li>
+                            @empty
+                            <li><a class="dropdown-item disabled">No services available</a></li>
+                            @endforelse
+                            @if($services->count() > 0)
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item fw-bold text-primary" href="{{ route('services.index') }}">View All Services</a></li>
+                            @endif
+                        </ul>
+                    </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/#testimonials">Testimonials</a>
+                        <a class="nav-link" href="{{ route('galleries.index') }}">Gallery</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/#contact">Contact</a>
@@ -754,8 +864,15 @@
     </nav>
 
     <!-- Main Content -->
-    <main style="margin-top: 60px;">
-        @yield('content')
+    <main style="margin-top: 60px; 
+                 background-color: {{ $designSettings['main_bg_color'] }};
+                 @if($designSettings['main_bg_image']) 
+                 background-image: url('{{ asset($designSettings['main_bg_image']) }}');
+                 background-size: cover;
+                 background-attachment: fixed;
+                 @endif
+                 opacity: {{ ($designSettings['main_bg_opacity'] ?? 100) / 100 }};">
+        @yield('content', '<section style="background-color: ' . $designSettings['container_bg_color'] . '; padding: 2rem 0;"><div class="container-lg"></div></section>')
     </main>
 
     <!-- Footer -->
@@ -763,7 +880,9 @@
         <div class="container-lg py-5 border-bottom border-secondary">
             <div class="row g-4">
                 <div class="col-lg-3">
-                    <h5 class="mb-3"><i class="bi bi-book text-primary"></i> COINMAC Inc</h5>
+                    @if($brandingSettings['show_site_name'])
+                    <h5 class="mb-3"><i class="bi bi-book text-primary"></i> {{ $brandingSettings['site_name'] }}</h5>
+                    @endif
                     <p class="text-muted small">Empowering professionals worldwide with quality education and skill development.</p>
                     <div class="d-flex gap-2 mt-3">
                         <a href="#" class="btn btn-sm btn-outline-light rounded-circle"><i class="bi bi-facebook"></i></a>
@@ -802,7 +921,7 @@
             </div>
         </div>
         <div class="container-lg py-3 text-center text-muted small">
-            <p>&copy; 2026 COINMAC Inc . All rights reserved. | Empowering Professionals Globally</p>
+            <p>&copy; 2026 @if($brandingSettings['show_site_name']){{ $brandingSettings['site_name'] }} . @endif All rights reserved. | Empowering Professionals Globally</p>
         </div>
     </footer>
 
@@ -847,11 +966,11 @@
                         .then(data => {
                             if (data.success && data.data.length > 0) {
                                 navSearchResults.innerHTML = data.data.map(course => `
-                                    <a href="${course.url}" class="dropdown-item d-flex gap-2 align-items-start" style="border-bottom: 1px solid #f0f0f0; padding: 8px 12px;">
-                                        ${course.featured_image ? `<img src="${course.featured_image}" alt="" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">` : '<span style="width: 40px; height: 40px; background: #e9ecef; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 20px;">📚</span>'}
-                                        <div style="flex: 1;">
-                                            <div style="font-weight: 500; color: #2c3e50; font-size: 13px;">${course.title}</div>
-                                            <div style="font-size: 11px; color: #7f8c8d;">${course.category}</div>
+                                    <a href="${course.url}" class="dropdown-item" style="border-bottom: 1px solid #f0f0f0; padding: 8px 12px; white-space: normal; display: flex; gap: 8px; align-items: flex-start;">
+                                        ${course.featured_image ? `<img src="${course.featured_image}" alt="" style="width: 40px; height: 40px; min-width: 40px; object-fit: cover; border-radius: 4px; flex-shrink: 0;">` : '<span style="width: 40px; height: 40px; min-width: 40px; background: #e9ecef; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">📚</span>'}
+                                        <div style="flex: 1; width: 100%; min-width: 0;">
+                                            <div style="font-weight: 500; color: #2c3e50; font-size: 13px; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; line-height: 1.3;">${course.title}</div>
+                                            <div style="font-size: 11px; color: #7f8c8d; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; line-height: 1.3;">${course.category}</div>
                                         </div>
                                     </a>
                                 `).join('');

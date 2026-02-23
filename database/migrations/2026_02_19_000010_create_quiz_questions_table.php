@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('quiz_id')->constrained('course_quizzes')->onDelete('cascade');
             $table->text('question');
-            $table->enum('question_type', ['multiple_choice', 'true_false', 'short_answer', 'essay'])->default('multiple_choice');
+            $table->enum('question_type', ['multiple_choice', 'true_false', 'short_answer', 'essay', 'yes_no'])->default('multiple_choice');
             $table->text('correct_answer')->nullable(); // JSON for multiple options
             $table->integer('points')->default(1);
             $table->integer('sequence')->default(0);

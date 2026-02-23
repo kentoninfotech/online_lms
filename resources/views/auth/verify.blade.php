@@ -1,6 +1,6 @@
 @extends('layouts.auth')
 
-@section('title', 'Email Verification - LearnSmart')
+@section('title', 'Email Verification - COINMAC')
 
 @section('content')
 

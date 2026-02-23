@@ -92,14 +92,14 @@
                             <div class="border rounded p-2 bg-light">
                                 {{-- Image Preview --}}
                                 @if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp']))
-                                    <a href="{{ asset('storage/'. $receipt) }}" target="_blank">
-                                        <img src="{{ asset('storage/'. $receipt) }}" alt="Proof of payment" class="img-fluid rounded" style="max-width: 200px;">
+                                    <a href="{{ asset($receipt) }}" target="_blank">
+                                        <img src="{{ asset($receipt) }}" alt="Proof of payment" class="img-fluid rounded" style="max-width: 200px;">
                                     </a>
 
                                 {{-- PDF Preview --}}
                                 @elseif ($extension === 'pdf')
-                                    <iframe src="{{ asset('storage/'. $receipt) }}" width="100%" height="400" class="rounded border"></iframe>
-                                    <a href="{{ asset('storage/'. $receipt) }}" target="_blank" class="btn btn-outline-primary btn-sm mt-2">
+                                    <iframe src="{{ asset($receipt) }}" width="100%" height="400" class="rounded border"></iframe>
+                                    <a href="{{ asset($receipt) }}" target="_blank" class="btn btn-outline-primary btn-sm mt-2">
                                         View Full PDF
                                     </a>
 
@@ -109,7 +109,7 @@
                                         <i class="bi bi-file-earmark-word text-primary fs-3 me-2"></i>
                                         <div>
                                             <p class="mb-1 small">{{ basename($receipt) }}</p>
-                                            <a href="{{ asset('storage/'. $receipt) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            <a href="{{ asset($receipt) }}" target="_blank" class="btn btn-sm btn-outline-primary">
                                                 View Document
                                             </a>
                                         </div>
@@ -121,7 +121,7 @@
                                         <i class="bi bi-file-earmark-text fs-3 me-2 text-muted"></i>
                                         <div>
                                             <p class="mb-1 small">{{ basename($receipt) }}</p>
-                                            <a href="{{ asset('storage/'. $receipt) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                            <a href="{{ asset($receipt) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
                                                 Download
                                             </a>
                                         </div>

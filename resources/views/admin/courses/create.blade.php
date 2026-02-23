@@ -59,14 +59,31 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label for="subtitle" class="form-label">Subtitle</label>
                                 <input type="text" class="form-control @error('subtitle') is-invalid @enderror" id="subtitle" name="subtitle" value="{{ old('subtitle') }}">
                                 @error('subtitle')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-4 mb-3">
+                                <label for="level" class="form-label">Course Level <span class="text-danger">*</span></label>
+                                <select class="form-select @error('level') is-invalid @enderror" id="level" name="level" required>
+                                    <option value="">-- Select Level --</option>
+                                    @php
+                                        $levels = ['Local', 'International', 'Diploma'];
+                                    @endphp
+                                    @foreach($levels as $level)
+                                        <option value="{{ $level }}" @selected(old('level') == $level)>
+                                            {{ $level }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('level')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-4 mb-3">
                                 <label for="category_id" class="form-label">Category <span class="text-danger">*</span></label>
                                 <select class="form-select @error('category_id') is-invalid @enderror" id="category_id" name="category_id" required>
                                     <option value="">-- Select Category --</option>

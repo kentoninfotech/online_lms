@@ -78,7 +78,9 @@ class ProfileController extends Controller
 
         // Delete old profile if exists
         if ($user->profile) {
-            Storage::disk('public')->delete($user->profile);
+            if (file_exists(public_path($user->profile))) {
+                unlink(public_path($user->profile));
+            }
         }
 
         // Store new profile

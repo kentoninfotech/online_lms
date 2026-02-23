@@ -53,11 +53,45 @@
                             <small class="text-muted">Your main site title displayed in navigation</small>
                         </div>
 
-                        <div class="mb-0">
+                        <div class="mb-3">
                             <label for="site_tagline" class="form-label">Tagline / Motto</label>
                             <input type="text" class="form-control" id="site_tagline" name="site_tagline" 
                                 value="{{ $logoSettings['site_tagline'] ?? '' }}" placeholder="e.g., Learn Anytime, Anywhere">
                             <small class="text-muted">A short description shown with your brand</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="logo_height" class="form-label">Logo Height (pixels)</label>
+                            <input type="number" class="form-control" id="logo_height" name="logo_height" 
+                                value="{{ $logoSettings['logo_height'] ?? '50' }}" min="20" max="200" placeholder="50">
+                            <small class="text-muted">Set the height of the logo in the navbar (width will adjust automatically)</small>
+                        </div>
+
+                        <hr class="my-3">
+
+                        <div class="mb-0">
+                            <h6 class="mb-3">Element Visibility</h6>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="show_logo" name="show_logo" value="1"
+                                    {{ isset($logoSettings['show_logo']) && $logoSettings['show_logo'] ? 'checked' : '' }}>
+                                <label class="form-check-label" for="show_logo">
+                                    Show Logo in Navbar
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="show_site_name" name="show_site_name" value="1"
+                                    {{ isset($logoSettings['show_site_name']) && $logoSettings['show_site_name'] ? 'checked' : '' }}>
+                                <label class="form-check-label" for="show_site_name">
+                                    Show Site Name
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="show_site_tagline" name="show_site_tagline" value="1"
+                                    {{ isset($logoSettings['show_site_tagline']) && $logoSettings['show_site_tagline'] ? 'checked' : '' }}>
+                                <label class="form-check-label" for="show_site_tagline">
+                                    Show Tagline
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>

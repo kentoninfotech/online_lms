@@ -25,11 +25,15 @@ class SiteBuilderController extends Controller
         $this->authorize('isAdmin');
 
         $logoSettings = [
-            'logo_light' => HomepageSetting::getSetting('branding', 'logo_light'),
-            'logo_dark' => HomepageSetting::getSetting('branding', 'logo_dark'),
-            'favicon' => HomepageSetting::getSetting('branding', 'favicon'),
+            'logo_light' => HomepageSetting::getImagePath('branding', 'logo_light'),
+            'logo_dark' => HomepageSetting::getImagePath('branding', 'logo_dark'),
+            'favicon' => HomepageSetting::getImagePath('branding', 'favicon'),
             'site_name' => HomepageSetting::getSetting('branding', 'site_name'),
             'site_tagline' => HomepageSetting::getSetting('branding', 'site_tagline'),
+            'logo_height' => HomepageSetting::getSetting('branding', 'logo_height'),
+            'show_logo' => HomepageSetting::getSetting('branding', 'show_logo') ?? '1',
+            'show_site_name' => HomepageSetting::getSetting('branding', 'show_site_name') ?? '1',
+            'show_site_tagline' => HomepageSetting::getSetting('branding', 'show_site_tagline') ?? '1',
         ];
 
         return view('admin.site-builder.logos', compact('logoSettings'));
@@ -45,6 +49,10 @@ class SiteBuilderController extends Controller
         $validated = $request->validate([
             'site_name' => 'nullable|string|max:255',
             'site_tagline' => 'nullable|string|max:255',
+            'logo_height' => 'nullable|integer|min:20|max:200',
+            'show_logo' => 'nullable|in:0,1',
+            'show_site_name' => 'nullable|in:0,1',
+            'show_site_tagline' => 'nullable|in:0,1',
             'logo_light' => 'nullable|image|mimes:png,jpg,jpeg,gif,webp|max:2048',
             'logo_dark' => 'nullable|image|mimes:png,jpg,jpeg,gif,webp|max:2048',
             'favicon' => 'nullable|image|mimes:png,ico|max:1024',
@@ -109,6 +117,30 @@ class SiteBuilderController extends Controller
                 ['value' => $validated['site_tagline'], 'is_active' => true]
             );
         }
+
+        // Update logo height
+        if ($validated['logo_height']) {
+            HomepageSetting::updateOrCreate(
+                ['section' => 'branding', 'key' => 'logo_height'],
+                ['value' => $validated['logo_height'], 'is_active' => true]
+            );
+        }
+
+        // Update visibility settings
+        HomepageSetting::updateOrCreate(
+            ['section' => 'branding', 'key' => 'show_logo'],
+            ['value' => $request->has('show_logo') ? '1' : '0', 'is_active' => true]
+        );
+
+        HomepageSetting::updateOrCreate(
+            ['section' => 'branding', 'key' => 'show_site_name'],
+            ['value' => $request->has('show_site_name') ? '1' : '0', 'is_active' => true]
+        );
+
+        HomepageSetting::updateOrCreate(
+            ['section' => 'branding', 'key' => 'show_site_tagline'],
+            ['value' => $request->has('show_site_tagline') ? '1' : '0', 'is_active' => true]
+        );
 
         return redirect()->route('admin.site-builder.logos')
             ->with('success', 'Logos and branding updated successfully!');
@@ -257,5 +289,72 @@ class SiteBuilderController extends Controller
 
         return redirect()->route('admin.site-builder.page-titles')
             ->with('success', 'Page titles updated successfully!');
+    }
+
+    /**
+     * Edit design & layout (main element and navbar styling)
+     */
+    public function editDesign()
+    {
+        $this->authorize('isAdmin');
+
+        $designSettings = [
+            // Main element
+            'main_bg_color' => HomepageSetting::getSetting('design', 'main_bg_color') ?? '#ffffff',
+            'main_bg_image' => HomepageSetting::getSetting('design', 'main_bg_image'),
+            'main_bg_opacity' => HomepageSetting::getSetting('design', 'main_bg_opacity') ?? '100',
+            // Navbar
+            'navbar_bg_color' => HomepageSetting::getSetting('design', 'navbar_bg_color') ?? 'linear-gradient(135deg, #fff 0%, #f8f9fa 100%)',
+            'navbar_text_color' => HomepageSetting::getSetting('design', 'navbar_text_color') ?? '#333',
+            // First container
+            'container_bg_color' => HomepageSetting::getSetting('design', 'container_bg_color') ?? '#f8f9fa',
+        ];
+
+        return view('admin.site-builder.design', compact('designSettings'));
+    }
+
+    /**
+     * Update design & layout settings
+     */
+    public function updateDesign(Request $request)
+    {
+        $this->authorize('isAdmin');
+
+        $validated = $request->validate([
+            'main_bg_color' => 'nullable|regex:/^#(?:[0-9a-fA-F]{3}){1,2}$/',
+            'main_bg_image' => 'nullable|image|mimes:png,jpg,jpeg,gif,webp|max:5120',
+            'main_bg_opacity' => 'nullable|numeric|min:0|max:100',
+            'navbar_bg_color' => 'nullable|string|max:500',
+            'navbar_text_color' => 'nullable|regex:/^#(?:[0-9a-fA-F]{3}){1,2}$/',
+            'container_bg_color' => 'nullable|regex:/^#(?:[0-9a-fA-F]{3}){1,2}$/',
+        ]);
+
+        // Handle main background image upload
+        if ($request->hasFile('main_bg_image')) {
+            $file = $request->file('main_bg_image');
+            $uploadDir = public_path('uploads/branding');
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $filename = 'main-bg-' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move($uploadDir, $filename);
+            HomepageSetting::updateOrCreate(
+                ['section' => 'design', 'key' => 'main_bg_image'],
+                ['value' => 'uploads/branding/' . $filename, 'is_active' => true]
+            );
+        }
+
+        // Update color and text settings
+        foreach (['main_bg_color', 'main_bg_opacity', 'navbar_bg_color', 'navbar_text_color', 'container_bg_color'] as $key) {
+            if (isset($validated[$key])) {
+                HomepageSetting::updateOrCreate(
+                    ['section' => 'design', 'key' => $key],
+                    ['value' => $validated[$key], 'is_active' => true]
+                );
+            }
+        }
+
+        return redirect()->route('admin.site-builder.design')
+            ->with('success', 'Design and layout settings updated successfully!');
     }
 }

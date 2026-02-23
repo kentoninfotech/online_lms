@@ -80,7 +80,7 @@
                                 </td>
                                 <td>
                                     @if($payment->payment_evidence_path)
-                                        <a href="{{ asset('storage/' . $payment->payment_evidence_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <a href="{{ asset($payment->payment_evidence_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">
                                             <i class="bi bi-file-pdf"></i> View
                                         </a>
                                     @else

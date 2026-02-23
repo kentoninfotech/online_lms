@@ -48,7 +48,7 @@ class HomepageSettingSeeder extends Seeder
                 'section' => 'about',
                 'key' => 'title',
                 'title' => 'About Section Title',
-                'value' => 'About LearnSmart Academy',
+                'value' => 'About COINMAC Inc',
                 'data_type' => 'text',
                 'sort_order' => 1,
                 'is_active' => true
@@ -57,7 +57,7 @@ class HomepageSettingSeeder extends Seeder
                 'section' => 'about',
                 'key' => 'content',
                 'title' => 'About Content',
-                'value' => 'LearnSmart Academy is a leading online learning platform dedicated to transforming careers through world-class education and professional development courses.',
+                'value' => 'COINMAC Inc is a leading online learning platform dedicated to transforming careers through world-class education and professional development courses.',
                 'data_type' => 'textarea',
                 'sort_order' => 2,
                 'is_active' => true
@@ -104,7 +104,7 @@ class HomepageSettingSeeder extends Seeder
                 'section' => 'features',
                 'key' => 'title',
                 'title' => 'Features Section Title',
-                'value' => 'Why Choose LearnSmart?',
+                'value' => 'Why Choose COINMAC?',
                 'data_type' => 'text',
                 'sort_order' => 1,
                 'is_active' => true
@@ -191,7 +191,7 @@ class HomepageSettingSeeder extends Seeder
                 'section' => 'contact',
                 'key' => 'email',
                 'title' => 'Email Address',
-                'value' => 'contact@learnsmart.com',
+                'value' => 'info@coinmac.org',
                 'data_type' => 'text',
                 'sort_order' => 4,
                 'is_active' => true
@@ -211,7 +211,7 @@ class HomepageSettingSeeder extends Seeder
                 'section' => 'footer',
                 'key' => 'company_name',
                 'title' => 'Company Name',
-                'value' => 'LearnSmart Academy',
+                'value' => 'COINMAC Inc',
                 'data_type' => 'text',
                 'sort_order' => 1,
                 'is_active' => true

@@ -7,7 +7,7 @@
 
 ## Overview
 
-Comprehensive enhancement of the LearnSmart LMS admin, student, and instructor dashboards with new menu items, quick action buttons, and data visualization for courses management and online tutors management.
+Comprehensive enhancement of the COINMAC LMS admin, student, and instructor dashboards with new menu items, quick action buttons, and data visualization for courses management and online tutors management.
 
 ---
 
@@ -255,15 +255,15 @@ Changes:
 Use these seeded accounts to test dashboard features:
 
 **Admin Account:**
-- Email: `admin@learnsmart.com`
+- Email: `admin@COINMAC.com`
 - Password: `admin@123456`
 
 **Student Account:**
-- Email: `john.student@learnsmart.com`
+- Email: `john.student@COINMAC.com`
 - Password: `student@123`
 
 **Instructor Account:**
-- Email: `adekunle.instructor@learnsmart.com`
+- Email: `adekunle.instructor@COINMAC.com`
 - Password: `instructor@123`
 
 ### Test Endpoints

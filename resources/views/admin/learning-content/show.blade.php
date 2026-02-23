@@ -4,7 +4,7 @@
 
 @section('content')
 
-<div class="pc-container">
+<div class="pc-container" style="margin-top: -2rem;">
     <div class="page-header">
         <div class="page-block">
             <div class="row align-items-center">
@@ -20,7 +20,7 @@
     </div>
 </div>
 
-<div class="pc-container">
+<div class="pc-container" style="margin-top: 0.5rem;">
     <div class="row">
         <div class="col-lg-8">
             <div class="card">
@@ -104,7 +104,7 @@
                     @if($content->file_path)
                         <div class="mb-4">
                             <h6 class="text-muted">Attached File</h6>
-                            <p><a href="{{ asset('storage/' . $content->file_path) }}" class="btn btn-sm btn-primary" download>
+                            <p><a href="{{ asset($content->file_path) }}" class="btn btn-sm btn-primary" download>
                                 <i class="bi bi-download"></i> Download File
                             </a></p>
                         </div>

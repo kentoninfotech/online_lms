@@ -4,7 +4,7 @@
 
 @section('content')
 
-<div class="pc-container">
+<div class="pc-container" style="margin-top: -2rem;">
     <div class="page-header">
         <div class="page-block">
             <div class="row align-items-center">
@@ -24,7 +24,7 @@
     </div>
 </div>
 
-<div class="pc-container">
+<div class="pc-container" style="margin-top: 0.5rem;">
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
@@ -63,7 +63,7 @@
                                                 <span class="badge badge-light-info">{{ $quiz->questions->count() }}</span>
                                             </td>
                                             <td>
-                                                {{ $quiz->duration_minutes ?? '—' }}
+                                                {{ $quiz->time_limit_minutes ?? '—' }}
                                             </td>
                                             <td>
                                                 {{ $quiz->attempts_allowed }}
@@ -107,3 +107,27 @@
 </div>
 
 @endsection
+
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .table tbody tr {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f0f2f5;
+    }
+
+    .table tbody tr:nth-child(even) {
+        background-color: #f3f4f6;
+    }
+
+    .table tbody tr:nth-child(even):hover {
+        background-color: #eef0f5;
+    }
+</style>

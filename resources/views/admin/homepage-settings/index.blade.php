@@ -54,7 +54,10 @@
                 'stats' => 'fa-chart-bar',
                 'cta' => 'fa-bullhorn',
                 'contact' => 'fa-envelope',
-                'footer' => 'fa-square'
+                'footer' => 'fa-square',
+                'carousel' => 'fa-images',
+                'services' => 'fa-briefcase',
+                'galleries' => 'fa-image'
             ];
         @endphp
 
@@ -73,10 +76,14 @@
                         </div>
                         <hr>
                         <p class="card-text text-muted small">
-                            Edit all content and settings for this section
+                            @if($sectionKey === 'carousel')
+                                Manage carousel images and slides for homepage banner
+                            @else
+                                Edit all content and settings for this section
+                            @endif
                         </p>
-                        <a href="{{ route('admin.homepage-settings.edit-section', $sectionKey) }}" class="btn btn-primary btn-sm w-100">
-                            <i class="fa fa-edit"></i> Edit Section
+                        <a href="@if($sectionKey === 'carousel'){{ route('admin.carousel.index') }}@else{{ route('admin.homepage-settings.edit-section', $sectionKey) }}@endif" class="btn btn-primary btn-sm w-100">
+                            <i class="fa fa-edit"></i> Manage
                         </a>
                     </div>
                 </div>

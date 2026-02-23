@@ -89,7 +89,7 @@
                                    class="form-control @error('landing_page_title') is-invalid @enderror" 
                                    id="landing_page_title" 
                                    name="landing_page_title"
-                                   value="{{ old('landing_page_title', \App\Models\HomepageSetting::getSetting('pages', 'landing_page_title') ?? 'LearnSmart - Master Your Future with Expert-Led Courses') }}"
+                                   value="{{ old('landing_page_title', \App\Models\HomepageSetting::getSetting('pages', 'landing_page_title') ?? 'COINMAC - Master Your Future with Expert-Led Courses') }}"
                                    placeholder="Enter page title"
                                    maxlength="255">
                             <small class="form-text text-muted d-block mt-2">This title appears at the top of your landing page</small>
@@ -116,7 +116,7 @@
                         <!-- Preview -->
                         <div class="preview-card">
                             <small class="text-muted d-block mb-2">Preview:</small>
-                            <h3 class="fw-bold text-dark preview-text" id="landing-title-preview">LearnSmart - Master Your Future with Expert-Led Courses</h3>
+                            <h3 class="fw-bold text-dark preview-text" id="landing-title-preview">COINMAC - Master Your Future with Expert-Led Courses</h3>
                             <p class="text-secondary preview-text" id="landing-subtitle-preview">Explore our most popular and highly-rated courses</p>
                         </div>
                     </div>
@@ -244,7 +244,7 @@
     const landingTitlePreview = document.getElementById('landing-title-preview');
     
     landingTitleInput?.addEventListener('input', function() {
-        landingTitlePreview.textContent = this.value || 'LearnSmart - Master Your Future with Expert-Led Courses';
+        landingTitlePreview.textContent = this.value || 'COINMAC - Master Your Future with Expert-Led Courses';
     });
 
     // Landing Page Subtitle Preview

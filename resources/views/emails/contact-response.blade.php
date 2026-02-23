@@ -29,7 +29,7 @@ If you have any further questions or need clarification, please feel free to rea
 
 Best regards,
 
-**LearnSmart Academy Support Team**
+**COINMAC Inc Support Team**
 
-contact@learnsmart.com | +234 XXX XXX XXXX
+info@coinmac.org | +234 806 563 2882
 @endcomponent

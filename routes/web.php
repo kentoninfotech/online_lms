@@ -44,6 +44,9 @@ use App\Http\Controllers\CourseImportController;
 use App\Http\Controllers\FacilitatorController;
 use App\Http\Controllers\LiveSessionController;
 use App\Http\Controllers\CourseDiscussionController;
+use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\ServiceRequestController;
 use App\Http\Controllers\Admin\HomepageSettingController;
 use App\Http\Controllers\Admin\SiteBuilderController;
 use App\Http\Controllers\ContactMessageController;
@@ -272,9 +275,18 @@ Route::get('/', [CourseController::class, 'index'])->name('courses.index');
 Route::get('/all-courses', [CourseController::class, 'allCourses'])->name('courses.all');
 Route::get('/courses', [CourseController::class, 'index'])->name('courses.landing');
 Route::get('/courses/search', [CourseController::class, 'search'])->name('courses.search');
+Route::get('/courses/level/{level}/category/{category}', [CourseController::class, 'byLevelCategory'])->name('courses.by-level-category');
 Route::get('/courses/category/{category}', [CourseController::class, 'byCategory'])->name('courses.by-category');
 Route::get('/course/{course}', [CourseController::class, 'show'])->name('courses.show');
 Route::get('/facilitators/{facilitator}', [FacilitatorController::class, 'show'])->name('facilitators.show');
+
+// Services and Gallery (Public)
+Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
+Route::get('/service/{service:slug}', [ServiceController::class, 'show'])->name('services.show');
+Route::post('/service/{service}/request', [ServiceRequestController::class, 'store'])->name('service.request.store');
+
+Route::get('/galleries', [GalleryController::class, 'index'])->name('galleries.index');
+Route::get('/gallery/{gallery:slug}', [GalleryController::class, 'show'])->name('galleries.show');
 
 // Contact Form (Public)
 Route::post('/contact', [ContactMessageController::class, 'store'])->name('contact.store');
@@ -474,6 +486,26 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
         // Page Titles
         Route::get('/page-titles', [SiteBuilderController::class, 'editPageTitles'])->name('page-titles');
         Route::post('/page-titles', [SiteBuilderController::class, 'updatePageTitles'])->name('update-page-titles');
+        
+        // Design & Layout
+        Route::get('/design', [SiteBuilderController::class, 'editDesign'])->name('design');
+        Route::post('/design', [SiteBuilderController::class, 'updateDesign'])->name('update-design');
     });
+    
+    // ========== SERVICES ==========
+    Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class);
+    Route::get('/services/{service}/requests', [\App\Http\Controllers\Admin\ServiceController::class, 'requests'])->name('services.requests');
+    
+    // ========== GALLERIES ==========
+    Route::resource('galleries', \App\Http\Controllers\Admin\GalleryController::class);
+    Route::delete('/galleries/{image}/image', [\App\Http\Controllers\Admin\GalleryController::class, 'deleteImage'])->name('galleries.delete-image');
+    Route::post('/galleries/{gallery}/reorder-images', [\App\Http\Controllers\Admin\GalleryController::class, 'reorderImages'])->name('galleries.reorder-images');
+    
+    // ========== CAROUSEL MANAGEMENT ==========
+    Route::get('/carousel', [\App\Http\Controllers\Admin\CarouselController::class, 'index'])->name('carousel.index');
+    Route::post('/carousel/upload', [\App\Http\Controllers\Admin\CarouselController::class, 'upload'])->name('carousel.upload');
+    Route::put('/carousel/{id}/update', [\App\Http\Controllers\Admin\CarouselController::class, 'update'])->name('carousel.update');
+    Route::delete('/carousel/{id}/delete', [\App\Http\Controllers\Admin\CarouselController::class, 'destroy'])->name('carousel.destroy');
+    Route::post('/carousel/reorder', [\App\Http\Controllers\Admin\CarouselController::class, 'reorder'])->name('carousel.reorder');
 });
 

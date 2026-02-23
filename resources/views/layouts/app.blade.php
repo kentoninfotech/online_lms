@@ -71,7 +71,7 @@
             <!-- ========   Admin uploaded logo from Site Settings   ============ -->
             @php
                 $logo = \App\Models\HomepageSetting::getImagePath('branding', 'logo_light', asset('assets/images/logo.svg'));
-                $siteName = \App\Models\HomepageSetting::getSetting('branding', 'site_name', 'LearnSmart');
+                $siteName = \App\Models\HomepageSetting::getSetting('branding', 'site_name', 'COINMAC');
             @endphp
             @if($logo && $logo !== asset('assets/images/logo.svg'))
                 <img src="{{ $logo }}" alt="logo" class="logo-lg" style="height: 32px; width: auto;" />

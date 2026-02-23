@@ -26,7 +26,7 @@ class ContactResponseMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Response to Your Message - LearnSmart Academy',
+            subject: 'Response to Your Message - COINMAC Inc',
         );
     }
 

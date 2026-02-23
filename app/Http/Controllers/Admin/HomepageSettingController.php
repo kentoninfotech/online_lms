@@ -21,6 +21,9 @@ class HomepageSettingController extends Controller
             'featured_courses' => 'Featured Courses Section',
             'testimonials' => 'Testimonials Section',
             'stats' => 'Statistics Section',
+            'services' => 'Services Section',
+            'galleries' => 'Galleries Section',
+            'carousel' => 'Carousel Management',
             'cta' => 'Call-to-Action Section',
             'contact' => 'Contact Section',
             'footer' => 'Footer Section'
@@ -43,6 +46,8 @@ class HomepageSettingController extends Controller
             'featured_courses' => 'Featured Courses Section',
             'testimonials' => 'Testimonials Section',
             'stats' => 'Statistics Section',
+            'services' => 'Services Section',
+            'galleries' => 'Galleries Section',
             'cta' => 'Call-to-Action Section',
             'contact' => 'Contact Section',
             'footer' => 'Footer Section'
@@ -66,24 +71,40 @@ class HomepageSettingController extends Controller
     {
         $request->validate([
             'value' => 'nullable|string',
+            'textarea_value' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'button_text' => 'nullable|string|max:100',
             'button_link' => 'nullable|string|max:255',
             'title' => 'nullable|string|max:255',
-            'description' => 'nullable|string'
+            'description' => 'nullable|string',
+            'field_key' => 'nullable|string|max:100',
+            'field_type' => 'nullable|string|in:text,textarea,image'
         ]);
+
+        // Allow using custom field key from the form
+        $actualKey = $request->input('field_key') ?? $key;
+        
+        // Remove the 'manual_entry_' prefix if it exists
+        if (str_starts_with($actualKey, 'manual_entry_')) {
+            $actualKey = str_replace('manual_entry_' . time(), '', $actualKey);
+        }
 
         // Only include fields that are in the request
         $data = [
             'section' => $section,
-            'key' => $key,
-            'is_active' => (bool) $request->input('is_active', 0)
+            'key' => $actualKey,
+            'is_active' => (bool) $request->input('is_active', 0),
+            'data_type' => $request->input('field_type') ?? 'text'
         ];
 
-        // Only include fields if they exist in the request
-        if ($request->has('value')) {
+        // Handle different value sources
+        if ($request->has('textarea_value') && !empty($request->input('textarea_value'))) {
+            $data['value'] = $request->input('textarea_value');
+        } elseif ($request->has('value')) {
             $data['value'] = $request->input('value');
         }
+
+        // Include optional fields
         if ($request->has('button_text')) {
             $data['button_text'] = $request->input('button_text');
         }
@@ -100,13 +121,13 @@ class HomepageSettingController extends Controller
         // Handle image upload
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $filename = 'homepage-' . $section . '-' . $key . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $filename = 'homepage-' . $section . '-' . $actualKey . '-' . time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('uploads/courses'), $filename);
             $data['image_path'] = 'uploads/courses/' . $filename;
         }
 
         HomepageSetting::updateOrCreate(
-            ['section' => $section, 'key' => $key],
+            ['section' => $section, 'key' => $actualKey],
             $data
         );
 
@@ -165,27 +186,88 @@ class HomepageSettingController extends Controller
     }
 
     /**
-     * Reinitialize homepage with defaults
+     * Reinitialize homepage with defaults for a specific section
      */
-    public function initializeDefaults()
+    public function initializeDefaults(Request $request)
     {
+        $section = $request->input('section');
+
         $defaults = [
             'hero' => [
                 'title' => 'Master Your Future with Expert-Led Courses',
-                'subtitle' => 'Access world-class training from top facilitators',
                 'description' => 'Learn at your own pace, earn certificates, and advance your career with industry-relevant skills.',
                 'button_text' => 'Explore Courses',
-                'button_link' => '#featured-courses'
+                'button_link' => '#featured-courses',
+                'stat1_value' => '50K+',
+                'stat1_label' => 'Active Learners',
+                'stat2_value' => '200+',
+                'stat2_label' => 'Expert Courses',
+                'stat3_value' => '95%',
+                'stat3_label' => 'Satisfaction'
             ],
             'about' => [
-                'title' => 'About LearnSmart Academy',
-                'content' => 'LearnSmart Academy is a leading online learning platform...',
-                'stat1_label' => 'Expert Instructors',
+                'title' => 'About Us',
+                'content' => 'Our platform is dedicated to transforming careers through world-class education.',
+                'content_2' => 'We have helped thousands of professionals advance their careers.',
                 'stat1_value' => '200+',
-                'stat2_label' => 'Success Stories',
+                'stat1_label' => 'Expert Instructors',
                 'stat2_value' => '50K+',
+                'stat2_label' => 'Success Stories',
+                'stat3_value' => '15+',
                 'stat3_label' => 'Years Experience',
-                'stat3_value' => '15+'
+                'stat4_value' => '1M+',
+                'stat4_label' => 'Certificates Issued'
+            ],
+            'features' => [
+                'section_title' => 'Why Choose Us?',
+                'section_subtitle' => 'Premium education with professional support',
+                'feature1_icon' => '🎓',
+                'feature1_title' => 'Expert Instructors',
+                'feature1_desc' => 'Learn from industry professionals with 10+ years of experience',
+                'feature2_icon' => '⏰',
+                'feature2_title' => 'Learn Anytime',
+                'feature2_desc' => 'Access courses 24/7 from anywhere at your own pace',
+                'feature3_icon' => '🏆',
+                'feature3_title' => 'Verified Certificates',
+                'feature3_desc' => 'Earn industry-recognized certificates upon completion',
+                'feature4_icon' => '👥',
+                'feature4_title' => 'Community Support',
+                'feature4_desc' => 'Connect with peers, ask questions, and grow together',
+                'feature5_icon' => '💻',
+                'feature5_title' => 'Interactive Content',
+                'feature5_desc' => 'Videos, quizzes, projects, and live sessions',
+                'feature6_icon' => '💰',
+                'feature6_title' => 'Affordable Pricing',
+                'feature6_desc' => 'Get premium education at competitive prices',
+                'feature7_icon' => '🔐',
+                'feature7_title' => 'Lifetime Access',
+                'feature7_desc' => 'Access course materials forever after enrollment',
+                'feature8_icon' => '📱',
+                'feature8_title' => 'Mobile Friendly',
+                'feature8_desc' => 'Learn on smartphone, tablet, or computer'
+            ],
+            'testimonials' => [
+                'section_title' => 'What Our Students Say',
+                'section_subtitle' => 'Join thousands of satisfied learners',
+                'testimonial1_name' => 'Jane Doe',
+                'testimonial1_title' => 'Software Engineer at TechCorp',
+                'testimonial1_content' => 'This platform transformed my career. The courses are top-notch and the instructors are amazing!',
+                'testimonial2_name' => 'John Smith',
+                'testimonial2_title' => 'Data Analyst at DataWorks',
+                'testimonial2_content' => 'I landed my dream job thanks to the skills I learned here. Highly recommend to anyone looking to upskill.',
+                'testimonial3_name' => 'Emily Johnson',
+                'testimonial3_title' => 'UX Designer at CreativeStudio',
+                'testimonial3_content' => 'The community support is fantastic. I was able to connect with other learners and get help when needed.',
+            ],
+            'stats' => [
+                'stat1_value' => '50K+',
+                'stat1_label' => 'Active Learners',
+                'stat2_value' => '200+',
+                'stat2_label' => 'Expert Courses',
+                'stat3_value' => '95%',
+                'stat3_label' => 'Satisfaction Rate',
+                'stat4_value' => '1M+',
+                'stat4_label' => 'Certificates Issued'
             ],
             'cta' => [
                 'title' => 'Ready to Transform Your Career?',
@@ -193,22 +275,67 @@ class HomepageSettingController extends Controller
                 'button_text' => 'Sign Up Free',
                 'button_link' => '/register'
             ],
-            'footer' => [
-                'company_name' => 'LearnSmart Academy',
-                'company_description' => 'Leading online learning platform for professional development',
-                'phone' => '+234 (0) 812 345 6789',
-                'email' => 'contact@learnsmart.com',
-                'address' => 'Lagos, Nigeria'
+            'contact' => [
+                'title' => 'Get in Touch',
+                'subtitle' => 'Have questions? Our support team is always ready to help.',
+                'email_icon' => '📧',
+                'email_label' => 'Email',
+                'email_value' => 'info@coinmac.org',
+                'phone_icon' => '📞',
+                'phone_label' => 'Phone',
+                'phone_value' => '+234 (0) 806 563 2882',
+                'address_icon' => '📍',
+                'address_label' => 'Address',
+                'address_value' => 'Abuja, Nigeria',
+                'hours_icon' => '⏰',
+                'hours_label' => 'Support Hours',
+                'hours_value' => 'Monday - Friday: 9am - 6pm',
+                'whatsapp_link' => 'https://wa.me/2348065632882',
+                'form_title' => 'Send us a Message',
+                'form_name_label' => 'Full Name',
+                'form_email_label' => 'Email',
+                'form_phone_label' => 'Phone (Optional)',
+                'form_subject_label' => 'Subject (Optional)',
+                'form_message_label' => 'Message',
+                'form_submit_text' => 'Send Message'
             ]
         ];
 
-        foreach ($defaults as $section => $settings) {
-            foreach ($settings as $key => $value) {
-                HomepageSetting::setSetting($section, $key, $value);
+        // If specific section requested, only initialize that section
+        if ($section && isset($defaults[$section])) {
+            foreach ($defaults[$section] as $key => $value) {
+                HomepageSetting::updateOrCreate(
+                    ['section' => $section, 'key' => $key],
+                    [
+                        'section' => $section,
+                        'key' => $key,
+                        'value' => $value,
+                        'is_active' => true,
+                        'data_type' => 'text'
+                    ]
+                );
+            }
+            return redirect()->route('admin.homepage-settings.edit-section', $section)
+                ->with('success', "Default fields for {$section} section initialized successfully");
+        }
+
+        // Otherwise initialize all defaults
+        foreach ($defaults as $sectionName => $fields) {
+            foreach ($fields as $key => $value) {
+                HomepageSetting::updateOrCreate(
+                    ['section' => $sectionName, 'key' => $key],
+                    [
+                        'section' => $sectionName,
+                        'key' => $key,
+                        'value' => $value,
+                        'is_active' => true,
+                        'data_type' => 'text'
+                    ]
+                );
             }
         }
 
         return redirect()->route('admin.homepage-settings.index')
-            ->with('success', 'Homepage defaults initialized successfully');
+            ->with('success', 'All default homepage settings initialized successfully');
     }
 }

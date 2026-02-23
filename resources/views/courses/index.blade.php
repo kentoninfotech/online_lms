@@ -1,6 +1,6 @@
 @extends('layouts.landing')
 
-@section('title', \App\Models\HomepageSetting::getSetting('pages', 'landing_page_title') ?? 'LearnSmart - Master Your Future with Expert-Led Courses')
+@section('title', \App\Models\HomepageSetting::getSetting('pages', 'landing_page_title') ?? 'COINMAC - Master Your Future with Expert-Led Courses')
 
 @section('content')
 
@@ -24,29 +24,28 @@
 
 <!-- CAROUSEL Section (Full Width) -->
 <section id="carousel-section" class="carousel-section">
+    @if($carouselImages->count() > 0)
     <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" style="height: 500px; overflow: hidden;">
         <div class="carousel-indicators">
-            @forelse($carouselImages as $key => $image)
+            @foreach($carouselImages as $key => $image)
                 <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ $key }}" 
                     class="@if($key == 0) active @endif" aria-current="@if($key == 0)true @endif"></button>
-            @empty
-                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true"></button>
-                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
-                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
-            @endforelse
+            @endforeach
         </div>
         
         <div class="carousel-inner h-100">
-            @forelse($carouselImages as $key => $image)
+            @foreach($carouselImages as $key => $image)
                 <div class="carousel-item @if($key == 0) active @endif h-100">
-                    <img src="{{ $image->image_path }}" class="d-block w-100 h-100 object-fit-cover" alt="{{ $image->title }}">
+                    <img src="{{ asset($image->image_path) }}" class="d-block w-100 h-100 object-fit-cover" alt="{{ $image->value }}">
                     <div class="carousel-caption d-none d-md-block">
                         <h1 class="display-3 fw-bold text-white" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
-                            {{ $image->title }}
+                            {{ $image->value }}
                         </h1>
-                        <p class="lead text-white" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
-                            {{ $image->description }}
-                        </p>
+                        @if($image->description)
+                            <p class="lead text-white" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+                                {{ $image->description }}
+                            </p>
+                        @endif
                         @if($image->button_text && $image->button_link)
                             <a href="{{ $image->button_link }}" class="btn btn-primary btn-lg fw-bold">
                                 {{ $image->button_text }}
@@ -54,47 +53,7 @@
                         @endif
                     </div>
                 </div>
-            @empty
-                <!-- Default Carousel Slide 1 -->
-                <div class="carousel-item active h-100">
-                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884505?w=1200&h=500&fit=crop" class="d-block w-100 h-100 object-fit-cover" alt="Master New Skills">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h1 class="display-3 fw-bold text-white" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
-                            Master New Skills
-                        </h1>
-                        <p class="lead text-white" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
-                            Learn from Expert Instructors
-                        </p>
-                        <a href="#featured-courses" class="btn btn-primary btn-lg fw-bold">Start Learning</a>
-                    </div>
-                </div>
-                <!-- Default Carousel Slide 2 -->
-                <div class="carousel-item h-100">
-                    <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1200&h=500&fit=crop" class="d-block w-100 h-100 object-fit-cover" alt="Online Learning Made Easy">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h1 class="display-3 fw-bold text-white" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
-                            Online Learning Made Easy
-                        </h1>
-                        <p class="lead text-white" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
-                            Access courses anytime, anywhere
-                        </p>
-                        <a href="#featured-courses" class="btn btn-primary btn-lg fw-bold">Explore Now</a>
-                    </div>
-                </div>
-                <!-- Default Carousel Slide 3 -->
-                <div class="carousel-item h-100">
-                    <img src="https://images.unsplash.com/photo-1633356122544-f134324ef6db?w=1200&h=500&fit=crop" class="d-block w-100 h-100 object-fit-cover" alt="Transform Your Career">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h1 class="display-3 fw-bold text-white" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
-                            Transform Your Career
-                        </h1>
-                        <p class="lead text-white" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
-                            Get certified by industry experts
-                        </p>
-                        <a href="#featured-courses" class="btn btn-primary btn-lg fw-bold">View Courses</a>
-                    </div>
-                </div>
-            @endforelse
+            @endforeach
         </div>
         
         <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
@@ -106,6 +65,16 @@
             <span class="visually-hidden">Next</span>
         </button>
     </div>
+    @else
+    <!-- Empty carousel placeholder - encourage adding carousel images -->
+    <div class="bg-secondary" style="height: 500px; display: flex; align-items: center; justify-content: center;">
+        <div class="text-center text-white">
+            <i class="bi bi-images" style="font-size: 4rem;"></i>
+            <h3 class="mt-3">No Carousel Images</h3>
+            <p>Add carousel images from the admin panel at <strong>/admin/carousel</strong></p>
+        </div>
+    </div>
+    @endif
 </section>
 
 <!-- HERO Section (Content below carousel) -->
@@ -231,20 +200,20 @@
                     <div class="col-6">
                         <div class="card bg-warning text-dark h-100 d-flex align-items-center justify-content-center rounded-4 shadow" style="min-height: 200px;">
                             <div class="card-body text-center">
-                                <h2 class="fw-bold mb-2">1M+</h2>
-                                <p class="mb-0 small">Certificates Issued</p>
+                                <h2 class="fw-bold mb-2">{{ $homeSettings['about']['stat4_value']['value'] ?? '1M+' }}</h2>
+                                <p class="mb-0 small">{{ $homeSettings['about']['stat4_label']['value'] ?? 'Certificates Issued' }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-lg-6" data-aos="fade-left">
-                <h2 class="section-title">{{ $homeSettings['about']['title']['value'] ?? 'About LearnSmart Academy' }}</h2>
+                <h2 class="section-title">{{ $homeSettings['about']['title']['value'] ?? 'About COINMAC Academy' }}</h2>
                 <p class="text-muted mb-3 text-justify">
-                    {{ $homeSettings['about']['content']['value'] ?? 'LearnSmart Academy is a leading online learning platform dedicated to transforming careers through world-class education and professional development courses.' }}
+                    {{ $homeSettings['about']['content']['value'] ?? 'COINMAC Academy is a leading online learning platform dedicated to transforming careers through world-class education and professional development courses.' }}
                 </p>
                 <p class="text-muted mb-4 text-justify">
-                    Founded in 2009, we\'ve helped over 50,000 professionals advance their careers by providing industry-relevant training, expert mentorship, and internationally recognized certifications.
+                    {{ $homeSettings['about']['content_2']['value'] ?? 'Founded in 2009, we\'ve helped over 50,000 professionals advance their careers by providing industry-relevant training, expert mentorship, and internationally recognized certifications.' }}
                 </p>
                 <div class="row g-3">
                     <div class="col-6">
@@ -281,7 +250,7 @@
 <section class="py-5 py-md-8">
     <div class="container-lg">
         <div class="text-center mb-5 mb-md-8" data-aos="fade-up">
-            <h2 class="section-title">{{ $homeSettings['features']['section_title']['value'] ?? 'Why Choose LearnSmart?' }}</h2>
+            <h2 class="section-title">{{ $homeSettings['features']['section_title']['value'] ?? 'Why Choose COINMAC?' }}</h2>
             <p class="section-subtitle">{{ $homeSettings['features']['section_subtitle']['value'] ?? 'Premium education with professional support' }}</p>
         </div>
         
@@ -349,9 +318,9 @@
             <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="600">
                 <div class="feature-card text-center card shadow-sm h-100">
                     <div class="card-body">
-                        <div class="feature-icon">🔐</div>
-                        <h5 class="card-title fw-bold">Lifetime Access</h5>
-                        <p class="card-text text-muted small">Access course materials forever after enrollment</p>
+                        <div class="feature-icon">{{ $homeSettings['features']['feature7_icon']['value'] ?? '🔐' }}</div>
+                        <h5 class="card-title fw-bold">{{ $homeSettings['features']['feature7_title']['value'] ?? 'Lifetime Access' }}</h5>
+                        <p class="card-text text-muted small">{{ $homeSettings['features']['feature7_desc']['value'] ?? 'Access course materials forever after enrollment' }}</p>
                     </div>
                 </div>
             </div>
@@ -359,9 +328,9 @@
             <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="700">
                 <div class="feature-card text-center card shadow-sm h-100">
                     <div class="card-body">
-                        <div class="feature-icon">📱</div>
-                        <h5 class="card-title fw-bold">Mobile Friendly</h5>
-                        <p class="card-text text-muted small">Learn on smartphone, tablet, or computer</p>
+                        <div class="feature-icon">{{ $homeSettings['features']['feature8_icon']['value'] ?? '📱' }}</div>
+                        <h5 class="card-title fw-bold">{{ $homeSettings['features']['feature8_title']['value'] ?? 'Mobile Friendly' }}</h5>
+                        <p class="card-text text-muted small">{{ $homeSettings['features']['feature8_desc']['value'] ?? 'Learn on smartphone, tablet, or computer' }}</p>
                     </div>
                 </div>
             </div>
@@ -490,7 +459,7 @@
                         ⭐⭐⭐⭐⭐
                     </div>
                     <p class="text-muted fst-italic">
-                        "LearnSmart's courses helped me transition into a new role within 6 months. The instructors are world-class!"
+                        "COINMAC's courses helped me transition into a new role within 6 months. The instructors are world-class!"
                     </p>
                 </div>
             </div>
@@ -585,79 +554,120 @@
     <div class="container-lg">
         <div class="row g-5">
             <div class="col-lg-6" data-aos="fade-right">
-                <h2 class="section-title mb-4">Get in Touch</h2>
-                <p class="text-muted mb-4">Have questions? Our support team is always ready to help.</p>
+                <h2 class="section-title mb-4">{{ ($homeSettings['contact']['title']['value'] ?? null) ?? 'Get in Touch' }}</h2>
+                <p class="text-muted mb-4">{{ ($homeSettings['contact']['subtitle']['value'] ?? null) ?? 'Have questions? Our support team is always ready to help.' }}</p>
                 
                 <div class="row g-4">
-                    <div class="col-12">
-                        <div class="d-flex gap-3">
-                            <span style="font-size: 1.75rem;">📧</span>
-                            <div>
-                                <h6 class="fw-bold">Email</h6>
-                                <p class="text-muted">contact@learnsmart.com</p>
+                    @if(isset($homeSettings['contact']) && count($homeSettings['contact']) > 0)
+                        <div class="col-12">
+                            <div class="d-flex gap-3">
+                                <span style="font-size: 1.75rem;">{{ $homeSettings['contact']['email_icon']['value'] ?? '📧' }}</span>
+                                <div>
+                                    <h6 class="fw-bold">{{ $homeSettings['contact']['email_label']['value'] ?? 'Email' }}</h6>
+                                    <p class="text-muted">{{ $homeSettings['contact']['email_value']['value'] ?? 'info@coinmac.org' }}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="d-flex gap-3">
-                            <span style="font-size: 1.75rem;">📞</span>
-                            <div>
-                                <h6 class="fw-bold">Phone</h6>
-                                <p class="text-muted mb-2">+234 (0) 812 345 6789</p>
-                                <a href="https://wa.me/2348123456789" target="_blank" class="btn btn-sm btn-success">
-                                    <i class="bi bi-whatsapp" style="font-size: 1rem;"></i> Chat on WhatsApp
-                                </a>
+                        <div class="col-12">
+                            <div class="d-flex gap-3">
+                                <span style="font-size: 1.75rem;">{{ $homeSettings['contact']['phone_icon']['value'] ?? '📞' }}</span>
+                                <div>
+                                    <h6 class="fw-bold">{{ $homeSettings['contact']['phone_label']['value'] ?? 'Phone' }}</h6>
+                                    <p class="text-muted mb-2">{{ $homeSettings['contact']['phone_value']['value'] ?? '+234 (0) 806 563 2882' }}</p>
+                                    @if(isset($homeSettings['contact']['whatsapp_link']) && $homeSettings['contact']['whatsapp_link']['value'])
+                                        <a href="{{ $homeSettings['contact']['whatsapp_link']['value'] }}" target="_blank" class="btn btn-sm btn-success">
+                                            <i class="bi bi-whatsapp" style="font-size: 1rem;"></i> Chat on WhatsApp
+                                        </a>
+                                    @endif
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="d-flex gap-3">
-                            <span style="font-size: 1.75rem;">📍</span>
-                            <div>
-                                <h6 class="fw-bold">Address</h6>
-                                <p class="text-muted">Lagos, Nigeria<br>Available Worldwide</p>
+                        <div class="col-12">
+                            <div class="d-flex gap-3">
+                                <span style="font-size: 1.75rem;">{{ $homeSettings['contact']['address_icon']['value'] ?? '📍' }}</span>
+                                <div>
+                                    <h6 class="fw-bold">{{ $homeSettings['contact']['address_label']['value'] ?? 'Address' }}</h6>
+                                    <p class="text-muted">{!! $homeSettings['contact']['address_value']['value'] ?? 'Lagos, Nigeria <br> Available Worldwide' !!}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="d-flex gap-3">
-                            <span style="font-size: 1.75rem;">⏰</span>
-                            <div>
-                                <h6 class="fw-bold">Support Hours</h6>
-                                <p class="text-muted">Monday - Friday: 9am - 6pm<br>Weekend: 10am - 4pm (Nigeria Time)</p>
+                        <div class="col-12">
+                            <div class="d-flex gap-3">
+                                <span style="font-size: 1.75rem;">{{ $homeSettings['contact']['hours_icon']['value'] ?? '⏰' }}</span>
+                                <div>
+                                    <h6 class="fw-bold">{{ $homeSettings['contact']['hours_label']['value'] ?? 'Support Hours' }}</h6>
+                                    <p class="text-muted">{!! $homeSettings['contact']['hours_value']['value'] ?? 'Monday - Friday: 9am - 6pm<br>Weekend: 10am - 4pm (Nigeria Time)' !!}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    @else
+                        <div class="col-12">
+                            <div class="d-flex gap-3">
+                                <span style="font-size: 1.75rem;">📧</span>
+                                <div>
+                                    <h6 class="fw-bold">Email</h6>
+                                    <p class="text-muted">info@coinmac.org</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="d-flex gap-3">
+                                <span style="font-size: 1.75rem;">📞</span>
+                                <div>
+                                    <h6 class="fw-bold">Phone</h6>
+                                    <p class="text-muted mb-2">+234 (0) 806 563 2882</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="d-flex gap-3">
+                                <span style="font-size: 1.75rem;">📍</span>
+                                <div>
+                                    <h6 class="fw-bold">Address</h6>
+                                    <p class="text-muted">Lagos, Nigeria<br>Available Worldwide</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="d-flex gap-3">
+                                <span style="font-size: 1.75rem;">⏰</span>
+                                <div>
+                                    <h6 class="fw-bold">Support Hours</h6>
+                                    <p class="text-muted">Monday - Friday: 9am - 6pm<br>Weekend: 10am - 4pm (Nigeria Time)</p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
 
             <div class="col-lg-6" data-aos="fade-left">
                 <div class="card shadow-sm rounded-4 p-5">
-                    <h4 class="fw-bold mb-4">Send us a Message</h4>
+                    <h4 class="fw-bold mb-4">{{ $homeSettings['contact']['form_title']['value'] ?? 'Send us a Message' }}</h4>
                     <form method="POST" action="{{ route('contact.store') }}" class="space-y-4">
                         @csrf
                         <div class="mb-3">
-                            <label for="name" class="form-label fw-semibold">Full Name</label>
+                            <label for="name" class="form-label fw-semibold">{{ $homeSettings['contact']['form_name_label']['value'] ?? 'Full Name' }}</label>
                             <input type="text" id="name" name="name" required class="form-control form-control-lg" placeholder="Your Name" value="{{ old('name') }}">
                         </div>
                         <div class="mb-3">
-                            <label for="email_contact" class="form-label fw-semibold">Email</label>
+                            <label for="email_contact" class="form-label fw-semibold">{{ $homeSettings['contact']['form_email_label']['value'] ?? 'Email' }}</label>
                             <input type="email" id="email_contact" name="email" required class="form-control form-control-lg" placeholder="your@email.com" value="{{ old('email') }}">
                         </div>
                         <div class="mb-3">
-                            <label for="phone" class="form-label fw-semibold">Phone (Optional)</label>
+                            <label for="phone" class="form-label fw-semibold">{{ $homeSettings['contact']['form_phone_label']['value'] ?? 'Phone (Optional)' }}</label>
                             <input type="tel" id="phone" name="phone" class="form-control form-control-lg" placeholder="+234..." value="{{ old('phone') }}">
                         </div>
                         <div class="mb-3">
-                            <label for="subject" class="form-label fw-semibold">Subject (Optional)</label>
+                            <label for="subject" class="form-label fw-semibold">{{ $homeSettings['contact']['form_subject_label']['value'] ?? 'Subject (Optional)' }}</label>
                             <input type="text" id="subject" name="subject" class="form-control form-control-lg" placeholder="Message subject" value="{{ old('subject') }}">
                         </div>
                         <div class="mb-3">
-                            <label for="message" class="form-label fw-semibold">Message</label>
+                            <label for="message" class="form-label fw-semibold">{{ $homeSettings['contact']['form_message_label']['value'] ?? 'Message' }}</label>
                             <textarea id="message" name="message" rows="4" required class="form-control form-control-lg" placeholder="Your message...">{{ old('message') }}</textarea>
                         </div>
                         <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">
-                            <i class="bi bi-send"></i> Send Message
+                            <i class="bi bi-send"></i> {{ $homeSettings['contact']['form_submit_text']['value'] ?? 'Send Message' }}
                         </button>
                     </form>
                 </div>

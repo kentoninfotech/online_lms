@@ -75,12 +75,12 @@
                         <div class="mb-3">
                             <p class="text-muted">Uploaded: {{ $payment->created_at->format('M d, Y H:i A') }}</p>
                             @if(pathinfo($payment->payment_evidence_path, PATHINFO_EXTENSION) === 'pdf')
-                                <iframe src="{{ asset('storage/' . $payment->payment_evidence_path) }}" width="100%" height="600px" style="border: 1px solid #ddd; border-radius: 4px;"></iframe>
+                                <iframe src="{{ asset($payment->payment_evidence_path) }}" width="100%" height="600px" style="border: 1px solid #ddd; border-radius: 4px;"></iframe>
                             @else
-                                <img src="{{ asset('storage/' . $payment->payment_evidence_path) }}" class="img-fluid rounded" style="max-height: 600px; border: 1px solid #ddd;">
+                                <img src="{{ asset($payment->payment_evidence_path) }}" class="img-fluid rounded" style="max-height: 600px; border: 1px solid #ddd;">
                             @endif
                             <div class="mt-3">
-                                <a href="{{ asset('storage/' . $payment->payment_evidence_path) }}" download class="btn btn-outline-primary btn-sm">
+                                <a href="{{ asset($payment->payment_evidence_path) }}" download class="btn btn-outline-primary btn-sm">
                                     <i class="bi bi-download me-2"></i>Download
                                 </a>
                             </div>

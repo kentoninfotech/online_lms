@@ -4,7 +4,7 @@
 
 @section('content')
 
-<div class="pc-container">
+<div class="pc-container" style="margin-top: -2rem;">
     <div class="page-header">
         <div class="page-block">
             <div class="row align-items-center">
@@ -25,7 +25,7 @@
     </div>
 </div>
 
-<div class="pc-container">
+<div class="pc-container" style="margin-top: 0.5rem;">
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
@@ -137,6 +137,40 @@
                                 <small class="d-block text-muted">CTA buttons & links</small>
                             </div>
                             <i class="bi bi-chevron-right text-info"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer & Other -->
+        <div class="col-lg-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="bi bi-palette2"></i> Design & Layout</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <a href="{{ route('admin.site-builder.design') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Main Element</strong>
+                                <small class="d-block text-muted">Background, colors, opacity</small>
+                            </div>
+                            <i class="bi bi-chevron-right text-danger"></i>
+                        </a>
+                        <a href="{{ route('admin.site-builder.design') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Navbar Styling</strong>
+                                <small class="d-block text-muted">Top navbar colors</small>
+                            </div>
+                            <i class="bi bi-chevron-right text-danger"></i>
+                        </a>
+                        <a href="{{ route('admin.site-builder.design') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>First Container</strong>
+                                <small class="d-block text-muted">Container background</small>
+                            </div>
+                            <i class="bi bi-chevron-right text-danger"></i>
                         </a>
                     </div>
                 </div>

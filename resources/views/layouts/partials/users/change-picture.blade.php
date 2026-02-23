@@ -22,7 +22,7 @@
 
             <div class="mb-3 text-center">
                 <img id="profile-preview"
-                     src="{{ $user->profile ? asset($user->profile) : asset('storage/profiles/profile.png') ?? 'https://ui-avatars.com/api/?name='.$user->name }}" 
+                     src="{{ $user->profile ? asset($user->profile) : asset('images/default-profile.png') ?? 'https://ui-avatars.com/api/?name='.$user->name }}" 
                      alt="{{ $user->name }}"
                      class="rounded-circle shadow-sm mb-2"
                      style="width: 120px; height: 120px; object-fit: cover;">

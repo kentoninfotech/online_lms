@@ -9,9 +9,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description" content="LearnSmart - Professional Online Learning Platform"/>
+    <meta name="description" content="COINMAC - Professional Online Learning Platform"/>
     <meta name="keywords" content="online learning, courses, education, professional development"/>
-    <meta name="author" content="LearnSmart Academy"/>
+    <meta name="author" content="COINMAC Inc"/>
 
     <!-- [Favicon] icon -->
     <link rel="icon" href="{{ asset('assets/images/favicon.png') }}" type="image/x-icon" />

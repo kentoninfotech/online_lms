@@ -4,7 +4,7 @@
 
 @section('content')
 
-<div class="pc-container">
+<div class="pc-container" style="margin-top: -2rem;">
     <div class="page-header">
         <div class="page-block">
             <div class="row align-items-center">
@@ -25,7 +25,7 @@
     </div>
 </div>
 
-<div class="pc-container">
+<div class="pc-container" style="margin-top: 0.5rem;">
     <div class="row">
         <div class="col-sm-12">
             <div class="card">

@@ -16,6 +16,26 @@
     padding: 0;
     margin: 0;
     z-index: 999999999999999999999999;
+    /* Responsive width: 90% on mobile, 60% on desktop */
+    width: 90% !important;
+    max-width: 90vw !important;
+    position: absolute !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+}
+
+@media (min-width: 768px) {
+    #courseSearchResults {
+        width: 75% !important;
+        max-width: 75vw !important;
+    }
+}
+
+@media (min-width: 992px) {
+    #courseSearchResults {
+        width: 60% !important;
+        max-width: 60vw !important;
+    }
 }
 
 .search-result-item {
@@ -26,6 +46,9 @@
     text-decoration: none;
     color: inherit;
     display: block;
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .search-result-item:last-child {
@@ -41,12 +64,20 @@
     font-weight: 600;
     color: #2c3e50;
     margin-bottom: 4px;
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .search-result-item .course-subtitle {
     font-size: 0.85rem;
     color: #7f8c8d;
     margin-bottom: 4px;
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .search-result-item .course-category {
@@ -57,18 +88,24 @@
     padding: 2px 8px;
     border-radius: 4px;
     margin-right: 8px;
+    word-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%;
 }
 
 .search-result-item .course-price {
     font-weight: 700;
     color: #27ae60;
     font-size: 0.9rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .search-no-results {
     padding: 24px 16px;
     text-align: center;
     color: #7f8c8d;
+    word-wrap: break-word;
 }
 
 .search-loading {
@@ -96,9 +133,9 @@
 
         <!-- Search Results Dropdown -->
         <div 
-            class="position-absolute w-100 mt-2 bg-white rounded-3 shadow-lg d-none" 
+            class="position-absolute mt-2 bg-white rounded-3 shadow-lg d-none" 
             id="courseSearchResults"
-            style="top: 100%; left: 0; z-index: 1100; max-height: 500px; overflow-y: auto;"
+            style="top: 100%; left: 0; z-index: 1100; max-height: 500px; overflow-y: auto; width: 100%;"
         >
             <!-- Results will be populated here -->
         </div>

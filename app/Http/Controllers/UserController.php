@@ -132,7 +132,9 @@ class UserController extends Controller
 
         // check if user has profile picture and delete the file
         if ($user->profile){
-            Storage::disk('public')->delete($user->profile);
+            if (file_exists(public_path($user->profile))) {
+                unlink(public_path($user->profile));
+            }
         }
 
         // Finally, delete the user

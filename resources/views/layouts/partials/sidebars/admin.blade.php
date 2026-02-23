@@ -219,6 +219,15 @@
             <li class="pc-item">
                 <a href="{{ route('admin.homepage-settings.index') }}" class="pc-link">Homepage Sections</a>
             </li>
+            <li class="pc-item">
+                <a href="{{ route('admin.carousel.index') }}" class="pc-link">Carousel Management</a>
+            </li>
+            <li class="pc-item">
+                <a href="{{ route('admin.services.index') }}" class="pc-link">Services</a>
+            </li>
+            <li class="pc-item">
+                <a href="{{ route('admin.galleries.index') }}" class="pc-link">Galleries</a>
+            </li>
         </ul>
     </li>
 

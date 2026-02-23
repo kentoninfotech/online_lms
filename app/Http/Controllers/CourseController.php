@@ -18,7 +18,9 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $carouselImages = CourseCarouselImage::where('is_active', true)
+        // Fetch carousel images from HomepageSetting (uploaded via /admin/carousel)
+        $carouselImages = HomepageSetting::where('section', 'carousel')
+            ->where('is_active', true)
             ->orderBy('sort_order')
             ->get();
 
@@ -33,7 +35,24 @@ class CourseController extends Controller
 
         // Fetch all homepage settings organized by section and convert to arrays for views
         $rawSettings = HomepageSetting::getAllSections();
-        $homeSettings = [];
+        
+        // Initialize all expected sections with empty arrays as defaults
+        $homeSettings = [
+            'hero' => [],
+            'about' => [],
+            'features' => [],
+            'featured_courses' => [],
+            'testimonials' => [],
+            'stats' => [],
+            'services' => [],
+            'galleries' => [],
+            'cta' => [],
+            'contact' => [],
+            'carousel' => [],
+            'footer' => []
+        ];
+        
+        // Populate with database values
         foreach ($rawSettings as $section => $settings) {
             $homeSettings[$section] = [];
             foreach ($settings as $key => $setting) {
@@ -87,6 +106,19 @@ class CourseController extends Controller
             ->paginate(12);
 
         return view('courses.by-category', compact('category', 'courses'));
+    }
+
+    /**
+     * Show courses by level and category
+     */
+    public function byLevelCategory($level, CourseCategory $category)
+    {
+        $courses = $category->activeCourses()
+            ->where('level', $level)
+            ->orderBy('created_at', 'desc')
+            ->paginate(12);
+
+        return view('courses.by-level-category', compact('level', 'category', 'courses'));
     }
 
     /**

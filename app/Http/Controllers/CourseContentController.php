@@ -252,7 +252,9 @@ class CourseContentController extends Controller
 
         if ($request->hasFile('file')) {
             if ($content->file_path) {
-                Storage::disk('public')->delete($content->file_path);
+                if (file_exists(public_path($content->file_path))) {
+                    unlink(public_path($content->file_path));
+                }
             }
             $file = $request->file('file');
             $filename = Auth::id() . '-' . time() . '.' . $file->getClientOriginalExtension();
@@ -274,7 +276,9 @@ class CourseContentController extends Controller
         $this->authorize('isAdmin');
 
         if ($content->file_path) {
-            Storage::disk('public')->delete($content->file_path);
+            if (file_exists(public_path($content->file_path))) {
+                unlink(public_path($content->file_path));
+            }
         }
 
         $content->delete();
@@ -415,7 +419,9 @@ class CourseContentController extends Controller
 
         if ($request->hasFile('file')) {
             if ($content->file_path) {
-                Storage::disk('public')->delete($content->file_path);
+                if (file_exists(public_path($content->file_path))) {
+                    unlink(public_path($content->file_path));
+                }
             }
             $file = $request->file('file');
             $filename = Auth::id() . '-' . time() . '.' . $file->getClientOriginalExtension();
@@ -437,7 +443,9 @@ class CourseContentController extends Controller
         $this->authorize('delete', $content);
 
         if ($content->file_path) {
-            Storage::disk('public')->delete($content->file_path);
+            if (file_exists(public_path($content->file_path))) {
+                unlink(public_path($content->file_path));
+            }
         }
 
         $content->delete();
