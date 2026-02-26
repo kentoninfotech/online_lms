@@ -1,6 +1,6 @@
 @extends('layouts.auth')
 
-@section('title', 'Register - COINMAC')
+@section('title', 'Register - ' . (\App\Models\HomepageSetting::getSetting('branding', 'site_name') ?? 'LMS'))
 
 @section('content')
 
@@ -9,7 +9,7 @@
         <!-- Header Section -->
         <div class="auth-header">
             <h2><i class="bi bi-pencil-square"></i> Create Account</h2>
-            <p>Join COINMAC and start your learning journey</p>
+            <p>Join {{ \App\Models\HomepageSetting::getSetting('branding', 'site_name') ?? 'LMS' }} and start your learning journey</p>
         </div>
 
         <!-- Error Messages -->

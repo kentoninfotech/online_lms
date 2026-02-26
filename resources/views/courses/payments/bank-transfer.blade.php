@@ -45,7 +45,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <small class="text-muted d-block">Account Name</small>
-                            <strong>{{ env('BANK_ACCOUNT_NAME', 'Coinmac International Inc') }}</strong>
+                            <strong>{{ env('BANK_ACCOUNT_NAME') ?: \App\Models\HomepageSetting::getSetting('branding', 'site_name') ?: 'Learning Management System Inc' }}</strong>
                         </div>
                         <div class="col-md-6 mb-3">
                             <small class="text-muted d-block">Account Number</small>

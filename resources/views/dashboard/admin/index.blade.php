@@ -34,6 +34,9 @@
                         <a href="{{ route('admin.facilitators.create') }}" class="btn btn-success">
                             <i class="bi bi-plus-circle me-2"></i>New Tutor
                         </a>
+                        <button type="button" class="btn btn-danger" id="fixCourseDatesBtn">
+                            <i class="bi bi-gear me-2"></i>Fix Course Dates & Venues
+                        </button>
                     </div>
                 </div>
             </div>
@@ -382,6 +385,47 @@
     </div> <!-- row end -->
    
 </div>
+
+<script>
+document.getElementById('fixCourseDatesBtn').addEventListener('click', function() {
+    const btn = this;
+    const originalText = btn.innerHTML;
+    
+    // Show loading state
+    btn.disabled = true;
+    btn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Processing...';
+    
+    // Make the AJAX request
+    axios.post('{{ route("admin.fix-course-dates-venues") }}', {}, {
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => {
+        // Show success message
+        Swal.fire({
+            title: 'Success!',
+            text: response.data.message,
+            icon: 'success',
+            confirmButtonText: 'OK'
+        });
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    })
+    .catch(error => {
+        // Show error message
+        const errorMessage = error.response?.data?.message || 'An error occurred while processing.';
+        Swal.fire({
+            title: 'Error!',
+            text: errorMessage,
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    });
+});
+</script>
 @endsection
 
 

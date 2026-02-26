@@ -1,6 +1,6 @@
 @extends('layouts.auth')
 
-@section('title', 'Email Verification - COINMAC')
+@section('title', 'Email Verification - ' . (\\App\\Models\\HomepageSetting::getSetting('branding', 'site_name') ?? 'LMS'))
 
 @section('content')
 

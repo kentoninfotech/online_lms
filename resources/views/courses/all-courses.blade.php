@@ -1,6 +1,6 @@
 @extends('layouts.landing')
 
-@section('title', \App\Models\HomepageSetting::getSetting('pages', 'all_courses_page_title') ?? 'All Courses - COINMAC Inc')
+@section('title', \App\Models\HomepageSetting::getSetting('pages', 'all_courses_page_title') ?? ('All Courses - ' . (\App\Models\HomepageSetting::getSetting('branding', 'site_name') ?? 'LMS Inc')))
 
 @section('content')
 
@@ -272,7 +272,7 @@
 <section class="py-5 py-md-8" style="background: linear-gradient(135deg, #2563EB 0%, #4F46E5 100%); color: white;">
     <div class="container-lg text-center" data-aos="fade-up">
         <h2 class="fw-bold mb-3">Start Learning Today</h2>
-        <p class="lead mb-4">Join thousands of students already learning on COINMAC Inc</p>
+        <p class="lead mb-4">Join thousands of students already learning on {{ \App\Models\HomepageSetting::getSetting('branding', 'site_name') ?? 'LMS Inc' }}</p>
         @auth
             <a href="{{ route('courses.all') }}" class="btn btn-light btn-lg fw-bold">Browse Courses</a>
         @else

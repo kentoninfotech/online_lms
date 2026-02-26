@@ -9,9 +9,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description" content="COINMAC - Professional Online Learning Platform"/>
+    <meta name="description" content="{{ \App\Models\HomepageSetting::getSetting('branding', 'site_name') ?? 'LMS' }} - {{ \App\Models\HomepageSetting::getSetting('branding', 'site_tagline') ?? 'Professional Online Learning Platform' }}"/>
     <meta name="keywords" content="online learning, courses, education, professional development"/>
-    <meta name="author" content="COINMAC Inc"/>
+    <meta name="author" content="{{ \App\Models\HomepageSetting::getSetting('branding', 'site_name') ?? 'LMS Inc' }}"/>
 
     <!-- [Favicon] icon -->
     <link rel="icon" href="{{ asset('assets/images/favicon.png') }}" type="image/x-icon" />

@@ -166,6 +166,8 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
     // manual finalize attendance for occurrence
     Route::get('/attendance/{occurrence}/finalize', [AttendanceController::class, 'finalize'])->name('admin.attendance.finalize');
+    // Fix course dates and venues
+    Route::post('/admin/fix-course-dates-venues', [AdminDashboardController::class, 'fixCourseDatesAndVenues'])->name('admin.fix-course-dates-venues');
     // payment approval/rejection
     Route::post('/payments/{payment}/approve', [PaymentController::class, 'approve'])->name('payments.approve');
     Route::post('/payments/{payment}/reject', [PaymentController::class, 'reject'])->name('payments.reject');

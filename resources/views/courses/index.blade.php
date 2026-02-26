@@ -459,7 +459,7 @@
                         ⭐⭐⭐⭐⭐
                     </div>
                     <p class="text-muted fst-italic">
-                        "COINMAC's courses helped me transition into a new role within 6 months. The instructors are world-class!"
+                        "{{ \App\Models\HomepageSetting::getSetting('branding', 'site_name') ?? 'LMS' }}'s courses helped me transition into a new role within 6 months. The instructors are world-class!"
                     </p>
                 </div>
             </div>
@@ -606,7 +606,7 @@
                                 <span style="font-size: 1.75rem;">📧</span>
                                 <div>
                                     <h6 class="fw-bold">Email</h6>
-                                    <p class="text-muted">info@coinmac.org</p>
+                                    <p class="text-muted">{{ \App\Models\HomepageSetting::getSetting('contact', 'email_value') ?? 'info@example.org' }}</p>
                                 </div>
                             </div>
                         </div>
@@ -615,7 +615,7 @@
                                 <span style="font-size: 1.75rem;">📞</span>
                                 <div>
                                     <h6 class="fw-bold">Phone</h6>
-                                    <p class="text-muted mb-2">+234 (0) 806 563 2882</p>
+                                    <p class="text-muted mb-2">{{ \App\Models\HomepageSetting::getSetting('contact', 'phone_value') ?? '+234 (0) 806 563 2882' }}</p>
                                 </div>
                             </div>
                         </div>

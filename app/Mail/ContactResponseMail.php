@@ -25,8 +25,9 @@ class ContactResponseMail extends Mailable
      */
     public function envelope(): Envelope
     {
+        $siteName = \App\Models\HomepageSetting::getSetting('branding', 'site_name') ?? 'LMS Inc';
         return new Envelope(
-            subject: 'Response to Your Message - COINMAC Inc',
+            subject: 'Response to Your Message - ' . $siteName,
         );
     }
 

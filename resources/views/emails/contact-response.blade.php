@@ -29,7 +29,7 @@ If you have any further questions or need clarification, please feel free to rea
 
 Best regards,
 
-**COINMAC Inc Support Team**
+**{{ \App\Models\HomepageSetting::getSetting('branding', 'site_name') ?? 'LMS Inc' }} Support Team**
 
-info@coinmac.org | +234 806 563 2882
+{{ \App\Models\HomepageSetting::getSetting('contact', 'email_value') ?? 'info@example.org' }} | {{ \App\Models\HomepageSetting::getSetting('contact', 'phone_value') ?? '+234 (0) 806 563 2882' }}
 @endcomponent

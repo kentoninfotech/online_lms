@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Artisan;
 use App\Models\Student;
 use App\Models\Instructor;
 use App\Models\ParentModel;
@@ -118,6 +119,29 @@ class AdminDashboardController extends Controller
             ->paginate(20);
 
         return view('dashboard.admin.reschedules', compact('requests'));
+    }
+
+    /**
+     * Fix missing course dates and venues
+     */
+    public function fixCourseDatesAndVenues()
+    {
+        try {
+            Artisan::call('course:generate-dates-venues');
+            $output = Artisan::output();
+            
+            return response()->json([
+                'success' => true,
+                'message' => '✅ Course dates and venues generated successfully!',
+                'output' => $output
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => '❌ Error generating course dates and venues: ' . $e->getMessage(),
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
 }
