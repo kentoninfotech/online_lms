@@ -10,6 +10,7 @@ use App\Models\CourseDragAndDrop;
 use App\Models\HomepageSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class CourseController extends Controller
 {
@@ -589,5 +590,130 @@ class CourseController extends Controller
             }),
             'count' => $results->count()
         ]);
+    }
+
+    /**
+     * Generate venues for course dates that don't have venues
+     */
+    public function generateVenuesForCourse(Course $course)
+    {
+        $this->authorize('isAdmin');
+
+        $venues = ['Lagos', 'Abuja', 'Port Harcourt', 'Nasarawa', 'Bauchi'];
+
+        // Get all course_dates for this course that don't have a corresponding venue
+        $datesToAssignVenues = \DB::table('course_dates')
+            ->leftJoin('course_venues', 'course_dates.id', '=', 'course_venues.course_date_id')
+            ->where('course_dates.course_id', $course->id)
+            ->whereNull('course_venues.id')
+            ->select('course_dates.*')
+            ->orderBy('course_dates.id')
+            ->get();
+
+        if ($datesToAssignVenues->isEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => '✅ All course dates already have venues assigned.',
+                'count' => 0,
+                'datesUpdated' => 0
+            ]);
+        }
+
+        try {
+            // Shuffle venues for randomization
+            $shuffledVenues = $venues;
+            shuffle($shuffledVenues);
+            
+            $venueIndex = 0;
+            $createdCount = 0;
+            $datesUpdatedCount = 0;
+
+            foreach ($datesToAssignVenues as $dateRecord) {
+                // Try to parse start_date and end_date from date_label if they don't exist
+                $updateData = [];
+                
+                if ($dateRecord->date_label && (!$dateRecord->start_date || !$dateRecord->end_date)) {
+                    // Example: "04 - 08 May, 2026" or "04 - 08 May."
+                    $dateLabelParts = explode(',', $dateRecord->date_label);
+                    $year = trim(end($dateLabelParts));
+                    
+                    // Remove year from parts if it's a standalone number
+                    if (is_numeric(trim($year))) {
+                        array_pop($dateLabelParts);
+                    } else {
+                        // Year might be embedded in the last segment, extract it
+                        $lastPart = end($dateLabelParts);
+                        preg_match('/\d{4}/', $lastPart, $yearMatch);
+                        if (!empty($yearMatch)) {
+                            $year = $yearMatch[0];
+                        }
+                    }
+
+                    $dateSegment = trim(reset($dateLabelParts)); // e.g., "04 - 08 May"
+
+                    // Extract start day, end day, and month
+                    // Regex to capture: (Day1) - (Day2) (Month)
+                    if (preg_match('/(\d+)\s*-\s*(\d+)\s*([a-zA-Z.]+)/', $dateSegment, $matches)) {
+                        if (count($matches) === 4) {
+                            $startDay = $matches[1];
+                            $endDay = $matches[2];
+                            $month = $matches[3];
+
+                            try {
+                                $startDate = Carbon::parse("$startDay $month $year")->format('Y-m-d');
+                                $endDate = Carbon::parse("$endDay $month $year")->format('Y-m-d');
+                                
+                                $updateData['start_date'] = $startDate;
+                                $updateData['end_date'] = $endDate;
+                                $datesUpdatedCount++;
+                            } catch (\Exception $dateParseException) {
+                                // If date parsing fails, continue with just venue assignment
+                            }
+                        }
+                    }
+                }
+
+                // Assign venue, cycling through the list if necessary
+                $venueName = $shuffledVenues[$venueIndex % count($shuffledVenues)];
+                $venueIndex++;
+
+                // Update course_dates if dates were parsed
+                if (!empty($updateData)) {
+                    $updateData['updated_at'] = now();
+                    \DB::table('course_dates')
+                        ->where('id', $dateRecord->id)
+                        ->update($updateData);
+                }
+
+                // Create venue record
+                \DB::table('course_venues')->insert([
+                    'course_date_id' => $dateRecord->id,
+                    'venue_name' => $venueName,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                $createdCount++;
+            }
+
+            $message = "✅ Successfully generated {$createdCount} venue(s)";
+            if ($datesUpdatedCount > 0) {
+                $message .= " and updated {$datesUpdatedCount} date(s) with parsed dates";
+            }
+            $message .= " for this course!";
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'count' => $createdCount,
+                'datesUpdated' => $datesUpdatedCount
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => '❌ Error generating venues: ' . $e->getMessage(),
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -266,10 +266,13 @@
 
                         <!-- Course Dates Section -->
                         <div class="card mb-4 border-primary">
-                            <div class="card-header bg-light">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
                                 <h6 class="card-title mb-0">
                                     <i class="bi bi-calendar-event text-primary"></i> Course Dates
                                 </h6>
+                                <button type="button" class="btn btn-sm btn-outline-success" id="generateVenuesBtn" title="Generate venues for dates without venues">
+                                    <i class="bi bi-geo-alt me-1"></i>Generate Venues
+                                </button>
                             </div>
                             <div class="card-body">
                                 <div id="courseDatesContainer">
@@ -678,5 +681,80 @@
             }
         }
     }
+
+    // Generate venues for course dates without venues
+    document.getElementById('generateVenuesBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        const btn = this;
+        const courseId = {{ $course->id }};
+        const originalText = btn.innerHTML;
+        const originalClass = btn.className;
+
+        // Show loading state
+        btn.disabled = true;
+        btn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Generating...';
+        btn.className = 'btn btn-sm btn-outline-secondary';
+
+        // Make AJAX request
+        fetch(`/admin/courses/${courseId}/generate-venues`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Show success/error message
+            const alertClass = data.success ? 'alert-success' : 'alert-danger';
+            let message = data.message;
+            
+            // Add additional info if dates were updated
+            if (data.success && data.datesUpdated > 0) {
+                message += ` Also updated start_date and end_date for ${data.datesUpdated} date(s) from date labels.`;
+            }
+            
+            const alertHtml = `<div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                <i class="bi ${data.success ? 'bi-check-circle' : 'bi-exclamation-circle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>`;
+
+            // Insert alert at the top of the card
+            const cardHeader = document.querySelector('.card-header.bg-light');
+            if (cardHeader) {
+                cardHeader.insertAdjacentHTML('afterend', alertHtml);
+            }
+
+            // Reset button
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+            btn.className = originalClass;
+
+            // If successful and venues were created, reload the page to show new venues and updated dates
+            if (data.success && data.count > 0) {
+                setTimeout(() => {
+                    location.reload();
+                }, 2500);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            const alertHtml = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-circle me-2"></i>
+                An error occurred while generating venues.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>`;
+
+            const cardHeader = document.querySelector('.card-header.bg-light');
+            if (cardHeader) {
+                cardHeader.insertAdjacentHTML('afterend', alertHtml);
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+            btn.className = originalClass;
+        });
+    });
 </script>
 @endsection

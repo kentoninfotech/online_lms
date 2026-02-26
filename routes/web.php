@@ -366,6 +366,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::get('/courses/{course}/edit', [CourseController::class, 'adminEdit'])->name('courses.edit');
     Route::put('/courses/{course}', [CourseController::class, 'adminUpdate'])->name('courses.update');
     Route::delete('/courses/{course}', [CourseController::class, 'adminDestroy'])->name('courses.destroy');
+    Route::post('/courses/{course}/generate-venues', [CourseController::class, 'generateVenuesForCourse'])->name('courses.generate-venues');
 
     // Course Bulk Import
     Route::get('/courses/import/form', [CourseImportController::class, 'create'])->name('courses.import');
