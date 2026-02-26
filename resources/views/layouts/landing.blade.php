@@ -254,6 +254,39 @@
             float: right;
         }
 
+        /* Mobile Dropdown Fix - Align dropdowns to left on small screens */
+        @media (max-width: 991px) {
+            .dropdown-submenu > .dropdown-menu {
+                position: static !important;
+                display: none !important;
+                left: 0 !important;
+                top: auto !important;
+                border-radius: 8px;
+                margin-top: 0;
+                background: #f3f4f6;
+                border: none;
+                box-shadow: none;
+                padding: 0.5rem 0 0.5rem 1.5rem;
+            }
+
+            .dropdown-submenu:hover > .dropdown-menu,
+            .dropdown-submenu.show > .dropdown-menu {
+                display: block !important;
+            }
+
+            .dropdown-submenu > a::after {
+                content: '\f285';
+                font-family: 'bootstrap-icons';
+                margin-left: auto;
+                float: right;
+                transform: rotate(0deg);
+            }
+
+            .dropdown-submenu.show > a::after {
+                transform: rotate(90deg);
+            }
+        }
+
         /* Button Styles */
         .btn-primary {
             background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
@@ -491,6 +524,9 @@
                 padding: 1rem;
                 border-radius: 0 0 8px 8px;
                 border-top: 2px solid #f3f4f6;
+                max-height: calc(100vh - 80px);
+                overflow-y: auto;
+                overflow-x: hidden;
             }
 
             .navbar-nav {
@@ -1004,6 +1040,59 @@
                     });
                 }
             });
+        });
+
+        // Mobile submenu toggle functionality
+        const isSmallScreen = () => window.innerWidth <= 991;
+
+        document.querySelectorAll('.dropdown-submenu > a').forEach(submenuLink => {
+            submenuLink.addEventListener('click', function(e) {
+                if (isSmallScreen()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const submenuItem = this.closest('.dropdown-submenu');
+                    const submenuList = submenuItem.querySelector('.dropdown-menu');
+                    
+                    // Close other open submenus in the same parent
+                    document.querySelectorAll('.dropdown-submenu').forEach(item => {
+                        if (item !== submenuItem) {
+                            item.classList.remove('show');
+                            const menu = item.querySelector('.dropdown-menu');
+                            if (menu) menu.style.display = 'none';
+                        }
+                    });
+                    
+                    // Toggle current submenu
+                    if (submenuItem.classList.contains('show')) {
+                        submenuItem.classList.remove('show');
+                        submenuList.style.display = 'none';
+                    } else {
+                        submenuItem.classList.add('show');
+                        submenuList.style.display = 'block';
+                    }
+                }
+            });
+        });
+
+        // Close submenus when clicking outside
+        document.addEventListener('click', function(e) {
+            if (isSmallScreen() && !e.target.closest('.dropdown-submenu')) {
+                document.querySelectorAll('.dropdown-submenu.show').forEach(item => {
+                    item.classList.remove('show');
+                    const menu = item.querySelector('.dropdown-menu');
+                    if (menu) menu.style.display = 'none';
+                });
+            }
+        });
+
+        // Handle window resize to close submenus when switching from mobile to desktop
+        window.addEventListener('resize', function() {
+            if (!isSmallScreen()) {
+                document.querySelectorAll('.dropdown-submenu.show').forEach(item => {
+                    item.classList.remove('show');
+                });
+            }
         });
     </script>
 
