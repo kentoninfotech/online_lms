@@ -122,7 +122,12 @@
                     @if($carousel->count() > 0)
                         <div id="carouselSortable">
                             @foreach($carousel as $index => $slide)
-                                <div class="card mb-3 carousel-slide-item" data-id="{{ $slide->id }}">
+                                <div class="card mb-3 carousel-slide-item" 
+                                     data-id="{{ $slide->id }}" 
+                                     data-title="{{ $slide->value }}"
+                                     data-description="{{ $slide->description }}"
+                                     data-button-text="{{ $slide->button_text }}"
+                                     data-button-link="{{ $slide->button_link }}">
                                     <div class="card-body">
                                         <div class="row">
                                             <!-- Drag Handle -->
@@ -234,7 +239,8 @@
                                                     </div>
 
                                                     <div class="form-check form-switch">
-                                                        <input class="form-check-input" type="checkbox" name="is_active" {{ $slide->is_active ? 'checked' : '' }}>
+                                                        <input type="hidden" name="is_active" value="0">
+                                                        <input class="form-check-input" type="checkbox" name="is_active" value="1" {{ $slide->is_active ? 'checked' : '' }}>
                                                         <label class="form-check-label">Active</label>
                                                     </div>
                                                 </div>
@@ -309,12 +315,40 @@
                             // Toggle active status
                             document.querySelectorAll('.carousel-toggle').forEach(toggle => {
                                 toggle.addEventListener('change', function() {
-                                    const form = document.createElement('form');
-                                    form.method = 'POST';
-                                    form.action = '{{ route("admin.carousel.update", ":id") }}'.replace(':id', this.dataset.id);
-                                    form.innerHTML = '@csrf @method("PUT")<input type="hidden" name="is_active" value="' + (this.checked ? 1 : 0) + '">';
-                                    document.body.appendChild(form);
-                                    form.submit();
+                                    const slideItem = this.closest('.carousel-slide-item');
+                                    const slideId = slideItem.dataset.id;
+                                    
+                                    // Get the slide's data from data attributes
+                                    const formData = new FormData();
+                                    formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+                                    formData.append('_method', 'PUT');
+                                    formData.append('title', slideItem.dataset.title);
+                                    formData.append('description', slideItem.dataset.description || '');
+                                    formData.append('button_text', slideItem.dataset.buttonText || '');
+                                    formData.append('button_link', slideItem.dataset.buttonLink || '');
+                                    formData.append('is_active', this.checked ? 1 : 0);
+                                    
+                                    fetch('{{ route("admin.carousel.update", ":id") }}'.replace(':id', slideId), {
+                                        method: 'POST',
+                                        headers: {
+                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                            'Accept': 'application/json'
+                                        },
+                                        body: formData
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            console.log('Active status updated successfully');
+                                        } else if (data.errors) {
+                                            console.error('Update failed:', data.errors);
+                                            this.checked = !this.checked; // Revert the toggle
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error:', error);
+                                        this.checked = !this.checked; // Revert the toggle
+                                    });
                                 });
                             });
                         </script>

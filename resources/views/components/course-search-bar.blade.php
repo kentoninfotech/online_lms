@@ -15,13 +15,13 @@
     list-style: none;
     padding: 0;
     margin: 0;
-    z-index: 999999999999999999999999;
     /* Responsive width: 90% on mobile, 60% on desktop */
     width: 90% !important;
     max-width: 90vw !important;
     position: absolute !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
+    z-index: 50 !important;
 }
 
 @media (min-width: 768px) {
@@ -115,9 +115,9 @@
 }
 </style>
 <!-- Course Search Bar Component -->
-<div class="course-search-bar mb-4" data-aos="fade-up">
-    <div class="position-relative" style="z-index: 1050;">
-        <div class="input-group input-group-lg shadow-sm">
+<div class="course-search-bar mb-4" data-aos="fade-up" style="overflow: visible !important;">
+    <div class="position-relative" style="z-index: auto; overflow: visible;">
+        <div class="input-group input-group-lg shadow-sm" style="overflow: visible;">
             <span class="input-group-text bg-white border-end-0">
                 <i class="fa fa-search text-primary"></i>
             </span>
@@ -135,7 +135,7 @@
         <div 
             class="position-absolute mt-2 bg-white rounded-3 shadow-lg d-none" 
             id="courseSearchResults"
-            style="top: 100%; left: 0; z-index: 1100; max-height: 500px; overflow-y: auto; width: 100%;"
+            style="top: 100%; left: 0; z-index: 50; max-height: none; overflow: visible; width: 100%;"
         >
             <!-- Results will be populated here -->
         </div>

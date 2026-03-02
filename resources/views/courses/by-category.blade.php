@@ -18,7 +18,7 @@
 
     <!-- Course Search Bar -->
     <div class="row mb-5">
-        <div class="col-lg-8 mx-auto" style="position: relative; z-index: 999999999999999999999999999;">
+        <div class="col-lg-8 mx-auto">
             @include('components.course-search-bar')
         </div>
     </div>
