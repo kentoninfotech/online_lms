@@ -56,13 +56,8 @@ class FacilitatorController extends Controller
 
         if ($request->hasFile('profile_image')) {
             $file = $request->file('profile_image');
-            $uploadDir = public_path('uploads/facilitators');
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move($uploadDir, $filename);
-            $validated['profile_image'] = 'uploads/facilitators/' . $filename;
+            $validated['profile_image'] = $file->storeAs('uploads/facilitators', $filename, 'public');
         }
 
         Facilitator::create($validated);
@@ -102,13 +97,8 @@ class FacilitatorController extends Controller
 
         if ($request->hasFile('profile_image')) {
             $file = $request->file('profile_image');
-            $uploadDir = public_path('uploads/facilitators');
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move($uploadDir, $filename);
-            $validated['profile_image'] = 'uploads/facilitators/' . $filename;
+            $validated['profile_image'] = $file->storeAs('uploads/facilitators', $filename, 'public');
         }
 
         $facilitator->update($validated);

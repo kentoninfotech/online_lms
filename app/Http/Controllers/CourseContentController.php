@@ -194,13 +194,8 @@ class CourseContentController extends Controller
 
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $uploadDir = public_path('uploads/courses/' . $course->id . '/content');
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
             $filename = time() . '-' . $file->getClientOriginalName();
-            $file->move($uploadDir, $filename);
-            $validated['file_path'] = 'uploads/courses/' . $course->id . '/content/' . $filename;
+            $validated['file_path'] = $file->storeAs('uploads/courses/' . $course->id . '/content', $filename, 'public');
         }
 
         $validated['course_id'] = $course->id;
@@ -251,15 +246,12 @@ class CourseContentController extends Controller
         ]);
 
         if ($request->hasFile('file')) {
-            if ($content->file_path) {
-                if (file_exists(public_path($content->file_path))) {
-                    unlink(public_path($content->file_path));
-                }
+            if ($content->file_path && Storage::disk('public')->exists($content->file_path)) {
+                Storage::disk('public')->delete($content->file_path);
             }
             $file = $request->file('file');
             $filename = Auth::id() . '-' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/courses'), $filename);
-            $validated['file_path'] = 'uploads/courses/' . $filename;
+            $validated['file_path'] = $file->storeAs('uploads/courses', $filename, 'public');
         }
 
         $content->update($validated);
@@ -377,8 +369,7 @@ class CourseContentController extends Controller
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $filename = Auth::id() . '-' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/courses'), $filename);
-            $validated['file_path'] = 'uploads/courses/' . $filename;
+            $validated['file_path'] = $file->storeAs('uploads/courses', $filename, 'public');
         }
 
         $validated['course_id'] = $course->id;
@@ -418,15 +409,12 @@ class CourseContentController extends Controller
         ]);
 
         if ($request->hasFile('file')) {
-            if ($content->file_path) {
-                if (file_exists(public_path($content->file_path))) {
-                    unlink(public_path($content->file_path));
-                }
+            if ($content->file_path && Storage::disk('public')->exists($content->file_path)) {
+                Storage::disk('public')->delete($content->file_path);
             }
             $file = $request->file('file');
             $filename = Auth::id() . '-' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/courses'), $filename);
-            $validated['file_path'] = 'uploads/courses/' . $filename;
+            $validated['file_path'] = $file->storeAs('uploads/courses', $filename, 'public');
         }
 
         $content->update($validated);

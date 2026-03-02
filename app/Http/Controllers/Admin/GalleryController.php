@@ -51,10 +51,10 @@ class GalleryController extends Controller
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $index => $image) {
                 $filename = time() . '_' . ($index + 1) . '_' . $image->getClientOriginalName();
-                $image->move(public_path('uploads/galleries'), $filename);
+                $path = $image->storeAs('uploads/galleries', $filename, 'public');
                 GalleryImage::create([
                     'gallery_id' => $gallery->id,
-                    'image_path' => 'uploads/galleries/' . $filename,
+                    'image_path' => $path,
                     'sequence' => $index,
                 ]);
             }
@@ -96,10 +96,10 @@ class GalleryController extends Controller
             
             foreach ($request->file('images') as $index => $image) {
                 $filename = time() . '_' . ($index + 1) . '_' . $image->getClientOriginalName();
-                $image->move(public_path('uploads/galleries'), $filename);
+                $path = $image->storeAs('uploads/galleries', $filename, 'public');
                 GalleryImage::create([
                     'gallery_id' => $gallery->id,
-                    'image_path' => 'uploads/galleries/' . $filename,
+                    'image_path' => $path,
                     'sequence' => $lastSequence + $index + 1,
                 ]);
             }

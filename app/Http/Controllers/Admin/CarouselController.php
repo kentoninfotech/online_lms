@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\HomepageSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class CarouselController extends Controller
 {
@@ -32,8 +33,7 @@ class CarouselController extends Controller
 
         // Store image in public/uploads/carousel
         $filename = time() . '_' . $request->file('image')->getClientOriginalName();
-        $request->file('image')->move(public_path('uploads/carousel'), $filename);
-        $imagePath = 'uploads/carousel/' . $filename;
+        $imagePath = $request->file('image')->storeAs('uploads/carousel', $filename, 'public');
         
         // Get the next sort order
         $nextSort = HomepageSetting::where('section', 'carousel')->max('sort_order') ?? 0;
@@ -83,13 +83,12 @@ class CarouselController extends Controller
         // Handle image upload
         if ($request->hasFile('image')) {
             // Delete old image if exists
-            if ($carousel->image_path && file_exists(public_path($carousel->image_path))) {
-                unlink(public_path($carousel->image_path));
+            if ($carousel->image_path && Storage::disk('public')->exists($carousel->image_path)) {
+                Storage::disk('public')->delete($carousel->image_path);
             }
             // Store new image in public/uploads/carousel
             $filename = time() . '_' . $request->file('image')->getClientOriginalName();
-            $request->file('image')->move(public_path('uploads/carousel'), $filename);
-            $data['image_path'] = 'uploads/carousel/' . $filename;
+            $data['image_path'] = $request->file('image')->storeAs('uploads/carousel', $filename, 'public');
         }
 
         $carousel->update($data);

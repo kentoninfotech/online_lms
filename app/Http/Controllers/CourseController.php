@@ -232,20 +232,11 @@ class CourseController extends Controller
             }
             
             try {
-                // Create directory if it doesn't exist
-                $uploadDir = public_path('uploads/courses');
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0755, true);
-                }
-                
                 // Generate filename
                 $filename = time() . '_' . $file->getClientOriginalName();
                 
-                // Move file to directory
-                $file->move($uploadDir, $filename);
-                
-                // Store relative path for database
-                $validated['featured_image'] = 'uploads/courses/' . $filename;
+                // Store file and get path
+                $validated['featured_image'] = $file->storeAs('uploads/courses', $filename, 'public');
             } catch (\Exception $e) {
                 \Log::error('Featured image upload failed: ' . $e->getMessage());
                 return back()->with('error', 'Failed to upload featured image: ' . $e->getMessage())
@@ -269,20 +260,14 @@ class CourseController extends Controller
         // Handle featured image upload after course creation (to use course ID)
         if (isset($tempFile) && $tempFile) {
             try {
-                // Create course-specific directory
-                $courseUploadDir = public_path('uploads/courses/' . $course->id);
-                if (!is_dir($courseUploadDir)) {
-                    mkdir($courseUploadDir, 0755, true);
-                }
-                
                 // Generate filename
                 $filename = time() . '_' . $tempFile->getClientOriginalName();
                 
-                // Move file to course-specific directory
-                $tempFile->move($courseUploadDir, $filename);
+                // Store file in course-specific directory
+                $path = $tempFile->storeAs('uploads/courses/' . $course->id, $filename, 'public');
                 
                 // Update course with featured image path
-                $course->update(['featured_image' => 'uploads/courses/' . $course->id . '/' . $filename]);
+                $course->update(['featured_image' => $path]);
             } catch (\Exception $e) {
                 \Log::error('Featured image upload failed for course ' . $course->id . ': ' . $e->getMessage());
                 // Continue anyway, course is created without image
@@ -396,20 +381,11 @@ class CourseController extends Controller
             }
             
             try {
-                // Create directory if it doesn't exist
-                $uploadDir = public_path('uploads/courses');
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0755, true);
-                }
-                
                 // Generate filename
                 $filename = time() . '_' . $file->getClientOriginalName();
                 
-                // Move file to directory
-                $file->move($uploadDir, $filename);
-                
-                // Store relative path for database
-                $validated['featured_image'] = 'uploads/courses/' . $filename;
+                // Store file and get path
+                $validated['featured_image'] = $file->storeAs('uploads/courses', $filename, 'public');
             } catch (\Exception $e) {
                 \Log::error('Featured image upload failed: ' . $e->getMessage());
                 return back()->with('error', 'Failed to upload featured image: ' . $e->getMessage())
@@ -430,20 +406,14 @@ class CourseController extends Controller
         // Handle featured image upload after update (to use course ID)
         if (isset($tempFile) && $tempFile) {
             try {
-                // Create course-specific directory
-                $courseUploadDir = public_path('uploads/courses/' . $course->id);
-                if (!is_dir($courseUploadDir)) {
-                    mkdir($courseUploadDir, 0755, true);
-                }
-                
                 // Generate filename
                 $filename = time() . '_' . $tempFile->getClientOriginalName();
                 
-                // Move file to course-specific directory
-                $tempFile->move($courseUploadDir, $filename);
+                // Store file in course-specific directory
+                $path = $tempFile->storeAs('uploads/courses/' . $course->id, $filename, 'public');
                 
                 // Update course with featured image path
-                $course->update(['featured_image' => 'uploads/courses/' . $course->id . '/' . $filename]);
+                $course->update(['featured_image' => $path]);
             } catch (\Exception $e) {
                 \Log::error('Featured image upload failed for course ' . $course->id . ': ' . $e->getMessage());
                 // Continue anyway, course is updated without new image

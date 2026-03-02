@@ -122,8 +122,7 @@ class HomepageSettingController extends Controller
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = 'homepage-' . $section . '-' . $actualKey . '-' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/courses'), $filename);
-            $data['image_path'] = 'uploads/courses/' . $filename;
+            $data['image_path'] = $file->storeAs('uploads/courses', $filename, 'public');
         }
 
         HomepageSetting::updateOrCreate(
@@ -161,10 +160,10 @@ class HomepageSettingController extends Controller
             if ($request->hasFile('image_' . $key)) {
                 $file = $request->file('image_' . $key);
                 $filename = 'homepage-' . $section . '-' . $key . '-' . time() . '.' . $file->getClientOriginalExtension();
-                $file->move(public_path('uploads/courses'), $filename);
+                $path = $file->storeAs('uploads/courses', $filename, 'public');
                 HomepageSetting::where('section', $section)
                     ->where('key', $key)
-                    ->update(['image_path' => 'uploads/courses/' . $filename]);
+                    ->update(['image_path' => $path]);
             }
         }
 

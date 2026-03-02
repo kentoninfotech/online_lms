@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class ServiceController extends Controller
@@ -42,9 +43,9 @@ class ServiceController extends Controller
 
         // Handle image upload
         if ($request->hasFile('featured_image')) {
-            $filename = time() . '_' . $request->file('featured_image')->getClientOriginalName();
-            $request->file('featured_image')->move(public_path('uploads/services'), $filename);
-            $validated['featured_image'] = 'uploads/services/' . $filename;
+            $file = $request->file('featured_image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $validated['featured_image'] = $file->storeAs('uploads/services', $filename, 'public');
         }
 
         // Generate slug
@@ -80,13 +81,13 @@ class ServiceController extends Controller
         // Handle image upload
         if ($request->hasFile('featured_image')) {
             // Delete old image if exists
-            if ($service->featured_image && file_exists(public_path($service->featured_image))) {
-                unlink(public_path($service->featured_image));
+            if ($service->featured_image && Storage::disk('public')->exists($service->featured_image)) {
+                Storage::disk('public')->delete($service->featured_image);
             }
             
-            $filename = time() . '_' . $request->file('featured_image')->getClientOriginalName();
-            $request->file('featured_image')->move(public_path('uploads/services'), $filename);
-            $validated['featured_image'] = 'uploads/services/' . $filename;
+            $file = $request->file('featured_image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $validated['featured_image'] = $file->storeAs('uploads/services', $filename, 'public');
         }
 
         $service->update($validated);

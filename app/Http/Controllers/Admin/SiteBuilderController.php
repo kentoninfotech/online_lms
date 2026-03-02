@@ -61,45 +61,33 @@ class SiteBuilderController extends Controller
         // Handle logo light upload
         if ($request->hasFile('logo_light')) {
             $file = $request->file('logo_light');
-            $uploadDir = public_path('uploads/branding');
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
             $filename = 'logo-light-' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move($uploadDir, $filename);
+            $path = $file->storeAs('uploads/branding', $filename, 'public');
             HomepageSetting::updateOrCreate(
                 ['section' => 'branding', 'key' => 'logo_light'],
-                ['image_path' => 'uploads/branding/' . $filename, 'is_active' => true]
+                ['image_path' => $path, 'is_active' => true]
             );
         }
 
         // Handle logo dark upload
         if ($request->hasFile('logo_dark')) {
             $file = $request->file('logo_dark');
-            $uploadDir = public_path('uploads/branding');
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
             $filename = 'logo-dark-' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move($uploadDir, $filename);
+            $path = $file->storeAs('uploads/branding', $filename, 'public');
             HomepageSetting::updateOrCreate(
                 ['section' => 'branding', 'key' => 'logo_dark'],
-                ['image_path' => 'uploads/branding/' . $filename, 'is_active' => true]
+                ['image_path' => $path, 'is_active' => true]
             );
         }
 
         // Handle favicon upload
         if ($request->hasFile('favicon')) {
             $file = $request->file('favicon');
-            $uploadDir = public_path('uploads/branding');
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
             $filename = 'favicon-' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move($uploadDir, $filename);
+            $path = $file->storeAs('uploads/branding', $filename, 'public');
             HomepageSetting::updateOrCreate(
                 ['section' => 'branding', 'key' => 'favicon'],
-                ['image_path' => 'uploads/branding/' . $filename, 'is_active' => true]
+                ['image_path' => $path, 'is_active' => true]
             );
         }
 
@@ -332,15 +320,11 @@ class SiteBuilderController extends Controller
         // Handle main background image upload
         if ($request->hasFile('main_bg_image')) {
             $file = $request->file('main_bg_image');
-            $uploadDir = public_path('uploads/branding');
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
             $filename = 'main-bg-' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move($uploadDir, $filename);
+            $path = $file->storeAs('uploads/branding', $filename, 'public');
             HomepageSetting::updateOrCreate(
                 ['section' => 'design', 'key' => 'main_bg_image'],
-                ['value' => 'uploads/branding/' . $filename, 'is_active' => true]
+                ['value' => $path, 'is_active' => true]
             );
         }
 

@@ -19,13 +19,8 @@ class PaymentService
      */
     public function uploadEvidence(Subscription $subscription, ParentModel $parent, UploadedFile $file, int $amount): Payment
     {
-        $uploadDir = public_path('uploads/payments');
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
-        }
         $filename = auth()->id() . '-' . time() . '.' . $file->getClientOriginalExtension();
-        $file->move($uploadDir, $filename);
-        $path = 'uploads/payments/' . $filename;
+        $path = $file->storeAs('uploads/payments', $filename, 'public');
 
         $payment = Payment::create([
             'subscription_id' => $subscription->id,
