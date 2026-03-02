@@ -264,7 +264,7 @@ class CourseController extends Controller
                 $filename = time() . '_' . $tempFile->getClientOriginalName();
                 
                 // Store file in course-specific directory
-                $path = $tempFile->storeAs('uploads/courses/' . $course->id, $filename, 'public');
+                $path = 'storage/' . $tempFile->storeAs('uploads/courses/' . $course->id, $filename, 'public');
                 
                 // Update course with featured image path
                 $course->update(['featured_image' => $path]);
@@ -385,7 +385,7 @@ class CourseController extends Controller
                 $filename = time() . '_' . $file->getClientOriginalName();
                 
                 // Store file and get path
-                $validated['featured_image'] = $file->storeAs('uploads/courses', $filename, 'public');
+                $validated['featured_image'] = 'storage/' . $file->storeAs('uploads/courses', $filename, 'public');
             } catch (\Exception $e) {
                 \Log::error('Featured image upload failed: ' . $e->getMessage());
                 return back()->with('error', 'Failed to upload featured image: ' . $e->getMessage())
@@ -410,7 +410,7 @@ class CourseController extends Controller
                 $filename = time() . '_' . $tempFile->getClientOriginalName();
                 
                 // Store file in course-specific directory
-                $path = $tempFile->storeAs('uploads/courses/' . $course->id, $filename, 'public');
+                $path = 'storage/' . $tempFile->storeAs('uploads/courses/' . $course->id, $filename, 'public');
                 
                 // Update course with featured image path
                 $course->update(['featured_image' => $path]);

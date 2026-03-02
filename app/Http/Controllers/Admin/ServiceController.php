@@ -45,7 +45,7 @@ class ServiceController extends Controller
         if ($request->hasFile('featured_image')) {
             $file = $request->file('featured_image');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $validated['featured_image'] = $file->storeAs('uploads/services', $filename, 'public');
+            $validated['featured_image'] = 'storage/' . $file->storeAs('uploads/services', $filename, 'public');
         }
 
         // Generate slug
@@ -81,13 +81,13 @@ class ServiceController extends Controller
         // Handle image upload
         if ($request->hasFile('featured_image')) {
             // Delete old image if exists
-            if ($service->featured_image && Storage::disk('public')->exists($service->featured_image)) {
-                Storage::disk('public')->delete($service->featured_image);
+            if ($service->featured_image && Storage::disk('public')->exists(str_replace('storage/', '', $service->featured_image))) {
+                Storage::disk('public')->delete(str_replace('storage/', '', $service->featured_image));
             }
             
             $file = $request->file('featured_image');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $validated['featured_image'] = $file->storeAs('uploads/services', $filename, 'public');
+            $validated['featured_image'] = 'storage/' . $file->storeAs('uploads/services', $filename, 'public');
         }
 
         $service->update($validated);

@@ -88,7 +88,7 @@ class ProfileController extends Controller
             $file = $request->file('profile');
             $filename = $user->id . '-' . time() . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('uploads/profiles', $filename, 'public');
-            $user->update(['profile' => $path]);
+            $user->update(['profile' => 'storage/' . $path]);
         }
 
         return redirect()

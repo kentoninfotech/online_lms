@@ -33,7 +33,7 @@ class CarouselController extends Controller
 
         // Store image in public/uploads/carousel
         $filename = time() . '_' . $request->file('image')->getClientOriginalName();
-        $imagePath = $request->file('image')->storeAs('uploads/carousel', $filename, 'public');
+        $imagePath = 'storage/' . $request->file('image')->storeAs('uploads/carousel', $filename, 'public');
         
         // Get the next sort order
         $nextSort = HomepageSetting::where('section', 'carousel')->max('sort_order') ?? 0;
@@ -83,12 +83,12 @@ class CarouselController extends Controller
         // Handle image upload
         if ($request->hasFile('image')) {
             // Delete old image if exists
-            if ($carousel->image_path && Storage::disk('public')->exists($carousel->image_path)) {
-                Storage::disk('public')->delete($carousel->image_path);
+            if ($carousel->image_path && Storage::disk('public')->exists(str_replace('storage/', '', $carousel->image_path))) {
+                Storage::disk('public')->delete(str_replace('storage/', '', $carousel->image_path));
             }
             // Store new image in public/uploads/carousel
             $filename = time() . '_' . $request->file('image')->getClientOriginalName();
-            $data['image_path'] = $request->file('image')->storeAs('uploads/carousel', $filename, 'public');
+            $data['image_path'] = 'storage/' . $request->file('image')->storeAs('uploads/carousel', $filename, 'public');
         }
 
         $carousel->update($data);
@@ -105,8 +105,8 @@ class CarouselController extends Controller
         $carousel = HomepageSetting::findOrFail($id);
         
         // Delete image file if exists
-        if ($carousel->image_path && file_exists(public_path($carousel->image_path))) {
-            unlink(public_path($carousel->image_path));
+        if ($carousel->image_path && Storage::disk('public')->exists(str_replace('storage/', '', $carousel->image_path))) {
+            Storage::disk('public')->delete(str_replace('storage/', '', $carousel->image_path));
         }
         
         $carousel->delete();

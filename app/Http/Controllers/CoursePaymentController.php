@@ -82,7 +82,7 @@ class CoursePaymentController extends Controller
             if ($request->hasFile('payment_evidence_path')) {
                 $file = $request->file('payment_evidence_path');
                 $filename = Auth::id() . '-' . time() . '.' . $file->getClientOriginalExtension();
-                $validated['payment_evidence_path'] = $file->storeAs('uploads/courses', $filename, 'public');
+                $validated['payment_evidence_path'] = 'storage/' . $file->storeAs('uploads/courses', $filename, 'public');
             }
 
             // Update payment record

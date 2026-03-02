@@ -62,7 +62,7 @@ class SiteBuilderController extends Controller
         if ($request->hasFile('logo_light')) {
             $file = $request->file('logo_light');
             $filename = 'logo-light-' . time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('uploads/branding', $filename, 'public');
+            $path = 'storage/' . $file->storeAs('uploads/branding', $filename, 'public');
             HomepageSetting::updateOrCreate(
                 ['section' => 'branding', 'key' => 'logo_light'],
                 ['image_path' => $path, 'is_active' => true]
@@ -73,7 +73,7 @@ class SiteBuilderController extends Controller
         if ($request->hasFile('logo_dark')) {
             $file = $request->file('logo_dark');
             $filename = 'logo-dark-' . time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('uploads/branding', $filename, 'public');
+            $path = 'storage/' . $file->storeAs('uploads/branding', $filename, 'public');
             HomepageSetting::updateOrCreate(
                 ['section' => 'branding', 'key' => 'logo_dark'],
                 ['image_path' => $path, 'is_active' => true]
@@ -84,7 +84,7 @@ class SiteBuilderController extends Controller
         if ($request->hasFile('favicon')) {
             $file = $request->file('favicon');
             $filename = 'favicon-' . time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('uploads/branding', $filename, 'public');
+            $path = 'storage/' . $file->storeAs('uploads/branding', $filename, 'public');
             HomepageSetting::updateOrCreate(
                 ['section' => 'branding', 'key' => 'favicon'],
                 ['image_path' => $path, 'is_active' => true]
@@ -321,7 +321,7 @@ class SiteBuilderController extends Controller
         if ($request->hasFile('main_bg_image')) {
             $file = $request->file('main_bg_image');
             $filename = 'main-bg-' . time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('uploads/branding', $filename, 'public');
+            $path = 'storage/' . $file->storeAs('uploads/branding', $filename, 'public');
             HomepageSetting::updateOrCreate(
                 ['section' => 'design', 'key' => 'main_bg_image'],
                 ['value' => $path, 'is_active' => true]

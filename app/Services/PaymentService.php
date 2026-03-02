@@ -20,7 +20,7 @@ class PaymentService
     public function uploadEvidence(Subscription $subscription, ParentModel $parent, UploadedFile $file, int $amount): Payment
     {
         $filename = auth()->id() . '-' . time() . '.' . $file->getClientOriginalExtension();
-        $path = $file->storeAs('uploads/payments', $filename, 'public');
+        $path = 'storage/' . $file->storeAs('uploads/payments', $filename, 'public');
 
         $payment = Payment::create([
             'subscription_id' => $subscription->id,

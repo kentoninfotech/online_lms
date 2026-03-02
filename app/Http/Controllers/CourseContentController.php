@@ -195,7 +195,7 @@ class CourseContentController extends Controller
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $filename = time() . '-' . $file->getClientOriginalName();
-            $validated['file_path'] = $file->storeAs('uploads/courses/' . $course->id . '/content', $filename, 'public');
+            $validated['file_path'] = 'storage/' . $file->storeAs('uploads/courses/' . $course->id . '/content', $filename, 'public');
         }
 
         $validated['course_id'] = $course->id;
@@ -246,12 +246,12 @@ class CourseContentController extends Controller
         ]);
 
         if ($request->hasFile('file')) {
-            if ($content->file_path && Storage::disk('public')->exists($content->file_path)) {
-                Storage::disk('public')->delete($content->file_path);
+            if ($content->file_path && Storage::disk('public')->exists(str_replace('storage/', '', $content->file_path))) {
+                Storage::disk('public')->delete(str_replace('storage/', '', $content->file_path));
             }
             $file = $request->file('file');
             $filename = Auth::id() . '-' . time() . '.' . $file->getClientOriginalExtension();
-            $validated['file_path'] = $file->storeAs('uploads/courses', $filename, 'public');
+            $validated['file_path'] = 'storage/' . $file->storeAs('uploads/courses', $filename, 'public');
         }
 
         $content->update($validated);
@@ -369,7 +369,7 @@ class CourseContentController extends Controller
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $filename = Auth::id() . '-' . time() . '.' . $file->getClientOriginalExtension();
-            $validated['file_path'] = $file->storeAs('uploads/courses', $filename, 'public');
+            $validated['file_path'] = 'storage/' . $file->storeAs('uploads/courses', $filename, 'public');
         }
 
         $validated['course_id'] = $course->id;
@@ -409,12 +409,12 @@ class CourseContentController extends Controller
         ]);
 
         if ($request->hasFile('file')) {
-            if ($content->file_path && Storage::disk('public')->exists($content->file_path)) {
-                Storage::disk('public')->delete($content->file_path);
+            if ($content->file_path && Storage::disk('public')->exists(str_replace('storage/', '', $content->file_path))) {
+                Storage::disk('public')->delete(str_replace('storage/', '', $content->file_path));
             }
             $file = $request->file('file');
             $filename = Auth::id() . '-' . time() . '.' . $file->getClientOriginalExtension();
-            $validated['file_path'] = $file->storeAs('uploads/courses', $filename, 'public');
+            $validated['file_path'] = 'storage/' . $file->storeAs('uploads/courses', $filename, 'public');
         }
 
         $content->update($validated);
