@@ -1,6 +1,6 @@
 @extends('layouts.landing')
 
-@section('title', \App\Models\HomepageSetting::getSetting('pages', 'landing_page_title') ?? 'COINMAC - Master Your Future with Expert-Led Courses')
+@section('title', \App\Models\HomepageSetting::getSetting('pages', 'landing_page_title') ?? 'LMS - Master Your Future with Expert-Led Courses')
 
 @section('content')
 
@@ -437,6 +437,335 @@
     </div>
 </section>
 
+<!-- COURSES WITH CATEGORY FILTER Section (Optional) -->
+@if(in_array($courseDisplaySettings['course_display_mode'], ['categories_dropdown', 'both']))
+<section class="py-5 py-md-8">
+    <div class="container-lg">
+        <div class="text-center mb-5 mb-md-8" data-aos="fade-up">
+            <h2 class="section-title">Browse By Category</h2>
+            <p class="section-subtitle">Find courses tailored to your interests</p>
+        </div>
+
+        <!-- Category Filter Dropdown -->
+        <div class="row mb-5">
+            <div class="col-lg-4 mx-auto">
+                <div class="input-group">
+                    <label class="input-group-text" for="categoryFilter">
+                        <i class="fa fa-filter"></i> Filter by Category
+                    </label>
+                    <select id="categoryFilter" class="form-select" onchange="filterCoursesByCategory(this.value)">
+                        @if($courseDisplaySettings['show_all_categories_option'])
+                            <option value="">All Courses</option>
+                        @endif
+                        @foreach($categories as $category)
+                            @if(empty($courseDisplaySettings['selected_categories']) || in_array($category->id, $courseDisplaySettings['selected_categories']))
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Courses Display Area -->
+        <div class="row g-4" id="categoryCoursesContainer">
+            @php
+                $allActiveCourses = \App\Models\Course::where('is_active', true)
+                    ->orderBy('created_at', 'desc')
+                    ->limit($courseDisplaySettings['max_courses_display'] ?? 12)
+                    ->get();
+            @endphp
+
+            @forelse($allActiveCourses as $course)
+                <div class="col-lg-{{ $courseDisplaySettings['courses_per_row'] }} col-md-6 col-12 course-item" data-category="{{ $course->category_id ?? '' }}">
+                    <div class="card shadow-sm h-100 rounded-4 overflow-hidden course-card">
+                        <div class="position-relative overflow-hidden" style="height: 220px;">
+                            @if($course->featured_image)
+                                <img src="{{ asset($course->featured_image) }}" alt="{{ $course->title }}" class="card-img-top h-100 object-fit-cover">
+                            @else
+                                <div class="w-100 h-100 bg-gradient-primary d-flex align-items-center justify-content-center">
+                                    <span style="font-size: 4rem;">📚</span>
+                                </div>
+                            @endif
+                            <div class="position-absolute top-0 start-0 p-3">
+                                <span class="badge bg-white text-primary" style="max-width: 150px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word;">{{ $course->category->name ?? 'General' }}</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold mb-2">{{ Str::limit($course->title, 40) }}</h5>
+                            @if($course->subtitle)
+                                <p class="card-text text-muted small mb-3">{{ Str::limit($course->subtitle, 60) }}</p>
+                            @endif
+                            
+                            <hr>
+
+                            @if($course->facilitator)
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <span style="font-size: 1.25rem;">👨‍🏫</span>
+                                    <div>
+                                        <small class="d-block text-muted">Instructor</small>
+                                        <small class="fw-semibold">{{ $course->facilitator->name }}</small>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-6">
+                                    <small class="d-block text-muted">Duration</small>
+                                    <span class="fw-bold">{{ $course->course_hours }}h</span>
+                                </div>
+                                <div class="col-6">
+                                    <small class="d-block text-muted">Level</small>
+                                    <span class="fw-bold">{{ $course->level ?? 'Beginner' }}</span>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <h5 class="text-primary fw-bold mb-3">₦{{ number_format($course->fee) }}</h5>
+
+                            <div class="d-grid gap-2">
+                                <a href="{{ route('courses.show', $course) }}" class="btn btn-outline-primary btn-sm fw-bold">
+                                    View Details
+                                </a>
+                                @auth
+                                    <a href="{{ route('courses.enroll', $course) }}" class="btn btn-success btn-sm fw-bold">
+                                        Enroll Now
+                                    </a>
+                                @else
+                                    <a href="{{ route('login') }}" class="btn btn-success btn-sm fw-bold">
+                                        Enroll
+                                    </a>
+                                @endauth
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">No courses available in this category</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+</section>
+@endif
+
+<!-- COURSES WITH LEVEL TABS Section (Optional) -->
+@if(in_array($courseDisplaySettings['course_display_mode'], ['level_tabs', 'both']))
+<section class="py-5 py-md-8 bg-light">
+    <div class="container-lg">
+        <div class="text-center mb-5 mb-md-8" data-aos="fade-up">
+            <h2 class="section-title">Browse By Program Type</h2>
+            <p class="section-subtitle">Explore courses organized by program level</p>
+        </div>
+
+        <!-- Level Tab Navigation -->
+        <ul class="nav nav-tabs mb-5 justify-content-center border-bottom-0" id="levelTabs" role="tablist">
+            @if($courseDisplaySettings['show_all_levels_option'])
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="all-levels-tab" data-bs-toggle="tab" data-bs-target="#all-levels-pane" type="button" role="tab" aria-controls="all-levels-pane" aria-selected="true">
+                    <i class="fa fa-book"></i> All Programs
+                </button>
+            </li>
+            @endif
+
+            @foreach(['Local', 'International', 'Diploma'] as $level)
+                @if(in_array($level, $courseDisplaySettings['selected_levels']))
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link{{ $courseDisplaySettings['show_all_levels_option'] ? '' : ' active' }}" 
+                        id="{{ strtolower($level) }}-tab" 
+                        data-bs-toggle="tab" 
+                        data-bs-target="#{{ strtolower($level) }}-pane" 
+                        type="button" 
+                        role="tab" 
+                        aria-controls="{{ strtolower($level) }}-pane" 
+                        aria-selected="false">
+                        <i class="fa fa-graduation-cap"></i> {{ $level }}
+                    </button>
+                </li>
+                @endif
+            @endforeach
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="levelTabsContent">
+            @if($courseDisplaySettings['show_all_levels_option'])
+            <div class="tab-pane fade show active" id="all-levels-pane" role="tabpanel" aria-labelledby="all-levels-tab">
+                <div class="row g-4">
+                    @php
+                        $allLevelCourses = \App\Models\Course::where('is_active', true)
+                            ->orderBy('level')
+                            ->orderBy('created_at', 'desc')
+                            ->limit($courseDisplaySettings['max_courses_display'] ?? 12)
+                            ->get();
+                    @endphp
+
+                    @forelse($allLevelCourses as $course)
+                        <div class="col-lg-{{ $courseDisplaySettings['courses_per_row'] }} col-md-6 col-12">
+                            <div class="card shadow-sm h-100 rounded-4 overflow-hidden course-card">
+                                <div class="position-relative overflow-hidden" style="height: 220px;">
+                                    @if($course->featured_image)
+                                        <img src="{{ asset($course->featured_image) }}" alt="{{ $course->title }}" class="card-img-top h-100 object-fit-cover">
+                                    @else
+                                        <div class="w-100 h-100 bg-gradient-secondary d-flex align-items-center justify-content-center">
+                                            <span style="font-size: 4rem;">📚</span>
+                                        </div>
+                                    @endif
+                                    <div class="position-absolute top-0 start-0 p-3">
+                                        <span class="badge bg-info text-white">{{ $course->level ?? 'General' }}</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title fw-bold mb-2">{{ Str::limit($course->title, 40) }}</h5>
+                                    @if($course->subtitle)
+                                        <p class="card-text text-muted small mb-3">{{ Str::limit($course->subtitle, 60) }}</p>
+                                    @endif
+                                    
+                                    <hr>
+
+                                    @if($course->facilitator)
+                                        <div class="d-flex align-items-center gap-2 mb-3">
+                                            <span style="font-size: 1.25rem;">👨‍🏫</span>
+                                            <div>
+                                                <small class="d-block text-muted">Instructor</small>
+                                                <small class="fw-semibold">{{ $course->facilitator->name }}</small>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-6">
+                                            <small class="d-block text-muted">Duration</small>
+                                            <span class="fw-bold">{{ $course->course_hours }}h</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="d-block text-muted">Category</small>
+                                            <span class="fw-bold text-truncate">{{ $course->category->name ?? 'General' }}</span>
+                                        </div>
+                                    </div>
+
+                                    <hr>
+
+                                    <h5 class="text-primary fw-bold mb-3">₦{{ number_format($course->fee) }}</h5>
+
+                                    <div class="d-grid gap-2">
+                                        <a href="{{ route('courses.show', $course) }}" class="btn btn-outline-primary btn-sm fw-bold">
+                                            View Details
+                                        </a>
+                                        @auth
+                                            <a href="{{ route('courses.enroll', $course) }}" class="btn btn-success btn-sm fw-bold">
+                                                Enroll Now
+                                            </a>
+                                        @else
+                                            <a href="{{ route('login') }}" class="btn btn-success btn-sm fw-bold">
+                                                Enroll
+                                            </a>
+                                        @endauth
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="col-12 text-center py-5">
+                            <p class="text-muted">No courses available</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+            @endif
+
+            @foreach(['Local', 'International', 'Diploma'] as $level)
+                @if(in_array($level, $courseDisplaySettings['selected_levels']))
+                <div class="tab-pane fade{{ $courseDisplaySettings['show_all_levels_option'] ? '' : ' show active' }}" id="{{ strtolower($level) }}-pane" role="tabpanel" aria-labelledby="{{ strtolower($level) }}-tab">
+                    <div class="row g-4">
+                        @php
+                            $levelCourses = \App\Models\Course::where('is_active', true)
+                                ->where('level', $level)
+                                ->orderBy('created_at', 'desc')
+                                ->limit($courseDisplaySettings['max_courses_display'] ?? 12)
+                                ->get();
+                        @endphp
+
+                        @forelse($levelCourses as $course)
+                            <div class="col-lg-{{ $courseDisplaySettings['courses_per_row'] }} col-md-6 col-12">
+                                <div class="card shadow-sm h-100 rounded-4 overflow-hidden course-card">
+                                    <div class="position-relative overflow-hidden" style="height: 220px;">
+                                        @if($course->featured_image)
+                                            <img src="{{ asset($course->featured_image) }}" alt="{{ $course->title }}" class="card-img-top h-100 object-fit-cover">
+                                        @else
+                                            <div class="w-100 h-100 bg-gradient-success d-flex align-items-center justify-content-center">
+                                                <span style="font-size: 4rem;">📚</span>
+                                            </div>
+                                        @endif
+                                        <div class="position-absolute top-0 start-0 p-3">
+                                            <span class="badge bg-white text-primary">{{ $course->category->name ?? 'General' }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <h5 class="card-title fw-bold mb-2">{{ Str::limit($course->title, 40) }}</h5>
+                                        @if($course->subtitle)
+                                            <p class="card-text text-muted small mb-3">{{ Str::limit($course->subtitle, 60) }}</p>
+                                        @endif
+                                        
+                                        <hr>
+
+                                        @if($course->facilitator)
+                                            <div class="d-flex align-items-center gap-2 mb-3">
+                                                <span style="font-size: 1.25rem;">👨‍🏫</span>
+                                                <div>
+                                                    <small class="d-block text-muted">Instructor</small>
+                                                    <small class="fw-semibold">{{ $course->facilitator->name }}</small>
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        <div class="row g-3 mb-3">
+                                            <div class="col-6">
+                                                <small class="d-block text-muted">Duration</small>
+                                                <span class="fw-bold">{{ $course->course_hours }}h</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <small class="d-block text-muted">Category</small>
+                                                <span class="fw-bold text-truncate">{{ $course->category->name ?? 'General' }}</span>
+                                            </div>
+                                        </div>
+
+                                        <hr>
+
+                                        <h5 class="text-primary fw-bold mb-3">₦{{ number_format($course->fee) }}</h5>
+
+                                        <div class="d-grid gap-2">
+                                            <a href="{{ route('courses.show', $course) }}" class="btn btn-outline-primary btn-sm fw-bold">
+                                                View Details
+                                            </a>
+                                            @auth
+                                                <a href="{{ route('courses.enroll', $course) }}" class="btn btn-success btn-sm fw-bold">
+                                                    Enroll Now
+                                                </a>
+                                            @else
+                                                <a href="{{ route('login') }}" class="btn btn-success btn-sm fw-bold">
+                                                    Enroll
+                                                </a>
+                                            @endauth
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="col-12 text-center py-5">
+                                <p class="text-muted">No {{ strtolower($level) }} courses available</p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+                @endif
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
 <!-- TESTIMONIALS Section -->
 <section id="testimonials" class="py-5 py-md-8 bg-light">
     <div class="container-lg">
@@ -676,4 +1005,26 @@
     </div>
 </section>
 
-@endsection
+<script>
+// Category filter functionality
+function filterCoursesByCategory(categoryId) {
+    const courseItems = document.querySelectorAll('.course-item');
+    
+    if (categoryId === '') {
+        // Show all courses
+        courseItems.forEach(item => {
+            item.style.display = 'block';
+        });
+    } else {
+        // Filter by category
+        courseItems.forEach(item => {
+            if (item.getAttribute('data-category') === categoryId) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+}
+</script>
+

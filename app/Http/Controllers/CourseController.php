@@ -69,7 +69,19 @@ class CourseController extends Controller
             }
         }
 
-        return view('courses.index', compact('carouselImages', 'categories', 'featuredCourses', 'homeSettings'));
+        // Fetch course display settings
+        $courseDisplaySettings = [
+            'show_featured_courses' => (bool) HomepageSetting::getSetting('course_display', 'show_featured_courses', 1),
+            'course_display_mode' => HomepageSetting::getSetting('course_display', 'course_display_mode', 'default'),
+            'courses_per_row' => HomepageSetting::getSetting('course_display', 'courses_per_row', 3),
+            'max_courses_display' => HomepageSetting::getSetting('course_display', 'max_courses_display', 12),
+            'show_all_categories_option' => (bool) HomepageSetting::getSetting('course_display', 'show_all_categories_option', 1),
+            'selected_categories' => json_decode(HomepageSetting::getSetting('course_display', 'selected_categories', json_encode([])), true) ?: [],
+            'show_all_levels_option' => (bool) HomepageSetting::getSetting('course_display', 'show_all_levels_option', 1),
+            'selected_levels' => json_decode(HomepageSetting::getSetting('course_display', 'selected_levels', json_encode(['Local', 'International', 'Diploma'])), true) ?: ['Local', 'International', 'Diploma'],
+        ];
+
+        return view('courses.index', compact('carouselImages', 'categories', 'featuredCourses', 'homeSettings', 'courseDisplaySettings'));
     }
 
     /**

@@ -101,6 +101,29 @@
                         <i class="bi bi-eye" id="eyeIcon"></i>
                     </button>
                 </div>
+
+                <!-- Password Requirements Checker -->
+                <div class="password-requirements mt-2 p-3 bg-light rounded" id="passwordRequirements" style="display: none;">
+                    <small class="d-block mb-2 fw-bold text-dark">Password must contain:</small>
+                    <ul class="mb-0 ps-3 small list-unstyled">
+                        <li id="req-uppercase" class="text-danger mb-1">
+                            <i class="bi bi-x-circle me-1"></i>At least one uppercase letter (A-Z)
+                        </li>
+                        <li id="req-lowercase" class="text-danger mb-1">
+                            <i class="bi bi-x-circle me-1"></i>At least one lowercase letter (a-z)
+                        </li>
+                        <li id="req-number" class="text-danger mb-1">
+                            <i class="bi bi-x-circle me-1"></i>At least one number (0-9)
+                        </li>
+                        <li id="req-length" class="text-danger mb-1">
+                            <i class="bi bi-x-circle me-1"></i>At least 8 characters long
+                        </li>
+                        <li id="req-symbol" class="text-muted mb-1">
+                            <i class="bi bi-check-circle me-1"></i>Symbols (@$!%*?&) are optional
+                        </li>
+                    </ul>
+                </div>
+
                 @error('password')
                     <span class="invalid-feedback d-block">{{ $message }}</span>
                 @enderror
@@ -151,20 +174,85 @@
     </div>
 </div>
 
-<!-- Password Toggle Script -->
+<!-- Password Validation & Toggle Script -->
 <script>
-    document.getElementById('togglePassword')?.addEventListener('click', function() {
-        const passwordField = document.getElementById('password');
-        const eyeIcon = document.getElementById('eyeIcon');
-        
-        if (passwordField.type === 'password') {
-            passwordField.type = 'text';
+    const passwordInput = document.getElementById('password');
+    const togglePasswordBtn = document.getElementById('togglePassword');
+    const eyeIcon = document.getElementById('eyeIcon');
+    const requirementsDiv = document.getElementById('passwordRequirements');
+
+    // Show/Hide password
+    togglePasswordBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
             eyeIcon.classList.remove('bi-eye');
             eyeIcon.classList.add('bi-eye-slash');
         } else {
-            passwordField.type = 'password';
+            passwordInput.type = 'password';
             eyeIcon.classList.remove('bi-eye-slash');
             eyeIcon.classList.add('bi-eye');
+        }
+    });
+
+    // Real-time password validation
+    passwordInput.addEventListener('input', function() {
+        const password = this.value;
+        
+        // Show requirements box when user starts typing
+        if (password.length > 0) {
+            requirementsDiv.style.display = 'block';
+        } else {
+            requirementsDiv.style.display = 'none';
+        }
+
+        // Check uppercase
+        const hasUppercase = /[A-Z]/.test(password);
+        updateValidation('req-uppercase', hasUppercase, 'At least one uppercase letter (A-Z)');
+
+        // Check lowercase
+        const hasLowercase = /[a-z]/.test(password);
+        updateValidation('req-lowercase', hasLowercase, 'At least one lowercase letter (a-z)');
+
+        // Check number
+        const hasNumber = /\d/.test(password);
+        updateValidation('req-number', hasNumber, 'At least one number (0-9)');
+
+        // Check length with character count
+        const hasLength = password.length >= 8;
+        const lengthText = hasLength ? 'At least 8 characters long (currently ' + password.length + ')' : 'At least 8 characters long (currently ' + password.length + ')';
+        updateValidation('req-length', hasLength, lengthText);
+    });
+
+    function updateValidation(elementId, isValid, text) {
+        const element = document.getElementById(elementId);
+        if (isValid) {
+            element.classList.remove('text-danger');
+            element.classList.add('text-success');
+            element.innerHTML = '<i class="bi bi-check-circle me-1"></i>' + text;
+        } else {
+            element.classList.remove('text-success');
+            element.classList.add('text-danger');
+            element.innerHTML = '<i class="bi bi-x-circle me-1"></i>' + text;
+        }
+    }
+
+    // Listen for form submission to validate all rules
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const password = passwordInput.value;
+        const hasUppercase = /[A-Z]/.test(password);
+        const hasLowercase = /[a-z]/.test(password);
+        const hasNumber = /\d/.test(password);
+        const hasLength = password.length >= 8;
+
+        if (!hasUppercase || !hasLowercase || !hasNumber || !hasLength) {
+            e.preventDefault();
+            passwordInput.classList.add('is-invalid');
+            requirementsDiv.style.display = 'block';
+            
+            // Scroll to password field
+            passwordInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     });
 </script>

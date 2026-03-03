@@ -1,6 +1,10 @@
 @extends('layouts.auth')
 
-@section('title', 'Email Verification - ' . (\\App\\Models\\HomepageSetting::getSetting('branding', 'site_name') ?? 'LMS'))
+@php
+    $siteName = \App\Models\HomepageSetting::getSetting('branding', 'site_name') ?? 'LMS';
+@endphp
+
+@section('title', 'Email Verification - ' . $siteName)
 
 @section('content')
 

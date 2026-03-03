@@ -7,7 +7,9 @@ use App\Models\User;
 use App\Models\Student;
 use App\Models\Instructor;
 use App\Models\ParentModel;
+use App\Http\Requests\RegistrationRequest;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -31,7 +33,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/';
+    protected $redirectTo = '/email/verify';
 
     /**
      * Create a new controller instance.
@@ -41,6 +43,19 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+    }
+
+    /**
+     * Handle a registration request for the application.
+     *
+     * @param  \App\Http\Requests\RegistrationRequest  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function register(RegistrationRequest $request)
+    {
+        $user = $this->create($request->validated());
+        
+        return $this->registered($request, $user) ?: redirect($this->redirectPath());
     }
 
     /**
@@ -54,10 +69,20 @@ class RegisterController extends Controller
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'string', 'min:8', 'confirmed', 'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d@$!%*?&]+$/'],
             'user_type' => ['required', 'string', 'in:student,instructor,parent'],
             'terms' => ['required', 'accepted'],
         ]);
+    }
+
+    /**
+     * Get custom validation messages for password complexity.
+     */
+    protected function messages()
+    {
+        return [
+            'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, and one number. Symbols (@$!%*?&) are optional.',
+        ];
     }
 
     /**
@@ -111,5 +136,22 @@ class RegisterController extends Controller
 
         return $user;
     }
-}
 
+    /**
+     * The user has been registered.
+     * Send verification email and DO NOT log the user in.
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\User  $user
+     * @return mixed
+     */
+    protected function registered(Request $request, $user)
+    {
+        // Send email verification notification
+        $user->sendEmailVerificationNotification();
+
+        // DO NOT log in the user - they must verify email first
+        // Redirect to /email/verify page
+        return redirect($this->redirectTo);
+    }
+}

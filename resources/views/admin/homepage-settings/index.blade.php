@@ -91,6 +91,32 @@
         @endforeach
     </div>
 
+    <!-- Course Display Settings Card -->
+    <div class="row mt-4">
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm hover-shadow border-2 border-success">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="fs-3 text-success">
+                            <i class="fa fa-graduation-cap"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-0">Course Display</h5>
+                            <small class="text-muted">Advanced options</small>
+                        </div>
+                    </div>
+                    <hr>
+                    <p class="card-text text-muted small">
+                        Configure how courses are displayed on the homepage. Add category dropdown or course level tabs.
+                    </p>
+                    <a href="{{ route('admin.homepage-settings.course-display') }}" class="btn btn-success btn-sm w-100">
+                        <i class="fa fa-cog"></i> Configure
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Information section -->
     <div class="row mt-5">
         <div class="col-12">

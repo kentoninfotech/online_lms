@@ -80,9 +80,8 @@ Route::post('/webhooks/zoom', [ZoomWebhookController::class, 'handle']);
 
 // ------------------------------
 // GLOBAL ROUTES
-// Note: verified middleware NOT added to all auth routes as these include public endpoints
-// Only dashboard and sensitive routes require verification
-Route::middleware(['auth'])->group(function () {
+// Require both authentication AND email verification for all auth routes
+Route::middleware(['auth', 'verified'])->group(function () {
     Route:: get('/student/{student}', [StudentController::class, 'show'])->name('show.student');
     Route:: get('/parent/{parent}', [ParentController::class, 'show'])->name('show.parent');
     Route:: get('/instructor/{instructor}', [InstructorController::class, 'show'])->name('show.instructor');
@@ -171,6 +170,16 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     // payment approval/rejection
     Route::post('/payments/{payment}/approve', [PaymentController::class, 'approve'])->name('payments.approve');
     Route::post('/payments/{payment}/reject', [PaymentController::class, 'reject'])->name('payments.reject');
+
+    // Admin Accounts Management
+    Route::prefix('accounts')->name('accounts.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\AdminAccountController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Admin\AdminAccountController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Admin\AdminAccountController::class, 'store'])->name('store');
+        Route::get('/{admin}/edit', [\App\Http\Controllers\Admin\AdminAccountController::class, 'edit'])->name('edit');
+        Route::put('/{admin}', [\App\Http\Controllers\Admin\AdminAccountController::class, 'update'])->name('update');
+        Route::delete('/{admin}', [\App\Http\Controllers\Admin\AdminAccountController::class, 'destroy'])->name('destroy');
+    });
 });
 
 // ------------------------------
@@ -468,6 +477,10 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
         Route::post('/section/{section}', [HomepageSettingController::class, 'updateSection'])->name('update-section');
         Route::delete('/section/{section}/{key}', [HomepageSettingController::class, 'destroy'])->name('destroy');
         Route::post('/initialize-defaults', [HomepageSettingController::class, 'initializeDefaults'])->name('initialize-defaults');
+        
+        // Course Display Settings
+        Route::get('/course-display', [HomepageSettingController::class, 'showCourseDisplaySettings'])->name('course-display');
+        Route::put('/course-display', [HomepageSettingController::class, 'updateCourseDisplaySettings'])->name('update-course-display');
     });
 
     // Site Builder
@@ -493,6 +506,14 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
         // Design & Layout
         Route::get('/design', [SiteBuilderController::class, 'editDesign'])->name('design');
         Route::post('/design', [SiteBuilderController::class, 'updateDesign'])->name('update-design');
+    });
+
+    // Email Testing Routes
+    Route::prefix('email-testing')->name('email-testing.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\EmailTestController::class, 'index'])->name('index');
+        Route::post('/send-verification', [\App\Http\Controllers\Admin\EmailTestController::class, 'sendVerificationEmail'])->name('send-verification');
+        Route::post('/send-contact', [\App\Http\Controllers\Admin\EmailTestController::class, 'sendContactResponseEmail'])->name('send-contact');
+        Route::get('/config', [\App\Http\Controllers\Admin\EmailTestController::class, 'viewConfig'])->name('config');
     });
     
     // ========== SERVICES ==========

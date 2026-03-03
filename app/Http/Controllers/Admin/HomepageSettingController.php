@@ -337,4 +337,68 @@ class HomepageSettingController extends Controller
         return redirect()->route('admin.homepage-settings.index')
             ->with('success', 'All default homepage settings initialized successfully');
     }
+
+    /**
+     * Show course display settings form
+     */
+    public function showCourseDisplaySettings()
+    {
+        $categories = \App\Models\CourseCategory::where('is_active', true)
+            ->orderBy('sort_order')
+            ->get();
+
+        // Get current settings
+        $settings = [
+            'show_featured_courses' => (bool) HomepageSetting::getSetting('course_display', 'show_featured_courses', 1),
+            'course_display_mode' => HomepageSetting::getSetting('course_display', 'course_display_mode', 'default'),
+            'courses_per_row' => HomepageSetting::getSetting('course_display', 'courses_per_row', 3),
+            'max_courses_display' => HomepageSetting::getSetting('course_display', 'max_courses_display', 12),
+            'show_all_categories_option' => (bool) HomepageSetting::getSetting('course_display', 'show_all_categories_option', 1),
+            'selected_categories' => json_decode(HomepageSetting::getSetting('course_display', 'selected_categories', json_encode([])), true) ?: [],
+            'show_all_levels_option' => (bool) HomepageSetting::getSetting('course_display', 'show_all_levels_option', 1),
+            'selected_levels' => json_decode(HomepageSetting::getSetting('course_display', 'selected_levels', json_encode(['Local', 'International', 'Diploma'])), true) ?: ['Local', 'International', 'Diploma'],
+        ];
+
+        return view('admin.homepage-settings.course-display-settings', compact('categories', 'settings'));
+    }
+
+    /**
+     * Update course display settings
+     */
+    public function updateCourseDisplaySettings(Request $request)
+    {
+        $request->validate([
+            'show_featured_courses' => 'nullable|boolean',
+            'course_display_mode' => 'required|in:default,categories_dropdown,level_tabs,both',
+            'courses_per_row' => 'required|in:3,4,5',
+            'max_courses_display' => 'nullable|integer|min:1',
+            'show_all_categories_option' => 'nullable|boolean',
+            'selected_categories' => 'nullable|array',
+            'selected_categories.*' => 'integer|exists:course_categories,id',
+            'show_all_levels_option' => 'nullable|boolean',
+            'selected_levels' => 'nullable|array',
+            'selected_levels.*' => 'string|in:Local,International,Diploma',
+        ]);
+
+        // Save all course display settings
+        HomepageSetting::setSetting('course_display', 'show_featured_courses', $request->input('show_featured_courses', 0) ? '1' : '0');
+        HomepageSetting::setSetting('course_display', 'course_display_mode', $request->input('course_display_mode', 'default'));
+        HomepageSetting::setSetting('course_display', 'courses_per_row', $request->input('courses_per_row', 3));
+        HomepageSetting::setSetting('course_display', 'max_courses_display', $request->input('max_courses_display', 12));
+        HomepageSetting::setSetting('course_display', 'show_all_categories_option', $request->input('show_all_categories_option', 0) ? '1' : '0');
+        
+        // Save selected categories as JSON
+        $selectedCategories = $request->input('selected_categories', []);
+        HomepageSetting::setSetting('course_display', 'selected_categories', json_encode($selectedCategories));
+
+        // Save show_all_levels_option
+        HomepageSetting::setSetting('course_display', 'show_all_levels_option', $request->input('show_all_levels_option', 0) ? '1' : '0');
+
+        // Save selected levels as JSON
+        $selectedLevels = $request->input('selected_levels', ['Local', 'International', 'Diploma']);
+        HomepageSetting::setSetting('course_display', 'selected_levels', json_encode($selectedLevels));
+
+        return redirect()->route('admin.homepage-settings.course-display')
+            ->with('success', 'Course display settings updated successfully!');
+    }
 }

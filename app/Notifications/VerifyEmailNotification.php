@@ -33,14 +33,22 @@ class VerifyEmailNotification extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         $verificationUrl = $this->verificationUrl($notifiable);
+        
+        // Get branding settings
+        $siteName = \App\Models\HomepageSetting::getSetting('branding', 'site_name') ?? config('app.name');
+        $logoPath = \App\Models\HomepageSetting::getImagePath('branding', 'logo_dark') 
+            ?? \App\Models\HomepageSetting::getImagePath('branding', 'logo_light')
+            ?? (file_exists(public_path('assets/images/logo.png')) ? asset('assets/images/logo.png') : null);
 
         return (new MailMessage)
             ->view('emails.verify-email', [
                 'user' => $notifiable,
                 'verificationUrl' => $verificationUrl,
                 'expiresAt' => Carbon::now()->addHours(24),
+                'siteName' => $siteName,
+                'logoPath' => $logoPath,
             ])
-            ->subject('Verify Your Email Address - ' . config('app.name'));
+            ->subject('Verify Your Email Address - ' . $siteName);
     }
 
     /**

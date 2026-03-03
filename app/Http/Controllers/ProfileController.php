@@ -48,12 +48,12 @@ class ProfileController extends Controller
         if (!auth()->user()->hasRole('admin') || auth()->id() == $user->id) {
             $request->validate([
                 'current_password' => 'required|current_password',
-                'password' => 'required|confirmed|min:4',
+                'password' => 'required|confirmed|min:8|regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d@$!%*?&]+$/,'
             ]);
         } else {
             // Admin can bypass current password
             $request->validate([
-                'password' => 'required|confirmed|min:4',
+                'password' => 'required|confirmed|min:8|regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d@$!%*?&]+$/',
             ]);
         }
 

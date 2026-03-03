@@ -258,8 +258,16 @@
     <div class="email-container">
         <!-- Header Section -->
         <div class="email-header">
-            @if(file_exists(public_path('assets/images/logo.png')))
+            @if(!empty($logoPath))
+                @if(str_starts_with($logoPath, 'http'))
+                    <img src="{{ $logoPath }}" alt="Logo" class="logo" style="max-width: 140px; height: auto;">
+                @else
+                    <img src="{{ $message->embed(public_path($logoPath)) }}" alt="Logo" class="logo">
+                @endif
+            @elseif(file_exists(public_path('assets/images/logo.png')))
                 <img src="{{ $message->embed(public_path('assets/images/logo.png')) }}" alt="Logo" class="logo">
+            @elseif(file_exists(public_path('assets/images/logo.svg')))
+                <img src="{{ $message->embed(public_path('assets/images/logo.svg')) }}" alt="Logo" class="logo">
             @else
                 <div style="font-size: 48px; margin-bottom: 15px;">🎓</div>
             @endif
@@ -274,7 +282,7 @@
             </div>
 
             <div class="message-text">
-                <p>Thank you for registering with <strong>{{ config('app.name') }}</strong>!</p>
+                <p>Thank you for registering with <strong>{{ $siteName ?? config('app.name') }}</strong>!</p>
                 <p>We're excited to have you on board. To get started, please verify your email address by clicking the button below.</p>
             </div>
 
@@ -317,7 +325,7 @@
 
         <!-- Footer -->
         <div class="email-footer">
-            <p><strong>{{ config('app.name') }}</strong></p>
+            <p><strong>{{ $siteName ?? config('app.name') }}</strong></p>
             <p>Learning Made Simple & Accessible</p>
 
             <div class="social-links">
@@ -328,7 +336,7 @@
             </div>
 
             <p style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e9ecef;">
-                © {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
+                © {{ date('Y') }} {{ $siteName ?? config('app.name') }}. All rights reserved.
             </p>
 
             <p style="font-size: 11px; color: #bbb; margin-top: 10px;">

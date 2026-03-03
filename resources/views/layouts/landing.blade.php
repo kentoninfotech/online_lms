@@ -14,7 +14,7 @@
         
         // Fetch branding settings from database
         $brandingSettings = [
-            'site_name' => \App\Models\HomepageSetting::getSetting('branding', 'site_name') ?? 'COINMAC Inc',
+            'site_name' => \App\Models\HomepageSetting::getSetting('branding', 'site_name') ?? 'LMS',
             'site_tagline' => \App\Models\HomepageSetting::getSetting('branding', 'site_tagline'),
             'logo_light' => \App\Models\HomepageSetting::getImagePath('branding', 'logo_light'),
             'logo_dark' => \App\Models\HomepageSetting::getImagePath('branding', 'logo_dark'),
