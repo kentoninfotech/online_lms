@@ -21,14 +21,53 @@ class CoursePaymentController extends Controller
      */
     public function showPaymentMethods(CoursePayment $payment)
     {
-        // Verify user owns this payment
-        if ($payment->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized');
+        try {
+            // Verify user owns this payment
+            if ($payment->user_id !== Auth::id()) {
+                abort(403, 'Unauthorized');
+            }
+
+            $payment->load('course', 'enrollment');
+
+            \Log::info('Payment page loaded', [
+                'payment_id' => $payment->id,
+                'amount' => $payment->amount,
+                'is_free' => $payment->course->is_free ?? false,
+            ]);
+
+            // For free courses, automatically complete the enrollment
+            if ($payment->amount == 0 || $payment->course->is_free) {
+                // Mark payment as completed
+                $payment->update([
+                    'status' => 'completed',
+                    'payment_method' => 'free',
+                    'paid_at' => now(),
+                ]);
+
+                // Mark enrollment as active
+                $payment->enrollment->update([
+                    'status' => 'active',
+                    'payment_status' => 'completed',
+                ]);
+
+                // Redirect to success page
+                return redirect()->route('courses.my-enrollments')
+                    ->with('success', 'Enrollment completed successfully! You now have access to this course.');
+            }
+
+            return view('courses.payments.select-method', compact('payment'));
+        } catch (\Exception $e) {
+            \Log::error('Payment page error', [
+                'payment_id' => $payment->id ?? 'unknown',
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+            
+            // Fallback: go back to enrollments
+            return redirect()->route('courses.my-enrollments')
+                ->with('error', 'An error occurred accessing payment: ' . $e->getMessage());
         }
-
-        $payment->load('course', 'enrollment');
-
-        return view('courses.payments.select-method', compact('payment'));
     }
 
     /**

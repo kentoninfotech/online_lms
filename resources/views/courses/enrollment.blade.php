@@ -53,21 +53,23 @@ Available Dates: {{ $courseDates->count() }}
                     <form action="{{ route('courses.enroll.store', $course) }}" method="POST" id="enrollmentForm" novalidate>
                         @csrf
 
+                        <!-- Date and venue fields are now optional for all courses -->
                         <div class="mb-4">
                             <label for="course_date_id" class="form-label">
-                                <strong>Select Course Date <span class="text-danger">*</span></strong>
+                                <strong>Select Course Date (Optional)</strong>
                             </label>
                             <select class="form-select @error('course_date_id') is-invalid @enderror" 
                                     id="course_date_id" 
                                     name="course_date_id" 
-                                    onchange="updateVenues()" 
-                                    required>
-                                <option value="">-- Select a date --</option>
-                                @foreach($courseDates as $date)
-                                    <option value="{{ $date->id }}" data-venues="{{ json_encode($date->venues->pluck('id', 'venue_name')->toArray()) }}" @selected(old('course_date_id') == $date->id)>
-                                        {{ $date->date_label ?? $date->start_date->format('M d, Y') . ' - ' . $date->end_date->format('M d, Y') }}
-                                    </option>
-                                @endforeach
+                                    onchange="updateVenues()">
+                                <option value="">-- No preference --</option>
+                                @if($courseDates && $courseDates->count() > 0)
+                                    @foreach($courseDates as $date)
+                                        <option value="{{ $date->id }}" data-delivery="{{ $date->delivery_method ?? 'offline' }}" data-venues="{{ json_encode($date->venues->pluck('id', 'venue_name')->toArray()) }}" @selected(old('course_date_id') == $date->id)>
+                                            {{ $date->date_label ?? $date->start_date->format('M d, Y') . ' - ' . $date->end_date->format('M d, Y') }}
+                                        </option>
+                                    @endforeach
+                                @endif
                             </select>
                             @error('course_date_id')
                                 <div class="invalid-feedback d-block">
@@ -78,13 +80,15 @@ Available Dates: {{ $courseDates->count() }}
 
                         <div class="mb-4">
                             <label for="course_venue_id" class="form-label">
-                                <strong>Select Venue <span class="text-danger">*</span></strong>
+                                <strong>Select Venue (Optional)</strong>
                             </label>
                             <select class="form-select @error('course_venue_id') is-invalid @enderror" 
                                     id="course_venue_id" 
-                                    name="course_venue_id" 
-                                    required>
-                                <option value="">-- Select a venue --</option>
+                                    name="course_venue_id">
+                                <option value="">-- No preference --</option>
+                                @if($course->is_online && $course->is_offline)
+                                    <option value="online-na">Online (Venue N/A)</option>
+                                @endif
                             </select>
                             @error('course_venue_id')
                                 <div class="invalid-feedback d-block">
@@ -154,12 +158,21 @@ Available Dates: {{ $courseDates->count() }}
 function updateVenues() {
     const dateSelect = document.getElementById('course_date_id');
     const venueSelect = document.getElementById('course_venue_id');
+    
+    if (!dateSelect || !venueSelect) return;
+    
     const selectedOption = dateSelect.options[dateSelect.selectedIndex];
     
     console.log('updateVenues called, selected date:', selectedOption.value);
     
-    // Clear venues
-    venueSelect.innerHTML = '<option value="">-- Select a venue --</option>';
+    // Keep the "No preference" option
+    venueSelect.innerHTML = '<option value="">-- No preference --</option>';
+    
+    // Add online option for hybrid courses
+    const onlineOption = document.createElement('option');
+    onlineOption.value = 'online-na';
+    onlineOption.text = 'Online (Venue N/A)';
+    venueSelect.appendChild(onlineOption);
     
     if (selectedOption.value) {
         try {
@@ -168,10 +181,7 @@ function updateVenues() {
             const venues = JSON.parse(venuesJson);
             console.log('Parsed venues:', venues);
             
-            if (Object.keys(venues).length === 0) {
-                venueSelect.innerHTML = '<option value="">No venues available for this date</option>';
-                console.warn('No venues found for this date');
-            } else {
+            if (Object.keys(venues).length > 0) {
                 Object.entries(venues).forEach(([name, id]) => {
                     const option = document.createElement('option');
                     option.value = id;
@@ -182,43 +192,15 @@ function updateVenues() {
             }
         } catch (e) {
             console.error('Error parsing venues:', e);
-            venueSelect.innerHTML = '<option value="">Error loading venues</option>';
         }
-    } else {
-        console.log('No date selected yet');
     }
 }
 
-// Handle form submission with validation
+// Handle form submission - no validation needed, users can enroll without date/venue
 const enrollmentForm = document.getElementById('enrollmentForm');
 if (enrollmentForm) {
     enrollmentForm.addEventListener('submit', function(e) {
-        const dateSelect = document.getElementById('course_date_id');
-        const venueSelect = document.getElementById('course_venue_id');
-        
-        console.log('Form submit attempted');
-        console.log('Date value:', dateSelect.value);
-        console.log('Venue value:', venueSelect.value);
-        
-        // Validate that both are selected
-        if (!dateSelect.value) {
-            e.preventDefault();
-            alert('Please select a course date');
-            console.warn('Form prevented: no date selected');
-            return false;
-        }
-        
-        if (!venueSelect.value) {
-            e.preventDefault();
-            alert('Please select a venue. First, select a course date to see available venues.');
-            console.warn('Form prevented: no venue selected');
-            return false;
-        }
-        
-        console.log('Validation passed, submitting form with:', {
-            date: dateSelect.value,
-            venue: venueSelect.value
-        });
+        console.log('Form submitted - no validation required, date and venue are optional');
         
         // Show processing status
         document.getElementById('submitStatus').style.display = 'block';
@@ -229,16 +211,21 @@ if (enrollmentForm) {
     });
 }
 
-// Pre-fill venue if there's old data
+// Pre-fill selections if there's old data
 window.addEventListener('load', function() {
+    const dateSelect = document.getElementById('course_date_id');
+    const venueSelect = document.getElementById('course_venue_id');
+    
+    if (!dateSelect || !venueSelect) return;
+    
     console.log('Page loaded');
     @if(old('course_date_id'))
         console.log('Old course_date_id found:', "{{ old('course_date_id') }}");
-        document.getElementById('course_date_id').value = "{{ old('course_date_id') }}";
+        dateSelect.value = "{{ old('course_date_id') }}";
         updateVenues();
         @if(old('course_venue_id'))
             console.log('Old course_venue_id found:', "{{ old('course_venue_id') }}");
-            document.getElementById('course_venue_id').value = "{{ old('course_venue_id') }}";
+            venueSelect.value = "{{ old('course_venue_id') }}";
         @endif
     @endif
 });

@@ -18,6 +18,7 @@ class CourseEnrollmentController extends Controller
      */
     public function create(Course $course)
     {
+        // Load course dates - they're optional but available for selection
         $courseDates = $course->courseDates()->with('venues')->get();
 
         return view('courses.enrollment', compact('course', 'courseDates'));
@@ -28,30 +29,43 @@ class CourseEnrollmentController extends Controller
      */
     public function store(Request $request, Course $course)
     {
+        // Date and venue are completely optional - users can enroll without selecting them
         $validated = $request->validate([
-            'course_date_id' => 'required|exists:course_dates,id',
-            'course_venue_id' => 'required|exists:course_venues,id',
+            'course_date_id' => 'nullable|exists:course_dates,id',
+            'course_venue_id' => 'nullable|max:255',
+        ], [
+            'course_date_id.exists' => 'The selected course date is invalid.',
         ]);
 
+        // Convert empty strings to null for consistency
+        $validated['course_date_id'] = $validated['course_date_id'] ?: null;
+        $validated['course_venue_id'] = $validated['course_venue_id'] ?: null;
 
-        // Check if user is already enrolled in this course/date/venue
-        $exists = CourseEnrollee::where([
+        // Debug log
+        \Log::info('Enrollment form submitted', [
             'user_id' => Auth::id(),
             'course_id' => $course->id,
-            'course_date_id' => $validated['course_date_id'],
-            'course_venue_id' => $validated['course_venue_id'],
-        ])->exists();
+            'validated_data' => $validated,
+            'request_all' => $request->all(),
+        ]);
 
-        if ($exists) {
-            return redirect()->route('courses.show', $course)
-                ->with('error', 'You are already enrolled in this course session.');
+        // Convert empty strings to null
+        $validated['course_date_id'] = $validated['course_date_id'] ?: null;
+        $validated['course_venue_id'] = $validated['course_venue_id'] ?: null;
+
+        // For hybrid courses, convert 'online-na' to null (means student chose online)
+        if ($validated['course_venue_id'] === 'online-na') {
+            $validated['course_venue_id'] = null;
         }
 
-        // Check venue capacity
-        $venue = CourseVenue::findOrFail($validated['course_venue_id']);
-        if ($venue->isAtCapacity()) {
-            return redirect()->route('courses.show', $course)
-                ->with('error', 'This venue is at full capacity.');
+        // Check venue capacity (only if venue was selected)
+        $venue = null;
+        if (isset($validated['course_venue_id']) && $validated['course_venue_id']) {
+            $venue = CourseVenue::findOrFail($validated['course_venue_id']);
+            if ($venue->isAtCapacity()) {
+                return redirect()->route('courses.show', $course)
+                    ->with('error', 'This venue is at full capacity.');
+            }
         }
 
         DB::beginTransaction();
@@ -66,52 +80,73 @@ class CourseEnrollmentController extends Controller
             $enrollment = CourseEnrollee::create([
                 'user_id' => Auth::id(),
                 'course_id' => $course->id,
-                'course_date_id' => $validated['course_date_id'],
-                'course_venue_id' => $validated['course_venue_id'],
+                'course_date_id' => $validated['course_date_id'] ?? null,
+                'course_venue_id' => $validated['course_venue_id'] ?? null,
                 'status' => $enrollmentStatus,
                 'payment_status' => $paymentStatus,
                 'enrolled_at' => now(),
             ]);
 
-            $payment = null;
-            
-            // Only create payment record if course is not free
-            if (!$course->is_free) {
-                $payment = CoursePayment::create([
-                    'course_enrollee_id' => $enrollment->id,
-                    'user_id' => Auth::id(),
-                    'course_id' => $course->id,
-                    'amount' => $course->fee,
-                    'currency' => $course->currency,
-                    'reference_id' => 'CRS-' . time() . '-' . Auth::id(),
-                    'payment_method' => 'pending',
-                    'status' => 'pending',
-                ]);
-            }
+            // Always create payment record (even for free courses)
+            $payment = CoursePayment::create([
+                'course_enrollee_id' => $enrollment->id,
+                'user_id' => Auth::id(),
+                'course_id' => $course->id,
+                'amount' => $course->fee ?? 0,
+                'currency' => $course->currency,
+                'reference_id' => 'CRS-' . time() . '-' . Auth::id(),
+                'payment_method' => $course->is_free ? 'free' : 'pending',
+                'status' => $course->is_free ? 'completed' : 'pending',
+            ]);
 
-            // Update venue enrolled count
-            $venue->increment('enrolled_count');
+            // Update venue enrolled count (only if venue was selected)
+            if ($venue) {
+                $venue->increment('enrolled_count');
+            }
 
             // Update course enrolled count
             $course->increment('enrolled_count');
 
             DB::commit();
 
-            // Redirect based on whether course is free
-            if ($course->is_free) {
-                return redirect()->route('my-enrollments')
-                    ->with('success', 'Enrollment submitted! Admin will review your enrollment shortly.');
-            } else {
-                return redirect()->route('course.payment.show', $payment)
-                    ->with('success', 'Enrollment created. Please proceed to payment.');
-            }
+            // Debug log successful creation
+            \Log::info('Enrollment and payment created successfully', [
+                'enrollment_id' => $enrollment->id,
+                'payment_id' => $payment->id,
+                'course_id' => $course->id,
+                'user_id' => Auth::id(),
+                'amount' => $payment->amount,
+            ]);
+
+            // Always redirect to payment page (shows payment status or confirmation for free courses)
+            // Use payment ID explicitly for safer route binding
+            $paymentUrl = route('course.payment.show', ['payment' => $payment->id]);
+            
+            \Log::info('Enrollment redirect', [
+                'payment_id' => $payment->id,
+                'payment_url' => $paymentUrl,
+                'course_id' => $course->id,
+            ]);
+            
+            return redirect($paymentUrl)
+                ->with('success', 'Enrollment created. Proceeding to payment...');
 
         } catch (\Exception $e) {
 
             DB::rollBack();
 
+            // Log the full error for debugging
+            \Log::error('Enrollment Error', [
+                'user_id' => Auth::id(),
+                'course_id' => $course->id,
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return redirect()->route('courses.show', $course)
-                ->with('error', 'An error occurred during enrollment: ' . $e->getMessage());
+                ->with('error', 'An error occurred during enrollment. Please try again or contact support. Error: ' . $e->getMessage());
         }
     }
 
