@@ -216,8 +216,17 @@
                             @else
                                 <div class="text-center">
                                     @if($pendingPayment)
-                                        <p class="text-warning fw-semibold mb-3"><i class="bi bi-credit-card"></i> Payment Pending</p>
-                                        <p class="small text-muted mb-3">Your enrollment requires payment to proceed.</p>
+                                        {{-- Show "Make Payment" button if payment is pending, rejected, or failed --}}
+                                        @if($pendingPayment->status === 'pending' && $pendingPayment->approval_status === 'rejected')
+                                            <p class="text-danger fw-semibold mb-3"><i class="bi bi-x-circle"></i> Payment Rejected</p>
+                                            <p class="small text-muted mb-3">Your payment was rejected by the admin. Please try again.</p>
+                                        @elseif($pendingPayment->status === 'failed')
+                                            <p class="text-danger fw-semibold mb-3"><i class="bi bi-x-circle"></i> Payment Failed</p>
+                                            <p class="small text-muted mb-3">Your payment could not be processed. Please try again.</p>
+                                        @else
+                                            <p class="text-warning fw-semibold mb-3"><i class="bi bi-credit-card"></i> Payment Pending</p>
+                                            <p class="small text-muted mb-3">Your enrollment requires payment to proceed.</p>
+                                        @endif
                                         <a href="{{ route('course.payment.show', $pendingPayment) }}" class="btn btn-warning w-100 mb-2">
                                             <i class="bi bi-credit-card me-2"></i>Make Payment
                                         </a>
@@ -225,10 +234,11 @@
                                             Amount Due: <strong>{{ number_format($pendingPayment->amount) }} {{ $pendingPayment->course->currency }}</strong>
                                         </p>
                                     @else
-                                        <p class="text-warning fw-semibold mb-3"><i class="bi bi-clock-history"></i> Awaiting Approval</p>
-                                        <p class="small text-muted">Your enrollment is pending admin approval. Please check back soon.</p>
+                                        {{-- No pending payment means it's either completed or awaiting admin approval --}}
+                                        <p class="text-info fw-semibold mb-3"><i class="bi bi-hourglass-split"></i> Processing Payment</p>
+                                        <p class="small text-muted">Your payment is being processed or awaiting admin approval. Please check back soon.</p>
                                         <button class="btn btn-secondary w-100" disabled>
-                                            Pending Approval
+                                            <i class="bi bi-clock-history me-2"></i>Awaiting Confirmation
                                         </button>
                                     @endif
                                 </div>

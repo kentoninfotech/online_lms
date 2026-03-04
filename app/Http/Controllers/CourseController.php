@@ -156,10 +156,21 @@ class CourseController extends Controller
                 $hasEnrolled = true;
                 $enrollmentStatus = $enrollment->status;
                 
-                // Check if there's a pending payment for this enrollment
-                $pendingPayment = CoursePayment::where('course_enrollee_id', $enrollment->id)
-                    ->where('status', 'pending')
+                // Check if there's a payment that needs action (pending, rejected, or failed)
+                // Don't show "Make Payment" if payment is already completed/approved
+                $payment = CoursePayment::where('course_enrollee_id', $enrollment->id)
                     ->first();
+                
+                if ($payment) {
+                    // Show "Make Payment" button only if:
+                    // - Payment is still pending (not yet paid), OR
+                    // - Payment was rejected by admin, OR
+                    // - Payment failed
+                    if (in_array($payment->status, ['pending', 'failed']) || 
+                        in_array($payment->approval_status, ['rejected'])) {
+                        $pendingPayment = $payment;
+                    }
+                }
             }
         }
 
