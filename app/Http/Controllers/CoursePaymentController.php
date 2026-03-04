@@ -115,13 +115,29 @@ class CoursePaymentController extends Controller
      */
     public function payWithPaystack(CoursePayment $payment)
     {
+        // Enhanced logging for diagnosis
+        \Log::debug('Paystack payment access', [
+            'payment_id' => $payment->id,
+            'payment_user_id' => $payment->user_id,
+            'auth_check' => Auth::check(),
+            'auth_id' => Auth::id(),
+        ]);
+
         // Verify user is authenticated
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Please log in to make a payment.');
         }
 
-        // Verify user owns this payment
-        if ($payment->user_id !== Auth::id()) {
+        // Verify user owns this payment - type-safe comparison
+        $currentUserId = Auth::id();
+        if ((int)$payment->user_id !== (int)$currentUserId) {
+            \Log::warning('Paystack access denied - not owner', [
+                'payment_id' => $payment->id,
+                'payment_user_id' => $payment->user_id,
+                'payment_user_id_type' => gettype($payment->user_id),
+                'current_user_id' => $currentUserId,
+                'current_user_id_type' => gettype($currentUserId),
+            ]);
             return redirect()->route('courses.my-enrollments')
                 ->with('error', 'You do not have permission to access this payment.');
         }
@@ -136,13 +152,29 @@ class CoursePaymentController extends Controller
      */
     public function payWithBank(CoursePayment $payment)
     {
+        // Enhanced logging for diagnosis
+        \Log::debug('Bank payment access', [
+            'payment_id' => $payment->id,
+            'payment_user_id' => $payment->user_id,
+            'auth_check' => Auth::check(),
+            'auth_id' => Auth::id(),
+        ]);
+
         // Verify user is authenticated
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Please log in to make a payment.');
         }
 
-        // Verify user owns this payment
-        if ($payment->user_id !== Auth::id()) {
+        // Verify user owns this payment - type-safe comparison
+        $currentUserId = Auth::id();
+        if ((int)$payment->user_id !== (int)$currentUserId) {
+            \Log::warning('Bank payment access denied - not owner', [
+                'payment_id' => $payment->id,
+                'payment_user_id' => $payment->user_id,
+                'payment_user_id_type' => gettype($payment->user_id),
+                'current_user_id' => $currentUserId,
+                'current_user_id_type' => gettype($currentUserId),
+            ]);
             return redirect()->route('courses.my-enrollments')
                 ->with('error', 'You do not have permission to access this payment.');
         }
@@ -157,13 +189,29 @@ class CoursePaymentController extends Controller
      */
     public function uploadEvidence(Request $request, CoursePayment $payment)
     {
+        // Enhanced logging for diagnosis
+        \Log::debug('Upload evidence access', [
+            'payment_id' => $payment->id,
+            'payment_user_id' => $payment->user_id,
+            'auth_check' => Auth::check(),
+            'auth_id' => Auth::id(),
+        ]);
+
         // Verify user is authenticated
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Please log in to upload payment evidence.');
         }
 
-        // Verify user owns this payment
-        if ($payment->user_id !== Auth::id()) {
+        // Verify user owns this payment - type-safe comparison
+        $currentUserId = Auth::id();
+        if ((int)$payment->user_id !== (int)$currentUserId) {
+            \Log::warning('Upload evidence denied - not owner', [
+                'payment_id' => $payment->id,
+                'payment_user_id' => $payment->user_id,
+                'payment_user_id_type' => gettype($payment->user_id),
+                'current_user_id' => $currentUserId,
+                'current_user_id_type' => gettype($currentUserId),
+            ]);
             return redirect()->route('courses.my-enrollments')
                 ->with('error', 'You do not have permission to upload evidence for this payment.');
         }
@@ -218,13 +266,29 @@ class CoursePaymentController extends Controller
      */
     public function showPendingStatus(CoursePayment $payment)
     {
+        // Enhanced logging for diagnosis
+        \Log::debug('Pending status page access', [
+            'payment_id' => $payment->id,
+            'payment_user_id' => $payment->user_id,
+            'auth_check' => Auth::check(),
+            'auth_id' => Auth::id(),
+        ]);
+
         // Verify user is authenticated
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Please log in to view payment status.');
         }
 
-        // Verify user owns this payment
-        if ($payment->user_id !== Auth::id()) {
+        // Verify user owns this payment - type-safe comparison
+        $currentUserId = Auth::id();
+        if ((int)$payment->user_id !== (int)$currentUserId) {
+            \Log::warning('Pending status access denied - not owner', [
+                'payment_id' => $payment->id,
+                'payment_user_id' => $payment->user_id,
+                'payment_user_id_type' => gettype($payment->user_id),
+                'current_user_id' => $currentUserId,
+                'current_user_id_type' => gettype($currentUserId),
+            ]);
             return redirect()->route('courses.my-enrollments')
                 ->with('error', 'You do not have permission to view this payment.');
         }
