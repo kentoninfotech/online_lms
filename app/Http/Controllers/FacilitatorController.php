@@ -14,7 +14,7 @@ class FacilitatorController extends Controller
     {
         $this->authorize('isAdmin');
 
-        $facilitators = Facilitator::with('user', 'courses')
+        $facilitators = Facilitator::with('user', 'assignedCourses')
             ->paginate(15);
 
         return view('admin.facilitators.index', compact('facilitators'));
@@ -114,7 +114,7 @@ class FacilitatorController extends Controller
     {
         $this->authorize('isAdmin');
 
-        $facilitator->load('user', 'courses');
+        $facilitator->load('user', 'assignedCourses');
 
         return view('admin.facilitators.show', compact('facilitator'));
     }
@@ -137,7 +137,7 @@ class FacilitatorController extends Controller
      */
     public function show(Facilitator $facilitator)
     {
-        $courses = $facilitator->courses()->where('is_active', true)->paginate(12);
+        $courses = $facilitator->assignedCourses()->where('is_active', true)->paginate(12);
 
         return view('facilitators.show', compact('facilitator', 'courses'));
     }

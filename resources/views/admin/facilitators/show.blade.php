@@ -102,10 +102,10 @@
             <!-- Associated Courses -->
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title">Associated Courses ({{ $facilitator->courses->count() }})</h5>
+                    <h5 class="card-title">Associated Courses ({{ $facilitator->assignedCourses->count() }})</h5>
                 </div>
                 <div class="table-responsive">
-                    @if($facilitator->courses->count() > 0)
+                    @if($facilitator->assignedCourses->count() > 0)
                         <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
@@ -117,7 +117,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($facilitator->courses as $course)
+                                @foreach($facilitator->assignedCourses as $course)
                                     <tr>
                                         <td>{{ $course->title }}</td>
                                         <td>
@@ -162,13 +162,13 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <h6 class="text-muted">Total Courses</h6>
-                        <h2 class="mb-0">{{ $facilitator->courses->count() }}</h2>
+                        <h2 class="mb-0">{{ $facilitator->assignedCourses->count() }}</h2>
                     </div>
                     <hr>
                     <div class="mb-3">
                         <h6 class="text-muted">Total Enrollees</h6>
                         <h2 class="mb-0">
-                            {{ $facilitator->courses->reduce(function($carry, $course) {
+                            {{ $facilitator->assignedCourses->reduce(function($carry, $course) {
                                 return $carry + $course->enrollees->count();
                             }, 0) }}
                         </h2>

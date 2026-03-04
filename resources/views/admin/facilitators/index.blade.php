@@ -61,7 +61,7 @@
                                         </a>
                                     </td>
                                     <td>
-                                        <span class="badge bg-light text-dark">{{ $facilitator->courses->count() }}</span>
+                                        <span class="badge bg-light text-dark">{{ $facilitator->assignedCourses->count() }}</span>
                                     </td>
                                     <td>
                                         @if($facilitator->is_active)
