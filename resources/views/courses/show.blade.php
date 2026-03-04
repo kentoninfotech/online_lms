@@ -215,11 +215,22 @@
                                 </div>
                             @else
                                 <div class="text-center">
-                                    <p class="text-warning fw-semibold mb-3"><i class="bi bi-clock-history"></i> Awaiting Approval</p>
-                                    <p class="small text-muted">Your enrollment is pending admin approval. Please check back soon.</p>
-                                    <button class="btn btn-secondary w-100" disabled>
-                                        Pending Approval
-                                    </button>
+                                    @if($pendingPayment)
+                                        <p class="text-warning fw-semibold mb-3"><i class="bi bi-credit-card"></i> Payment Pending</p>
+                                        <p class="small text-muted mb-3">Your enrollment requires payment to proceed.</p>
+                                        <a href="{{ route('course.payment.show', $pendingPayment) }}" class="btn btn-warning w-100 mb-2">
+                                            <i class="bi bi-credit-card me-2"></i>Make Payment
+                                        </a>
+                                        <p class="small text-muted">
+                                            Amount Due: <strong>{{ number_format($pendingPayment->amount) }} {{ $pendingPayment->course->currency }}</strong>
+                                        </p>
+                                    @else
+                                        <p class="text-warning fw-semibold mb-3"><i class="bi bi-clock-history"></i> Awaiting Approval</p>
+                                        <p class="small text-muted">Your enrollment is pending admin approval. Please check back soon.</p>
+                                        <button class="btn btn-secondary w-100" disabled>
+                                            Pending Approval
+                                        </button>
+                                    @endif
                                 </div>
                             @endif
                         @else

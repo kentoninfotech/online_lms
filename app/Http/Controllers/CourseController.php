@@ -6,6 +6,7 @@ use App\Models\Course;
 use App\Models\CourseCategory;
 use App\Models\CourseCarouselImage;
 use App\Models\CourseEnrollee;
+use App\Models\CoursePayment;
 use App\Models\CourseDragAndDrop;
 use App\Models\HomepageSetting;
 use Illuminate\Http\Request;
@@ -144,6 +145,7 @@ class CourseController extends Controller
         $hasEnrolled = false;
         $enrollment = null;
         $enrollmentStatus = null;
+        $pendingPayment = null;
         
         if (Auth::check()) {
             $enrollment = CourseEnrollee::where('user_id', Auth::id())
@@ -153,6 +155,11 @@ class CourseController extends Controller
             if ($enrollment) {
                 $hasEnrolled = true;
                 $enrollmentStatus = $enrollment->status;
+                
+                // Check if there's a pending payment for this enrollment
+                $pendingPayment = CoursePayment::where('course_enrollee_id', $enrollment->id)
+                    ->where('status', 'pending')
+                    ->first();
             }
         }
 
@@ -163,7 +170,7 @@ class CourseController extends Controller
         // Eager load dates and venues to prevent N+1 query
         $course->load('courseDates.venues');
 
-        return view('courses.show', compact('course', 'hasEnrolled', 'enrollmentCount', 'enrollmentStatus', 'enrollment'));
+        return view('courses.show', compact('course', 'hasEnrolled', 'enrollmentCount', 'enrollmentStatus', 'enrollment', 'pendingPayment'));
     }
 
     /**
