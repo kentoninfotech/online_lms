@@ -22,9 +22,47 @@ class CoursePaymentController extends Controller
     public function showPaymentMethods(CoursePayment $payment)
     {
         try {
+            // Enhanced logging for diagnosis
+            \Log::debug('Payment page access', [
+                'payment_id' => $payment->id,
+                'payment_user_id' => $payment->user_id,
+                'auth_check' => Auth::check(),
+                'auth_id' => Auth::id(),
+                'session_id' => session()->getId(),
+                'user_agent' => request()->userAgent(),
+            ]);
+
+            // Verify user is authenticated
+            if (!Auth::check()) {
+                \Log::warning('Payment access without authentication', [
+                    'payment_id' => $payment->id,
+                    'session_id' => session()->getId(),
+                ]);
+                return redirect()->route('login')->with('error', 'Please log in to access this payment.');
+            }
+
             // Verify user owns this payment
-            if ($payment->user_id !== Auth::id()) {
-                abort(403, 'Unauthorized');
+            $currentUserId = Auth::id();
+            
+            \Log::info('Payment access attempt', [
+                'payment_id' => $payment->id,
+                'payment_user_id' => $payment->user_id,
+                'current_user_id' => $currentUserId,
+                'match' => $payment->user_id === $currentUserId,
+                'match_type_safe' => ((int)$payment->user_id === (int)$currentUserId),
+            ]);
+
+            // Safe comparison - ensure both are integers
+            if ((int)$payment->user_id !== (int)$currentUserId) {
+                \Log::warning('Payment access denied - not owner', [
+                    'payment_id' => $payment->id,
+                    'payment_user_id' => $payment->user_id,
+                    'payment_user_id_type' => gettype($payment->user_id),
+                    'current_user_id' => $currentUserId,
+                    'current_user_id_type' => gettype($currentUserId),
+                ]);
+                return redirect()->route('courses.my-enrollments')
+                    ->with('error', 'You do not have permission to access this payment.');
             }
 
             $payment->load('course', 'enrollment');
@@ -62,6 +100,8 @@ class CoursePaymentController extends Controller
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
+                'auth_id' => Auth::id(),
+                'trace' => $e->getTraceAsString(),
             ]);
             
             // Fallback: go back to enrollments
@@ -75,8 +115,15 @@ class CoursePaymentController extends Controller
      */
     public function payWithPaystack(CoursePayment $payment)
     {
+        // Verify user is authenticated
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Please log in to make a payment.');
+        }
+
+        // Verify user owns this payment
         if ($payment->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized');
+            return redirect()->route('courses.my-enrollments')
+                ->with('error', 'You do not have permission to access this payment.');
         }
 
         $payment->load('course', 'user');
@@ -89,8 +136,15 @@ class CoursePaymentController extends Controller
      */
     public function payWithBank(CoursePayment $payment)
     {
+        // Verify user is authenticated
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Please log in to make a payment.');
+        }
+
+        // Verify user owns this payment
         if ($payment->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized');
+            return redirect()->route('courses.my-enrollments')
+                ->with('error', 'You do not have permission to access this payment.');
         }
 
         $payment->load('course', 'user');
@@ -103,8 +157,15 @@ class CoursePaymentController extends Controller
      */
     public function uploadEvidence(Request $request, CoursePayment $payment)
     {
+        // Verify user is authenticated
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Please log in to upload payment evidence.');
+        }
+
+        // Verify user owns this payment
         if ($payment->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized');
+            return redirect()->route('courses.my-enrollments')
+                ->with('error', 'You do not have permission to upload evidence for this payment.');
         }
 
         $validated = $request->validate([
@@ -157,8 +218,15 @@ class CoursePaymentController extends Controller
      */
     public function showPendingStatus(CoursePayment $payment)
     {
+        // Verify user is authenticated
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Please log in to view payment status.');
+        }
+
+        // Verify user owns this payment
         if ($payment->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized');
+            return redirect()->route('courses.my-enrollments')
+                ->with('error', 'You do not have permission to view this payment.');
         }
 
         $payment->load('course', 'enrollment.user');
