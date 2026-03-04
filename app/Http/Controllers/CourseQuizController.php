@@ -171,7 +171,10 @@ class CourseQuizController extends Controller
         $validated['course_id'] = $course->id;
         $quiz = CourseQuiz::create($validated);
 
-        return redirect()->route('admin.courses.show', $course)
+        return redirect()->route(
+                auth()->user()->user_type === 'instructor' ? 'tutor.courses.show' : 'admin.courses.show',
+                $course
+            )
             ->with('success', 'Quiz created successfully.');
     }
 
@@ -206,7 +209,10 @@ class CourseQuizController extends Controller
 
         $quiz->update($validated);
 
-        return redirect()->route('admin.courses.show', $course)
+        return redirect()->route(
+                auth()->user()->user_type === 'instructor' ? 'tutor.courses.show' : 'admin.courses.show',
+                $course
+            )
             ->with('success', 'Quiz updated successfully.');
     }
 
@@ -219,7 +225,10 @@ class CourseQuizController extends Controller
 
         $quiz->delete();
 
-        return redirect()->route('admin.courses.show', $course)
+        return redirect()->route(
+                auth()->user()->user_type === 'instructor' ? 'tutor.courses.show' : 'admin.courses.show',
+                $course
+            )
             ->with('success', 'Quiz deleted successfully.');
     }
 

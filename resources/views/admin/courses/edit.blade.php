@@ -24,7 +24,12 @@
                 <h3 class="page-title">Edit Course</h3>
             </div>
             <div class="col-auto">
-                <a href="{{ route('admin.courses.index') }}" class="btn btn-secondary">
+                @php
+                    $backRoute = auth()->user()->user_type === 'instructor'
+                        ? route('tutor.courses.index')
+                        : route('admin.courses.index');
+                @endphp
+                <a href="{{ $backRoute }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left me-2"></i>Back to Courses
                 </a>
             </div>
@@ -39,7 +44,13 @@
                     <p class="text-muted mb-0">Code: {{ $course->code }}</p>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('admin.courses.update', $course) }}" method="POST" enctype="multipart/form-data">
+                    @php
+                        // Use tutor route if user is instructor, otherwise use admin route
+                        $updateRoute = auth()->user()->user_type === 'instructor' 
+                            ? route('tutor.courses.update', $course)
+                            : route('admin.courses.update', $course);
+                    @endphp
+                    <form action="{{ $updateRoute }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 

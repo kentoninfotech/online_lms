@@ -129,7 +129,12 @@
                 </h3>
             </div>
             <div class="col-auto">
-                <a href="{{ route('admin.courses.create') }}" class="btn btn-light text-white" style="background: rgba(255,255,255,0.2);">
+                @php
+                    $createRoute = auth()->user()->user_type === 'instructor'
+                        ? route('tutor.courses.create')
+                        : route('admin.courses.create');
+                @endphp
+                <a href="{{ $createRoute }}" class="btn btn-light text-white" style="background: rgba(255,255,255,0.2);">
                     <i class="bi bi-plus-circle me-2"></i>Create Course
                 </a>
             </div>
@@ -215,7 +220,12 @@
                                         <strong>{{ $course->code }}</strong>
                                     </td>
                                     <td>
-                                        <a href="{{ route('admin.courses.show', $course) }}" class="text-decoration-none">
+                                        @php
+                                            $showRoute = auth()->user()->user_type === 'instructor'
+                                                ? route('tutor.courses.show', $course)
+                                                : route('admin.courses.show', $course);
+                                        @endphp
+                                        <a href="{{ $showRoute }}" class="text-decoration-none">
                                             {{ Str::limit($course->title, 40) }}
                                         </a>
                                     </td>
@@ -239,17 +249,24 @@
                                         @endif
                                     </td>
                                     <td>
+                                        @php
+                                            $isInstructor = auth()->user()->user_type === 'instructor';
+                                            $showRoute = $isInstructor ? route('tutor.courses.show', $course) : route('admin.courses.show', $course);
+                                            $contentsRoute = $isInstructor ? route('tutor.course-contents.index', $course) : route('admin.course-contents.index', $course);
+                                            $editRoute = $isInstructor ? route('tutor.courses.edit', $course) : route('admin.courses.edit', $course);
+                                            $destroyRoute = $isInstructor ? route('tutor.courses.destroy', $course) : route('admin.courses.destroy', $course);
+                                        @endphp
                                         <div class="btn-group btn-group-sm" role="group">
-                                            <a href="{{ route('admin.courses.show', $course) }}" class="btn btn-outline-info" title="View" data-bs-toggle="tooltip">
+                                            <a href="{{ $showRoute }}" class="btn btn-outline-info" title="View" data-bs-toggle="tooltip">
                                                 <i class="bi bi-eye"></i>
                                             </a>
-                                            <a href="{{ route('admin.course-contents.index', $course) }}" class="btn btn-outline-secondary" title="View Contents" data-bs-toggle="tooltip">
+                                            <a href="{{ $contentsRoute }}" class="btn btn-outline-secondary" title="View Contents" data-bs-toggle="tooltip">
                                                 <i class="bi bi-collection"></i>
                                             </a>
-                                            <a href="{{ route('admin.courses.edit', $course) }}" class="btn btn-outline-primary" title="Edit" data-bs-toggle="tooltip">
+                                            <a href="{{ $editRoute }}" class="btn btn-outline-primary" title="Edit" data-bs-toggle="tooltip">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
-                                            <form action="{{ route('admin.courses.destroy', $course) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this course?');">
+                                            <form action="{{ $destroyRoute }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this course?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete">
@@ -263,7 +280,12 @@
                                 <tr>
                                     <td colspan="8" class="text-center text-muted py-4">
                                         <i class="bi bi-inbox" style="font-size: 2rem; opacity: 0.5;"></i>
-                                        <p class="mt-2">No courses found. <a href="{{ route('admin.courses.create') }}">Create one now</a>.</p>
+                                        @php
+                                            $createRoute = auth()->user()->user_type === 'instructor'
+                                                ? route('tutor.courses.create')
+                                                : route('admin.courses.create');
+                                        @endphp
+                                        <p class="mt-2">No courses found. <a href="{{ $createRoute }}">Create one now</a>.</p>
                                     </td>
                                 </tr>
                             @endforelse

@@ -143,7 +143,9 @@ class CourseDiscussionController extends Controller
 
         $discussion->delete();
 
-        return redirect()->route('admin.discussions.index')
+        return redirect()->route(
+                auth()->user()->user_type === 'instructor' ? 'tutor.discussions.index' : 'admin.discussions.index'
+            )
             ->with('success', 'Discussion deleted successfully.');
     }
 

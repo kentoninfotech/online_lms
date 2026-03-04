@@ -12,7 +12,12 @@
             <p class="text-muted mt-1">{{ $course->title }}</p>
         </div>
         <div class="col-auto">
-            <a href="{{ route('admin.courses.show', $course) }}" class="btn btn-secondary">
+            @php
+                $backRoute = auth()->user()->user_type === 'instructor'
+                    ? route('tutor.courses.show', $course)
+                    : route('admin.courses.show', $course);
+            @endphp
+            <a href="{{ $backRoute }}" class="btn btn-secondary">
                 <i class="bi bi-arrow-left me-2"></i>Back to Course
             </a>
         </div>
@@ -20,7 +25,12 @@
 
     <div class="row">
         <div class="col-lg-8">
-            <form action="{{ route('admin.live-sessions.store', $course) }}" method="POST" class="card shadow-sm">
+            @php
+                $storeRoute = auth()->user()->user_type === 'instructor'
+                    ? route('tutor.live-sessions.store', $course)
+                    : route('admin.live-sessions.store', $course);
+            @endphp
+            <form action="{{ $storeRoute }}" method="POST" class="card shadow-sm">
                 @csrf
 
                 <!-- Basic Information -->

@@ -10,10 +10,15 @@
                 <h3 class="page-title">{{ $course->title }}</h3>
             </div>
             <div class="col-auto">
-                <a href="{{ route('admin.courses.edit', $course) }}" class="btn btn-primary">
+                @php
+                    $isInstructor = auth()->user()->user_type === 'instructor';
+                    $editRoute = $isInstructor ? route('tutor.courses.edit', $course) : route('admin.courses.edit', $course);
+                    $backRoute = $isInstructor ? route('tutor.courses.index') : route('admin.courses.index');
+                @endphp
+                <a href="{{ $editRoute }}" class="btn btn-primary">
                     <i class="bi bi-pencil me-2"></i>Edit
                 </a>
-                <a href="{{ route('admin.courses.index') }}" class="btn btn-secondary">
+                <a href="{{ $backRoute }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left me-2"></i>Back
                 </a>
             </div>
@@ -226,7 +231,7 @@
                         <a href="#" class="btn btn-outline-primary btn-sm">
                             <i class="bi bi-chat-dots me-2"></i>Discussions
                         </a>
-                        <form action="{{ route('admin.courses.destroy', $course) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure? This will delete the course and all associated content.');">
+                        <form action="{{ auth()->user()->user_type === 'instructor' ? route('tutor.courses.destroy', $course) : route('admin.courses.destroy', $course) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure? This will delete the course and all associated content.');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-outline-danger btn-sm w-100">

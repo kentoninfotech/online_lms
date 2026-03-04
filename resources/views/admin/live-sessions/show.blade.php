@@ -11,10 +11,12 @@
                 <p class="text-muted">{{ $course->title }}</p>
             </div>
             <div class="col-auto">
-                <a href="{{ route('admin.live-sessions.edit', [$course, $session]) }}" class="btn btn-primary">
-                    <i class="bi bi-pencil me-2"></i>Edit
-                </a>
-                <a href="{{ route('admin.live-sessions.index', $course) }}" class="btn btn-secondary">
+                @php
+                    $backRoute = auth()->user()->user_type === 'instructor'
+                        ? route('tutor.live-sessions.index', $course)
+                        : route('admin.live-sessions.index', $course);
+                @endphp
+                <a href="{{ $backRoute }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left me-2"></i>Back
                 </a>
             </div>
@@ -140,7 +142,7 @@
                         <a href="{{ route('admin.live-sessions.edit', [$course, $session]) }}" class="btn btn-primary">
                             <i class="bi bi-pencil me-2"></i>Edit Session
                         </a>
-                        <form action="{{ route('admin.live-sessions.destroy', [$course, $session]) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+                        <form action="{{ route(auth()->user()->user_type === 'instructor' ? 'tutor.live-sessions.destroy' : 'admin.live-sessions.destroy', [$course, $session]) }}" method="POST" onsubmit="return confirm('Are you sure?');">>
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-outline-danger w-100">

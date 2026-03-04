@@ -11,10 +11,15 @@
                 <p class="text-muted">Course: <strong>{{ $course->title }}</strong></p>
             </div>
             <div class="col-auto">
-                <a href="{{ route('admin.course-contents.create', $course) }}" class="btn btn-primary">
+                @php
+                    $isInstructor = auth()->user()->user_type === 'instructor';
+                    $createRoute = $isInstructor ? route('tutor.course-contents.create', $course) : route('admin.course-contents.create', $course);
+                    $backRoute = $isInstructor ? route('tutor.courses.show', $course) : route('admin.courses.show', $course);
+                @endphp
+                <a href="{{ $createRoute }}" class="btn btn-primary">
                     <i class="bi bi-plus-circle me-2"></i>Add Content
                 </a>
-                <a href="{{ route('admin.courses.show', $course) }}" class="btn btn-secondary">
+                <a href="{{ $backRoute }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left me-2"></i>Back to Course
                 </a>
             </div>
@@ -139,12 +144,18 @@
                                             @endif
                                         </td>
                                         <td>
+                                            @php
+                                                $isInstructor = auth()->user()->user_type === 'instructor';
+                                                $showRoute = $isInstructor ? route('tutor.course-contents.show', [$course, $content]) : route('admin.course-contents.show', [$course, $content]);
+                                                $editRoute = $isInstructor ? route('tutor.course-contents.edit', [$course, $content]) : route('admin.course-contents.edit', [$course, $content]);
+                                                $destroyRoute = $isInstructor ? route('tutor.course-contents.destroy', [$course, $content]) : route('admin.course-contents.destroy', [$course, $content]);
+                                            @endphp
                                             <div class="btn-group btn-group-sm" role="group">
-                                                <a href="{{ route('admin.course-contents.show', [$course, $content]) }}" 
+                                                <a href="{{ $showRoute }}" 
                                                     class="btn btn-outline-primary" title="View">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
-                                                <a href="{{ route('admin.course-contents.edit', [$course, $content]) }}" 
+                                                <a href="{{ $editRoute }}" 
                                                     class="btn btn-outline-warning" title="Edit">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
@@ -168,7 +179,7 @@
                                                         </div>
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                            <form action="{{ route('admin.course-contents.destroy', [$course, $content]) }}" method="POST" style="display: inline;">
+                                                            <form action="{{ $destroyRoute }}" method="POST" style="display: inline;">
                                                                 @csrf
                                                                 @method('DELETE')
                                                                 <button type="submit" class="btn btn-danger">Delete</button>

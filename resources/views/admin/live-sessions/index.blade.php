@@ -11,10 +11,15 @@
                 <p class="text-muted">{{ $course->title }}</p>
             </div>
             <div class="col-auto">
-                <a href="{{ route('admin.live-sessions.create', $course) }}" class="btn btn-primary">
+                @php
+                    $isInstructor = auth()->user()->user_type === 'instructor';
+                    $createRoute = $isInstructor ? route('tutor.live-sessions.create', $course) : route('admin.live-sessions.create', $course);
+                    $backRoute = $isInstructor ? route('tutor.courses.show', $course) : route('admin.courses.show', $course);
+                @endphp
+                <a href="{{ $createRoute }}" class="btn btn-primary">
                     <i class="bi bi-plus-circle me-2"></i>Schedule Session
                 </a>
-                <a href="{{ route('admin.courses.show', $course) }}" class="btn btn-secondary">
+                <a href="{{ $backRoute }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left me-2"></i>Back
                 </a>
             </div>
@@ -78,13 +83,15 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <a href="{{ route('admin.live-sessions.show', [$course, $session]) }}" class="btn btn-outline-info btn-sm" title="View">
+                                        @php
+                                            $isInstructor = auth()->user()->user_type === 'instructor';
+                                            $showRoute = $isInstructor ? route('tutor.live-sessions.show', [$course, $session]) : route('admin.live-sessions.show', [$course, $session]);
+                                            $destroyRoute = $isInstructor ? route('tutor.live-sessions.destroy', [$course, $session]) : route('admin.live-sessions.destroy', [$course, $session]);
+                                        @endphp
+                                        <a href="{{ $showRoute }}" class="btn btn-outline-info btn-sm" title="View">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <a href="{{ route('admin.live-sessions.edit', [$course, $session]) }}" class="btn btn-outline-primary btn-sm" title="Edit">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <form action="{{ route('admin.live-sessions.destroy', [$course, $session]) }}" method="POST" style="display: inline;" onsubmit="return confirm('Delete this session?');">
+                                        <form action="{{ $destroyRoute }}" method="POST" style="display: inline;" onsubmit="return confirm('Delete this session?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete">
@@ -96,7 +103,12 @@
                             @empty
                                 <tr>
                                     <td colspan="5" class="text-center text-muted py-4">
-                                        No live sessions scheduled yet. <a href="{{ route('admin.live-sessions.create', $course) }}">Schedule one now</a>
+                                        @php
+                                            $createRoute = auth()->user()->user_type === 'instructor'
+                                                ? route('tutor.live-sessions.create', $course)
+                                                : route('admin.live-sessions.create', $course);
+                                        @endphp
+                                        No live sessions scheduled yet. <a href="{{ $createRoute }}">Schedule one now</a>
                                     </td>
                                 </tr>
                             @endforelse

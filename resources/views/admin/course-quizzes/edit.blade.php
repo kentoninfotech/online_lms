@@ -11,14 +11,25 @@
                 <p class="text-muted">{{ $course->title }}</p>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ route('admin.courses.show', $course) }}">{{ $course->title }}</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('admin.course-quizzes.index', $course) }}">Quizzes</a></li>
+                        @php
+                            $showRoute = auth()->user()->user_type === 'instructor'
+                                ? route('tutor.courses.show', $course)
+                                : route('admin.courses.show', $course);
+                            $indexRoute = auth()->user()->user_type === 'instructor'
+                                ? route('tutor.course-quizzes.index', $course)
+                                : route('admin.course-quizzes.index', $course);
+                            $quizShowRoute = auth()->user()->user_type === 'instructor'
+                                ? route('tutor.course-quizzes.show', [$course, $quiz])
+                                : route('admin.course-quizzes.show', [$course, $quiz]);
+                        @endphp
+                        <li class="breadcrumb-item"><a href="{{ $showRoute }}">{{ $course->title }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ $indexRoute }}">Quizzes</a></li>
                         <li class="breadcrumb-item active">{{ $quiz->title }}</li>
                     </ol>
                 </nav>
             </div>
             <div class="col-auto">
-                <a href="{{ route('admin.course-quizzes.show', [$course, $quiz]) }}" class="btn btn-secondary">
+                <a href="{{ $quizShowRoute }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Back
                 </a>
             </div>
@@ -69,7 +80,12 @@
                             <h5 class="card-title mb-0">Quiz Settings</h5>
                         </div>
                         <div class="card-body">
-                            <form action="{{ route('admin.course-quizzes.update', [$course, $quiz]) }}" method="POST">
+                            @php
+                                $updateRoute = auth()->user()->user_type === 'instructor'
+                                    ? route('tutor.course-quizzes.update', [$course, $quiz])
+                                    : route('admin.course-quizzes.update', [$course, $quiz]);
+                            @endphp
+                            <form action="{{ $updateRoute }}" method="POST">
                                 @csrf
                                 @method('PUT')
 
@@ -315,7 +331,12 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form action="{{ route('admin.course-quizzes.destroy', [$course, $quiz]) }}" method="POST" style="display: inline;">
+                @php
+                    $destroyRoute = auth()->user()->user_type === 'instructor'
+                        ? route('tutor.course-quizzes.destroy', [$course, $quiz])
+                        : route('admin.course-quizzes.destroy', [$course, $quiz]);
+                @endphp
+                <form action="{{ $destroyRoute }}" method="POST" style="display: inline;">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger">Delete Quiz</button>

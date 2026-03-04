@@ -342,7 +342,10 @@ class CourseController extends Controller
             }
         }
 
-        return redirect()->route('admin.courses.show', $course)
+        return redirect()->route(
+                auth()->user()->user_type === 'instructor' ? 'tutor.courses.show' : 'admin.courses.show',
+                $course
+            )
             ->with('success', 'Course created successfully.');
     }
 
@@ -495,7 +498,10 @@ class CourseController extends Controller
             }
         }
 
-        return redirect()->route('admin.courses.show', $course)
+        return redirect()->route(
+                auth()->user()->user_type === 'instructor' ? 'tutor.courses.show' : 'admin.courses.show',
+                $course
+            )
             ->with('success', 'Course updated successfully.');
     }
 
@@ -520,7 +526,9 @@ class CourseController extends Controller
 
         $course->delete();
 
-        return redirect()->route('admin.courses.index')
+        return redirect()->route(
+                auth()->user()->user_type === 'instructor' ? 'tutor.courses.index' : 'admin.courses.index'
+            )
             ->with('success', 'Course deleted successfully.');
     }
 

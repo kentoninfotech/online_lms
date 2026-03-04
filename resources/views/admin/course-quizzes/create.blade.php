@@ -10,14 +10,22 @@
                 <h3 class="page-title">Create Quiz</h3>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ route('admin.courses.show', $course) }}">{{ $course->title }}</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('admin.course-quizzes.index', $course) }}">Quizzes</a></li>
+                        @php
+                            $showRoute = auth()->user()->user_type === 'instructor'
+                                ? route('tutor.courses.show', $course)
+                                : route('admin.courses.show', $course);
+                            $indexRoute = auth()->user()->user_type === 'instructor'
+                                ? route('tutor.course-quizzes.index', $course)
+                                : route('admin.course-quizzes.index', $course);
+                        @endphp
+                        <li class="breadcrumb-item"><a href="{{ $showRoute }}">{{ $course->title }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ $indexRoute }}">Quizzes</a></li>
                         <li class="breadcrumb-item active">Create</li>
                     </ol>
                 </nav>
             </div>
             <div class="col-auto">
-                <a href="{{ route('admin.course-quizzes.index', $course) }}" class="btn btn-secondary">
+                <a href="{{ $indexRoute }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Back
                 </a>
             </div>
@@ -38,7 +46,12 @@
 
     <div class="row">
         <div class="col-lg-8">
-            <form action="{{ route('admin.course-quizzes.store', $course) }}" method="POST">
+            @php
+                $storeRoute = auth()->user()->user_type === 'instructor'
+                    ? route('tutor.course-quizzes.store', $course)
+                    : route('admin.course-quizzes.store', $course);
+            @endphp
+            <form action="{{ $storeRoute }}" method="POST">
                 @csrf
 
                 <!-- Basic Information Card -->

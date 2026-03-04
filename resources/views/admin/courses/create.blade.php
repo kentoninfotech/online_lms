@@ -24,7 +24,12 @@
                 <h3 class="page-title">Create New Course</h3>
             </div>
             <div class="col-auto">
-                <a href="{{ route('admin.courses.index') }}" class="btn btn-secondary">
+                @php
+                    $backRoute = auth()->user()->user_type === 'instructor'
+                        ? route('tutor.courses.index')
+                        : route('admin.courses.index');
+                @endphp
+                <a href="{{ $backRoute }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left me-2"></i>Back to Courses
                 </a>
             </div>
@@ -38,7 +43,13 @@
                     <h5 class="card-title">Course Information</h5>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('admin.courses.store') }}" method="POST" enctype="multipart/form-data">
+                    @php
+                        // Use tutor route if user is instructor, otherwise use admin route
+                        $storeRoute = auth()->user()->user_type === 'instructor'
+                            ? route('tutor.courses.store')
+                            : route('admin.courses.store');
+                    @endphp
+                    <form action="{{ $storeRoute }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
                         <div class="row">

@@ -201,7 +201,10 @@ class CourseContentController extends Controller
         $validated['course_id'] = $course->id;
         $content = CourseContent::create($validated);
 
-        return redirect()->route('admin.courses.show', $course)
+        return redirect()->route(
+                auth()->user()->user_type === 'instructor' ? 'tutor.courses.show' : 'admin.courses.show',
+                $course
+            )
             ->with('success', 'Content created successfully.');
     }
 
@@ -256,7 +259,10 @@ class CourseContentController extends Controller
 
         $content->update($validated);
 
-        return redirect()->route('admin.courses.show', $course)
+        return redirect()->route(
+                auth()->user()->user_type === 'instructor' ? 'tutor.courses.show' : 'admin.courses.show',
+                $course
+            )
             ->with('success', 'Content updated successfully.');
     }
 
@@ -275,7 +281,10 @@ class CourseContentController extends Controller
 
         $content->delete();
 
-        return redirect()->route('admin.courses.show', $course)
+        return redirect()->route(
+                auth()->user()->user_type === 'instructor' ? 'tutor.courses.show' : 'admin.courses.show',
+                $course
+            )
             ->with('success', 'Content deleted successfully.');
     }
 

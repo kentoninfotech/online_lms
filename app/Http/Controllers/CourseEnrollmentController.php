@@ -179,7 +179,10 @@ class CourseEnrollmentController extends Controller
 
         $enrollment->update($validated);
 
-        return redirect()->route('admin.course-enrollments.show', $enrollment)
+        return redirect()->route(
+                auth()->user()->user_type === 'instructor' ? 'tutor.course-enrollments.show' : 'admin.course-enrollments.show',
+                $enrollment
+            )
             ->with('success', 'Enrollment status updated successfully.');
     }
 }

@@ -11,10 +11,15 @@
                 <p class="text-muted">{{ $course->title }}</p>
             </div>
             <div class="col-auto">
-                <a href="{{ route('admin.course-quizzes.create', $course) }}" class="btn btn-primary">
+                @php
+                    $isInstructor = auth()->user()->user_type === 'instructor';
+                    $createRoute = $isInstructor ? route('tutor.course-quizzes.create', $course) : route('admin.course-quizzes.create', $course);
+                    $backRoute = $isInstructor ? route('tutor.courses.show', $course) : route('admin.courses.show', $course);
+                @endphp
+                <a href="{{ $createRoute }}" class="btn btn-primary">
                     <i class="bi bi-plus-circle me-2"></i>Create Quiz
                 </a>
-                <a href="{{ route('admin.courses.show', $course) }}" class="btn btn-secondary">
+                <a href="{{ $backRoute }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left me-2"></i>Back
                 </a>
             </div>
@@ -69,13 +74,19 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="{{ route('admin.course-quizzes.show', [$course, $quiz]) }}" class="btn btn-outline-info btn-sm" title="View">
+                                        @php
+                                            $isInstructor = auth()->user()->user_type === 'instructor';
+                                            $showRoute = $isInstructor ? route('tutor.course-quizzes.show', [$course, $quiz]) : route('admin.course-quizzes.show', [$course, $quiz]);
+                                            $editRoute = $isInstructor ? route('tutor.course-quizzes.edit', [$course, $quiz]) : route('admin.course-quizzes.edit', [$course, $quiz]);
+                                            $destroyRoute = $isInstructor ? route('tutor.course-quizzes.destroy', [$course, $quiz]) : route('admin.course-quizzes.destroy', [$course, $quiz]);
+                                        @endphp
+                                        <a href="{{ $showRoute }}" class="btn btn-outline-info btn-sm" title="View">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <a href="{{ route('admin.course-quizzes.edit', [$course, $quiz]) }}" class="btn btn-outline-primary btn-sm" title="Edit">
+                                        <a href="{{ $editRoute }}" class="btn btn-outline-primary btn-sm" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <form action="{{ route('admin.course-quizzes.destroy', [$course, $quiz]) }}" method="POST" style="display: inline;" onsubmit="return confirm('Delete this quiz?');">
+                                        <form action="{{ $destroyRoute }}" method="POST" style="display: inline;" onsubmit="return confirm('Delete this quiz?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete">
@@ -87,7 +98,12 @@
                             @empty
                                 <tr>
                                     <td colspan="5" class="text-center text-muted py-4">
-                                        No quizzes created yet. <a href="{{ route('admin.course-quizzes.create', $course) }}">Create one now</a>
+                                        @php
+                                            $createRoute = auth()->user()->user_type === 'instructor'
+                                                ? route('tutor.course-quizzes.create', $course)
+                                                : route('admin.course-quizzes.create', $course);
+                                        @endphp
+                                        No quizzes created yet. <a href="{{ $createRoute }}">Create one now</a>
                                     </td>
                                 </tr>
                             @endforelse

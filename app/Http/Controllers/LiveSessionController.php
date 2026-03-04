@@ -102,7 +102,10 @@ class LiveSessionController extends Controller
 
         CourseLiveSession::create($validated);
 
-        return redirect()->route('admin.courses.show', $course)
+        return redirect()->route(
+                auth()->user()->user_type === 'instructor' ? 'tutor.courses.show' : 'admin.courses.show',
+                $course
+            )
             ->with('success', 'Live session scheduled successfully.');
     }
 
@@ -141,7 +144,10 @@ class LiveSessionController extends Controller
 
         $session->update($validated);
 
-        return redirect()->route('admin.courses.show', $course)
+        return redirect()->route(
+                auth()->user()->user_type === 'instructor' ? 'tutor.courses.show' : 'admin.courses.show',
+                $course
+            )
             ->with('success', 'Live session updated successfully.');
     }
 
@@ -154,7 +160,10 @@ class LiveSessionController extends Controller
 
         $session->delete();
 
-        return redirect()->route('admin.courses.show', $course)
+        return redirect()->route(
+                auth()->user()->user_type === 'instructor' ? 'tutor.courses.show' : 'admin.courses.show',
+                $course
+            )
             ->with('success', 'Live session deleted successfully.');
     }
 
