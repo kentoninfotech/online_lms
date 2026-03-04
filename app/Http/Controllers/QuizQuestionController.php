@@ -15,7 +15,7 @@ class QuizQuestionController extends Controller
      */
     public function index(Course $course, CourseQuiz $quiz)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('manageQuizzes', $course);
 
         $questions = $quiz->questions()
             ->with('answers')
@@ -30,7 +30,7 @@ class QuizQuestionController extends Controller
      */
     public function store(Request $request, Course $course, CourseQuiz $quiz)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('manageQuizzes', $course);
 
         $validated = $request->validate([
             'question' => 'required|string',
@@ -88,7 +88,7 @@ class QuizQuestionController extends Controller
      */
     public function update(Request $request, Course $course, CourseQuiz $quiz, QuizQuestion $question)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('manageQuizzes', $course);
 
         $validated = $request->validate([
             'question' => 'required|string',
@@ -150,7 +150,7 @@ class QuizQuestionController extends Controller
      */
     public function destroy(Course $course, CourseQuiz $quiz, QuizQuestion $question)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('manageQuizzes', $course);
 
         $question->delete();
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Gallery;
+use App\Models\HomepageSetting;
 use Illuminate\Http\Request;
 
 class GalleryController extends Controller
@@ -12,6 +13,12 @@ class GalleryController extends Controller
      */
     public function index()
     {
+        // Check if galleries page is enabled
+        $showGalleries = HomepageSetting::getSetting('visibility', 'show_galleries', true);
+        if (!$showGalleries) {
+            abort(404, 'Galleries page is not available.');
+        }
+        
         $galleries = Gallery::published()->orderBy('created_at', 'desc')->get();
         return view('galleries.index', compact('galleries'));
     }

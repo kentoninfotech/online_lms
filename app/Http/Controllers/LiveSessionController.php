@@ -37,7 +37,7 @@ class LiveSessionController extends Controller
      */
     public function adminIndex(Course $course)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('update', $course);
 
         $sessions = $course->liveSessions()->with('facilitator')->get();
 
@@ -49,7 +49,7 @@ class LiveSessionController extends Controller
      */
     public function adminShow(Course $course, CourseLiveSession $session)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('update', $course);
 
         return view('admin.live-sessions.show', compact('course', 'session'));
     }
@@ -59,7 +59,7 @@ class LiveSessionController extends Controller
      */
     public function adminCreate(Course $course)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('update', $course);
 
         $facilitators = \App\Models\Facilitator::where('is_active', true)->get();
 
@@ -71,7 +71,7 @@ class LiveSessionController extends Controller
      */
     public function adminStore(Request $request, Course $course)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('update', $course);
 
         $validated = $request->validate([
             'facilitator_id' => 'required|exists:facilitators,id',
@@ -111,7 +111,7 @@ class LiveSessionController extends Controller
      */
     public function adminUpdate(Request $request, Course $course, CourseLiveSession $session)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('update', $course);
 
         $validated = $request->validate([
             'facilitator_id' => 'required|exists:facilitators,id',
@@ -150,7 +150,7 @@ class LiveSessionController extends Controller
      */
     public function adminDestroy(Course $course, CourseLiveSession $session)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('update', $course);
 
         $session->delete();
 
@@ -176,7 +176,9 @@ class LiveSessionController extends Controller
      */
     public function adminListAll()
     {
-        $this->authorize('isAdmin');
+        if (auth()->user()->user_type !== 'admin') {
+            abort(403);
+        }
 
         $sessions = CourseLiveSession::with('course', 'facilitator')
             ->orderBy('scheduled_start', 'desc')

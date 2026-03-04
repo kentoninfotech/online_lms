@@ -98,15 +98,28 @@ class CourseDiscussionController extends Controller
     /**
      * Admin: List all discussions
      */
-    public function adminIndex()
+    public function adminIndex(Course $course = null)
     {
-        $this->authorize('isAdmin');
+        if ($course) {
+            // Tutor viewing discussions for their course
+            $this->authorize('update', $course);
+            $discussions = $course->discussions()
+                ->with('user')
+                ->withCount('replies')
+                ->orderByDesc('is_pinned')
+                ->orderByDesc('created_at')
+                ->paginate(20);
+        } else {
+            // Admin viewing all discussions
+            if (auth()->user()->user_type !== 'admin') {
+                abort(403);
+            }
+            $discussions = CourseDiscussion::with('user', 'course')
+                ->withCount('replies')
+                ->paginate(20);
+        }
 
-        $discussions = CourseDiscussion::with('user', 'course')
-            ->withCount('replies')
-            ->paginate(20);
-
-        return view('admin.discussions.index', compact('discussions'));
+        return view('admin.discussions.index', compact('discussions', 'course'));
     }
 
     /**
@@ -114,7 +127,7 @@ class CourseDiscussionController extends Controller
      */
     public function adminShow(CourseDiscussion $discussion)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('update', $discussion->course);
 
         $replies = $discussion->replies()->with('user')->get();
 
@@ -126,7 +139,7 @@ class CourseDiscussionController extends Controller
      */
     public function adminDestroy(CourseDiscussion $discussion)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('update', $discussion->course);
 
         $discussion->delete();
 
@@ -164,7 +177,7 @@ class CourseDiscussionController extends Controller
      */
     public function togglePin(Course $course, CourseDiscussion $discussion)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('update', $discussion->course);
 
         $discussion->update(['is_pinned' => !$discussion->is_pinned]);
 
@@ -177,7 +190,7 @@ class CourseDiscussionController extends Controller
      */
     public function toggleLock(Course $course, CourseDiscussion $discussion)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('update', $discussion->course);
 
         $discussion->update(['is_locked' => !$discussion->is_locked]);
 

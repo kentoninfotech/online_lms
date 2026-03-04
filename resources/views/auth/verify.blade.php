@@ -18,20 +18,18 @@
         </div>
 
         <!-- Warning/Info Message -->
-        @if (session('warning'))
+        @if (session('resent'))
+            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert" style="border-left: 5px solid #28a745;">
+                <i class="bi bi-check-circle-fill me-2" style="font-size: 1.2rem; color: #28a745;"></i>
+                <strong style="font-size: 1.05rem;">Email Sent Successfully! ✓</strong><br>
+                <span style="font-size: 0.95rem;">A fresh verification link has been sent to your email address. Please check your inbox and spam folder.</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @elseif (session('warning'))
             <div class="alert alert-warning alert-dismissible fade show mb-4" role="alert">
                 <i class="bi bi-exclamation-circle me-2"></i>
                 <strong>Verification Required</strong><br>
                 {{ session('warning') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
-        @if (session('resent'))
-            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
-                <i class="bi bi-check-circle me-2"></i>
-                <strong>Success!</strong><br>
-                A fresh verification link has been sent to your email address.
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif

@@ -51,11 +51,17 @@ class LoginController extends Controller
     {
         // Check if email is verified
         if (!$user->hasVerifiedEmail()) {
+            // Log out the user
             auth()->logout();
-            return redirect()->route('verification.notice')
-                ->with('email', $user->email)
+            
+            // Invalidate session
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            
+            // Redirect back to login with email verification error
+            return redirect()->route('login')
                 ->withInput(['email' => $user->email])
-                ->with('warning', 'Please verify your email address before accessing your dashboard.');
+                ->with('error', 'Please verify your email address before logging in. Check your inbox for the verification link.');
         }
 
         // Get timezone from multiple sources (priority order):

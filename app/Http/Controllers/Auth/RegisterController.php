@@ -93,23 +93,24 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'user_type' => $data['user_type'],
-            // Do NOT set email_verified_at - user must verify email first
-        ]);
+        return \DB::transaction(function () use ($data) {
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+                'user_type' => $data['user_type'],
+                // Do NOT set email_verified_at - user must verify email first
+            ]);
 
-        // Assign role based on user_type
-        try {
-            $user->assignRole($data['user_type']);
-        } catch (\Exception $e) {
-            // Role assignment might fail if roles don't exist, that's okay
-        }
+            // Assign role based on user_type
+            try {
+                $user->assignRole($data['user_type']);
+            } catch (\Exception $e) {
+                // Role assignment might fail if roles don't exist, that's okay
+                \Log::warning('Could not assign role: ' . $e->getMessage());
+            }
 
-        // Create associated model based on user_type
-        try {
+            // Create associated model based on user_type
             if ($data['user_type'] === 'student') {
                 Student::create([
                     'user_id' => $user->id,
@@ -129,17 +130,14 @@ class RegisterController extends Controller
                     'email' => $data['email'],
                 ]);
             }
-        } catch (\Exception $e) {
-            // If model creation fails, just continue (rollback would be better with transactions)
-            \Log::error('Error creating associated model during registration: ' . $e->getMessage());
-        }
 
-        return $user;
+            return $user;
+        });
     }
 
     /**
      * The user has been registered.
-     * Send verification email and DO NOT log the user in.
+     * Send verification email and log them in.
      * 
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\User  $user
@@ -147,11 +145,15 @@ class RegisterController extends Controller
      */
     protected function registered(Request $request, $user)
     {
+        // Log in the user (unverified state is okay)
+        auth()->login($user, remember: false);
+
         // Send email verification notification
         $user->sendEmailVerificationNotification();
 
-        // DO NOT log in the user - they must verify email first
-        // Redirect to /email/verify page
-        return redirect($this->redirectTo);
+        // Redirect to /email/verify page so user can check inbox
+        return redirect($this->redirectTo)
+            ->with('email', $user->email)
+            ->with('warning', 'A verification link has been sent to your email address.');
     }
 }

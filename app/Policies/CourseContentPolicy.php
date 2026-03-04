@@ -18,14 +18,20 @@ class CourseContentPolicy
     public function create(User $user, Course $course): bool
     {
         // Admin can always create
-        if ($user->hasRole('admin')) {
+        if ($user->user_type === 'admin') {
             return true;
         }
 
-        // Instructor can create content for courses they facilitate
-        if ($user->hasRole('instructor')) {
-            $facilitator = $user->instructor;
-            return $facilitator && $course->facilitator_id === $facilitator->id;
+        // Instructor can create content for courses they're assigned to
+        if ($user->user_type === 'instructor') {
+            $instructor = $user->instructor;
+            if (!$instructor) {
+                return false;
+            }
+            
+            return $course->instructors()
+                ->where('instructor_id', $instructor->id)
+                ->exists();
         }
 
         return false;
@@ -37,14 +43,20 @@ class CourseContentPolicy
     public function update(User $user, CourseContent $content): bool
     {
         // Admin can always update
-        if ($user->hasRole('admin')) {
+        if ($user->user_type === 'admin') {
             return true;
         }
 
-        // Instructor can update content for courses they facilitate
-        if ($user->hasRole('instructor')) {
-            $facilitator = $user->instructor;
-            return $facilitator && $content->course->facilitator_id === $facilitator->id;
+        // Instructor can update content for courses they're assigned to
+        if ($user->user_type === 'instructor') {
+            $instructor = $user->instructor;
+            if (!$instructor) {
+                return false;
+            }
+            
+            return $content->course->instructors()
+                ->where('instructor_id', $instructor->id)
+                ->exists();
         }
 
         return false;
@@ -56,14 +68,20 @@ class CourseContentPolicy
     public function delete(User $user, CourseContent $content): bool
     {
         // Admin can always delete
-        if ($user->hasRole('admin')) {
+        if ($user->user_type === 'admin') {
             return true;
         }
 
-        // Instructor can delete content for courses they facilitate
-        if ($user->hasRole('instructor')) {
-            $facilitator = $user->instructor;
-            return $facilitator && $content->course->facilitator_id === $facilitator->id;
+        // Instructor can delete content for courses they're assigned to
+        if ($user->user_type === 'instructor') {
+            $instructor = $user->instructor;
+            if (!$instructor) {
+                return false;
+            }
+            
+            return $content->course->instructors()
+                ->where('instructor_id', $instructor->id)
+                ->exists();
         }
 
         return false;
@@ -75,7 +93,7 @@ class CourseContentPolicy
     public function viewAny(User $user): bool
     {
         // Admin and instructors can view course contents
-        return $user->hasRole(['admin', 'instructor']);
+        return in_array($user->user_type, ['admin', 'instructor']);
     }
 
     /**
@@ -84,16 +102,23 @@ class CourseContentPolicy
     public function view(User $user, CourseContent $content): bool
     {
         // Admin can always view
-        if ($user->hasRole('admin')) {
+        if ($user->user_type === 'admin') {
             return true;
         }
 
-        // Instructor can view content for courses they facilitate
-        if ($user->hasRole('instructor')) {
-            $facilitator = $user->instructor;
-            return $facilitator && $content->course->facilitator_id === $facilitator->id;
+        // Instructor can view content for courses they're assigned to
+        if ($user->user_type === 'instructor') {
+            $instructor = $user->instructor;
+            if (!$instructor) {
+                return false;
+            }
+            
+            return $content->course->instructors()
+                ->where('instructor_id', $instructor->id)
+                ->exists();
         }
 
         return false;
     }
 }
+

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Service;
+use App\Models\HomepageSetting;
 use Illuminate\Http\Request;
 
 class ServiceController extends Controller
@@ -12,6 +13,12 @@ class ServiceController extends Controller
      */
     public function index()
     {
+        // Check if services page is enabled
+        $showServices = HomepageSetting::getSetting('visibility', 'show_services', true);
+        if (!$showServices) {
+            abort(404, 'Services page is not available.');
+        }
+        
         $services = Service::published()->orderBy('created_at', 'desc')->get();
         return view('services.index', compact('services'));
     }

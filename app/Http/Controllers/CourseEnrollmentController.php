@@ -130,15 +130,26 @@ class CourseEnrollmentController extends Controller
     /**
      * Admin: View all enrollments
      */
-    public function adminIndex()
+    public function adminIndex(Course $course = null)
     {
-        $this->authorize('isAdmin');
+        if ($course) {
+            // Tutor viewing enrollments for their course
+            $this->authorize('viewEnrollees', $course);
+            $enrollments = $course->enrollees()
+                ->with('user')
+                ->orderBy('created_at', 'desc')
+                ->paginate(20);
+        } else {
+            // Admin viewing all enrollments
+            if (auth()->user()->user_type !== 'admin') {
+                abort(403);
+            }
+            $enrollments = CourseEnrollee::with('user', 'course', 'courseDate', 'venue')
+                ->orderBy('created_at', 'desc')
+                ->paginate(20);
+        }
 
-        $enrollments = CourseEnrollee::with('user', 'course', 'courseDate', 'venue')
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
-
-        return view('admin.course-enrollments.index', compact('enrollments'));
+        return view('admin.course-enrollments.index', compact('enrollments', 'course'));
     }
 
     /**
@@ -146,7 +157,8 @@ class CourseEnrollmentController extends Controller
      */
     public function adminShow(CourseEnrollee $enrollment)
     {
-        $this->authorize('isAdmin');
+        // Check if user can view this course's enrollments
+        $this->authorize('viewEnrollees', $enrollment->course);
 
         $enrollment->load('user', 'course', 'courseDate', 'venue');
 
@@ -158,7 +170,8 @@ class CourseEnrollmentController extends Controller
      */
     public function adminUpdate(Request $request, CourseEnrollee $enrollment)
     {
-        $this->authorize('isAdmin');
+        // Check if user can update this course's enrollments
+        $this->authorize('update', $enrollment->course);
 
         $validated = $request->validate([
             'status' => 'required|in:pending,active,completed,cancelled',

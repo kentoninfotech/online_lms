@@ -13,7 +13,7 @@ class LessonPolicy
      */
     public function before(User $user, string $ability)
     {
-        if ($user->hasRole('admin')) {
+        if ($user->user_type === 'admin') {
             return true;
         }
         return null; // Let individual methods decide
@@ -24,15 +24,26 @@ class LessonPolicy
      */
     public function view(User $user, Lesson $lesson)
     {
-        // Instructor can view all lessons (or their own)
-        if ($user->hasRole('instructor')) {
-            return true;
+        // Instructor can view lessons for courses they teach
+        if ($user->user_type === 'instructor') {
+            $instructor = $user->instructor;
+            if ($instructor && $lesson->course) {
+                return $lesson->course->instructors()
+                    ->where('instructor_id', $instructor->id)
+                    ->exists();
+            }
+            return false;
         }
 
-        // Student can view their own lessons
-        if ($user->hasRole('student')) {
-            $studentId = $user->student ? $user->student->id : null;
-            return $studentId && $lesson->student_id === $studentId;
+        // Student can view lessons in their enrolled courses
+        if ($user->user_type === 'student') {
+            $student = $user->student;
+            if ($student && $lesson->course) {
+                return $lesson->course->enrollees()
+                    ->where('student_id', $student->id)
+                    ->exists();
+            }
+            return false;
         }
 
         return false;
@@ -43,7 +54,7 @@ class LessonPolicy
      */
     public function create(User $user)
     {
-        return $user->hasRole('admin') || $user->hasRole('instructor');
+        return in_array($user->user_type, ['admin', 'instructor']);
     }
 
     /**
@@ -52,17 +63,19 @@ class LessonPolicy
     public function update(User $user, Lesson $lesson)
     {
         // Only instructors can update lessons (admins already handled by before())
-        if (!$user->hasRole('instructor')) {
+        if ($user->user_type !== 'instructor') {
             return false;
         }
 
-        // Allow any instructor to edit any lesson
-        // If you want to restrict to only their own lessons, implement the check below:
-        // $instructorId = $user->instructor?->id;
-        // if (!$instructorId) return false;
-        // return $lesson->instructor_id === $instructorId;
+        // Check if instructor teaches the course this lesson belongs to
+        $instructor = $user->instructor;
+        if (!$instructor || !$lesson->course) {
+            return false;
+        }
 
-        return true;
+        return $lesson->course->instructors()
+            ->where('instructor_id', $instructor->id)
+            ->exists();
     }
 
     /**
@@ -71,11 +84,18 @@ class LessonPolicy
     public function delete(User $user, Lesson $lesson): bool
     {
         // Only instructors can delete lessons (admins already handled by before())
-        if (!$user->hasRole('instructor')) {
+        if ($user->user_type !== 'instructor') {
             return false;
         }
 
-        // Allow any instructor to delete any lesson
-        return true;
+        // Check if instructor teaches the course this lesson belongs to
+        $instructor = $user->instructor;
+        if (!$instructor || !$lesson->course) {
+            return false;
+        }
+
+return $lesson->course->instructors()
+            ->where('instructor_id', $instructor->id)
+            ->exists();
     }
 }

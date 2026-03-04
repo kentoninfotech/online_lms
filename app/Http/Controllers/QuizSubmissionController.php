@@ -15,7 +15,7 @@ class QuizSubmissionController extends Controller
      */
     public function submissions(Course $course, CourseQuiz $quiz)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('manageQuizzes', $course);
 
         $submissions = QuizSubmission::where('quiz_id', $quiz->id)
             ->with(['courseEnrollee.user', 'answers.question'])
@@ -30,7 +30,7 @@ class QuizSubmissionController extends Controller
      */
     public function viewSubmission(Course $course, CourseQuiz $quiz, QuizSubmission $submission)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('manageQuizzes', $course);
 
         $submission->load(['courseEnrollee.user', 'answers.question', 'answers']);
 
@@ -42,7 +42,7 @@ class QuizSubmissionController extends Controller
      */
     public function markReviewed(Request $request, Course $course, CourseQuiz $quiz, QuizSubmission $submission)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('manageQuizzes', $course);
 
         $validated = $request->validate([
             'score' => 'required|integer|min:0|max:100',
@@ -81,7 +81,7 @@ class QuizSubmissionController extends Controller
      */
     public function saveFeedback(Request $request, Course $course, CourseQuiz $quiz, QuizSubmission $submission)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('manageQuizzes', $course);
 
         $validated = $request->validate([
             'feedback' => 'nullable|string',

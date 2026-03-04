@@ -16,7 +16,7 @@
         </a>
         <ul class="pc-submenu">
             <li class="pc-item">
-                <a href="{{ route('courses.index') }}" class="pc-link">All Courses</a>
+                <a href="{{ route('tutor.my-courses') }}" class="pc-link">All Courses</a>
             </li>
             <li class="pc-item">
                 <a href="{{ route('instructor.lessons') }}" class="pc-link">My Lessons</a>

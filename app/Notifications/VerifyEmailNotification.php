@@ -2,17 +2,13 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\URL;
 
-class VerifyEmailNotification extends Notification implements ShouldQueue
+class VerifyEmailNotification extends Notification
 {
-    use Queueable;
-
     /**
      * Get the notification's delivery channels.
      *
@@ -60,7 +56,7 @@ class VerifyEmailNotification extends Notification implements ShouldQueue
     protected function verificationUrl($notifiable)
     {
         return URL::temporarySignedRoute(
-            'email.verify',
+            'verification.verify',
             Carbon::now()->addHours(24),
             [
                 'id' => $notifiable->getKey(),

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Models\Instructor;
+use App\Models\Course;
 use App\Models\LessonOccurrence;
 use App\Models\RescheduleRequest;
 use App\Models\Attendance;
@@ -15,7 +17,17 @@ class InstructorDashboardController extends Controller
 {
     public function index(AttendanceService $attendanceService)
     {
-        $instructor = Auth::user()->instructor;
+        $user = Auth::user();
+        $instructor = $user->instructor;
+
+        // If instructor record doesn't exist, create it
+        if (!$instructor) {
+            $instructor = Instructor::create([
+                'user_id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ]);
+        }
 
         // FOR DEMO PURPOSE REMOVE LATER
         $students = Student::all();
@@ -82,6 +94,45 @@ class InstructorDashboardController extends Controller
             'recentAttendance',
             'notifications',
             'lessonsThisMonth',
+        ));
+    }
+
+    /**
+     * Display all courses assigned to the instructor for management
+     */
+    public function myCourses()
+    {
+        $user = Auth::user();
+        $instructor = $user->instructor;
+
+        // If instructor record doesn't exist, create it
+        if (!$instructor) {
+            $instructor = Instructor::create([
+                'user_id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ]);
+        }
+
+        // Get all courses assigned to this instructor with pagination
+        $courses = $instructor->courses()
+            ->with(['category', 'activeInstructors', 'enrollees'])
+            ->paginate(12);
+
+        // Get stats
+        $totalCourses = $instructor->courses()->count();
+        $activeCourses = $instructor->activeCourses()->count();
+        $totalEnrollees = $instructor->courses()
+            ->withCount('enrollees')
+            ->get()
+            ->sum('enrollees_count');
+
+        return view('dashboard.instructor.my-courses', compact(
+            'instructor',
+            'courses',
+            'totalCourses',
+            'activeCourses',
+            'totalEnrollees'
         ));
     }
 }

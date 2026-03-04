@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('parents', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->unique()->constrained('users')->onDelete('cascade');
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('email')->nullable();
             $table->string('number')->nullable();
             $table->string('address')->nullable();
             $table->string('profile')->nullable()->default('profile.png');

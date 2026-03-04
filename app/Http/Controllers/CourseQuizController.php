@@ -120,7 +120,7 @@ class CourseQuizController extends Controller
      */
     public function adminIndex(Course $course)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('manageQuizzes', $course);
 
         $quizzes = $course->quizzes()->withCount('questions')->get();
 
@@ -132,7 +132,7 @@ class CourseQuizController extends Controller
      */
     public function adminShow(Course $course, CourseQuiz $quiz)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('manageQuizzes', $course);
 
         $questions = $quiz->questions()->withCount('answers')->get();
 
@@ -144,7 +144,7 @@ class CourseQuizController extends Controller
      */
     public function adminCreate(Course $course)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('manageQuizzes', $course);
 
         return view('admin.course-quizzes.create', compact('course'));
     }
@@ -154,7 +154,7 @@ class CourseQuizController extends Controller
      */
     public function adminStore(Request $request, Course $course)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('manageQuizzes', $course);
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -180,7 +180,7 @@ class CourseQuizController extends Controller
      */
     public function adminEdit(Course $course, CourseQuiz $quiz)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('manageQuizzes', $course);
 
         return view('admin.course-quizzes.edit', compact('course', 'quiz'));
     }
@@ -190,7 +190,7 @@ class CourseQuizController extends Controller
      */
     public function adminUpdate(Request $request, Course $course, CourseQuiz $quiz)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('manageQuizzes', $course);
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -215,7 +215,7 @@ class CourseQuizController extends Controller
      */
     public function adminDestroy(Course $course, CourseQuiz $quiz)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('manageQuizzes', $course);
 
         $quiz->delete();
 
@@ -228,7 +228,9 @@ class CourseQuizController extends Controller
      */
     public function adminListAll()
     {
-        $this->authorize('isAdmin');
+        if (auth()->user()->user_type !== 'admin') {
+            abort(403);
+        }
 
         $quizzes = CourseQuiz::with('course')
             ->orderBy('created_at', 'desc')
@@ -242,7 +244,9 @@ class CourseQuizController extends Controller
      */
     public function adminViewQuiz(CourseQuiz $quiz)
     {
-        $this->authorize('isAdmin');
+        if (auth()->user()->user_type !== 'admin') {
+            abort(403);
+        }
 
         $questions = $quiz->questions()->get();
 
@@ -254,7 +258,9 @@ class CourseQuizController extends Controller
      */
     public function adminListSubmissions()
     {
-        $this->authorize('isAdmin');
+        if (auth()->user()->user_type !== 'admin') {
+            abort(403);
+        }
 
         $submissions = QuizSubmission::with('quiz', 'enrollee.user')
             ->orderBy('created_at', 'desc')

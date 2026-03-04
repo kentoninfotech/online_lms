@@ -135,7 +135,7 @@ class CourseContentController extends Controller
      */
     public function adminIndex(Course $course)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('createContent', $course);
 
         $contents = $course->contents()->orderBy('sequence', 'asc')->get();
 
@@ -147,7 +147,7 @@ class CourseContentController extends Controller
      */
     public function adminShow(Course $course, CourseContent $content)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('view', $content);
 
         return view('admin.course-contents.show', compact('course', 'content'));
     }
@@ -157,7 +157,7 @@ class CourseContentController extends Controller
      */
     public function adminCreate(Course $course)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('createContent', $course);
         
         // Get available prerequisites (other content in this course)
         $courseContents = $course->contents()->get();
@@ -170,7 +170,7 @@ class CourseContentController extends Controller
      */
     public function adminStore(Request $request, Course $course)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('createContent', $course);
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -210,7 +210,7 @@ class CourseContentController extends Controller
      */
     public function adminEdit(Course $course, CourseContent $content)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('update', $content);
         
         // Get available prerequisites (other content in this course, excluding this one)
         $courseContents = $course->contents()->where('id', '!=', $content->id)->get();
@@ -223,7 +223,7 @@ class CourseContentController extends Controller
      */
     public function adminUpdate(Request $request, Course $course, CourseContent $content)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('update', $content);
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -265,7 +265,7 @@ class CourseContentController extends Controller
      */
     public function adminDestroy(Course $course, CourseContent $content)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('delete', $content);
 
         if ($content->file_path) {
             if (file_exists(public_path($content->file_path))) {
@@ -284,7 +284,9 @@ class CourseContentController extends Controller
      */
     public function adminListAll()
     {
-        $this->authorize('isAdmin');
+        if (auth()->user()->user_type !== 'admin') {
+            abort(403);
+        }
 
         $contents = CourseContent::with('course')
             ->orderBy('created_at', 'desc')
@@ -298,7 +300,9 @@ class CourseContentController extends Controller
      */
     public function adminViewContent(CourseContent $content)
     {
-        $this->authorize('isAdmin');
+        if (auth()->user()->user_type !== 'admin') {
+            abort(403);
+        }
 
         return view('admin.learning-content.show', compact('content'));
     }

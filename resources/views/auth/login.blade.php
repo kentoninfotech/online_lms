@@ -12,12 +12,40 @@
             <p>Login to your account to access all courses</p>
         </div>
 
+        <!-- Success Messages -->
+        @if (session()->has('verified') || session()->has('resent'))
+            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <strong>✓ Success!</strong><br>
+                {{ session('verified') ?? session('resent') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
         <!-- Error Messages -->
         @if ($errors->has('error') || session()->has('error'))
-            <div class="alert alert-warning alert-dismissible fade show mb-4" role="alert">
-                <i class="bi bi-exclamation-circle me-2"></i>
-                <strong>Oops!</strong><br>
+            <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <strong>Email Verification Required!</strong><br>
                 {{ $errors->first('error') ?? session('error') }}
+                <hr style="margin: 0.75rem 0;">
+                <p style="margin: 0.5rem 0 0 0;">
+                    <form method="POST" action="{{ route('email.public-resend') }}" style="display: inline;">
+                        @csrf
+                        <input type="hidden" name="email" value="{{ old('email') }}">
+                        <button type="submit" class="alert-link fw-semibold" style="background: none; border: none; padding: 0; cursor: pointer; color: inherit; text-decoration: underline;">Click here to resend verification email</button>
+                    </form>
+                </p>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        <!-- Resend Error Messages -->
+        @if ($errors->has('email'))
+            <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <strong>Email Not Found!</strong><br>
+                {{ $errors->first('email') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
@@ -66,7 +94,7 @@
 
             <!-- Remember & Forgot Password -->
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
-                <div class="form-check">
+                <div class="form-check" title="Keep you logged in for 30 days on this device">
                     <input 
                         class="form-check-input" 
                         type="checkbox" 
@@ -74,8 +102,8 @@
                         id="remember" 
                         {{ old('remember') ? 'checked' : '' }}
                     />
-                    <label class="form-check-label" for="remember">
-                        Remember me
+                    <label class="form-check-label" for="remember" style="cursor: pointer; margin-bottom: 0;">
+                        <i class="bi bi-clock-history me-1" style="font-size: 0.95rem;"></i>Remember me
                     </label>
                 </div>
                 @if (Route::has('password.request'))

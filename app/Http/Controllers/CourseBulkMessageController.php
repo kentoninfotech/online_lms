@@ -18,10 +18,8 @@ class CourseBulkMessageController extends Controller
      */
     public function create(Course $course)
     {
-        // Check if user is admin or course tutor
-        if (!Auth::user()->hasRole('admin') && $course->facilitator_id !== Auth::id()) {
-            abort(403, 'Unauthorized');
-        }
+        // Check if user can update the course
+        $this->authorize('update', $course);
 
         $enrolleeCount = $course->enrollees()->where('status', 'active')->count();
 
@@ -34,9 +32,7 @@ class CourseBulkMessageController extends Controller
     public function store(Request $request, Course $course)
     {
         // Check authorization
-        if (!Auth::user()->hasRole('admin') && $course->facilitator_id !== Auth::id()) {
-            abort(403, 'Unauthorized');
-        }
+        $this->authorize('update', $course);
 
         $validated = $request->validate([
             'subject' => 'required|string|max:255',
@@ -103,9 +99,7 @@ class CourseBulkMessageController extends Controller
     public function history(Course $course)
     {
         // Check authorization
-        if (!Auth::user()->hasRole('admin') && $course->facilitator_id !== Auth::id()) {
-            abort(403, 'Unauthorized');
-        }
+        $this->authorize('update', $course);
 
         $messages = $course->bulkMessages()
             ->with('sender', 'recipients')
@@ -120,9 +114,7 @@ class CourseBulkMessageController extends Controller
     public function show(CourseBulkMessage $message)
     {
         // Check authorization
-        if (!Auth::user()->hasRole('admin') && $message->sender_id !== Auth::id()) {
-            abort(403, 'Unauthorized');
-        }
+        $this->authorize('update', $message->course);
 
         $message->load('course', 'sender', 'recipients');
         $sentCount = $message->recipients()->where('status', 'sent')->count();
@@ -137,9 +129,7 @@ class CourseBulkMessageController extends Controller
     public function send(CourseBulkMessage $message)
     {
         // Check authorization
-        if (!Auth::user()->hasRole('admin') && $message->sender_id !== Auth::id()) {
-            abort(403, 'Unauthorized');
-        }
+        $this->authorize('update', $message->course);
 
         // Only allow sending scheduled messages
         if ($message->status !== 'scheduled') {

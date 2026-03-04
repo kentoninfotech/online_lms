@@ -73,6 +73,26 @@ class Course extends Model
     }
 
     /**
+     * Get all instructors assigned to manage this course
+     */
+    public function instructors(): BelongsToMany
+    {
+        return $this->belongsToMany(Instructor::class, 'instructor_course')
+            ->withPivot('role', 'bio', 'order', 'can_manage_content', 'can_manage_enrollees', 'can_manage_quizzes', 'is_active')
+            ->orderBy('instructor_course.order')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get only active instructors for this course
+     */
+    public function activeInstructors(): BelongsToMany
+    {
+        return $this->instructors()
+            ->wherePivot('is_active', true);
+    }
+
+    /**
      * Get all dates for this course
      */
     public function courseDates(): HasMany

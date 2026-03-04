@@ -74,4 +74,6 @@ class InstructorStudentController extends Controller
 
         return view('dashboard.instructor.reschedules', compact('requests'));
     }
+
+    
 }

@@ -84,6 +84,8 @@ Route::post('/webhooks/zoom', [ZoomWebhookController::class, 'handle']);
 Route::middleware(['auth', 'verified'])->group(function () {
     Route:: get('/student/{student}', [StudentController::class, 'show'])->name('show.student');
     Route:: get('/parent/{parent}', [ParentController::class, 'show'])->name('show.parent');
+    // Tutor routes - more specific routes must come before parameterized ones
+    Route::get('/tutor/my-courses', [InstructorDashboardController::class, 'myCourses'])->middleware('role:instructor')->name('tutor.my-courses');
     Route:: get('/instructor/{instructor}', [InstructorController::class, 'show'])->name('show.instructor');
     // USER ROUTE
     Route::get('/users/{user}/edit/{role}', [UserController::class, 'edit'])->name('users.edit');
@@ -208,10 +210,10 @@ Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
 // INSTRUCTOR ROUTES
 // ------------------------------
 Route::middleware(['auth', 'verified', 'role:instructor'])->group(function () {
-    Route::get('dashboard/instructor', [InstructorDashboardController::class, 'index'])->name('instructor.dashboard');
-    Route::get('instructors/lessons', [InstructorLessonController::class, 'lessons'])->name('instructor.lessons');
-    Route::get('instructors/students', [InstructorStudentController::class, 'students'])->name('instructor.students');
-    Route::get('instructors/reschedules', [InstructorStudentController::class, 'reschedules'])->name('instructor.reschedules');
+    Route::get('/dashboard/instructor', [InstructorDashboardController::class, 'index'])->name('instructor.dashboard');
+    Route::get('/instructors/lessons', [InstructorLessonController::class, 'lessons'])->name('instructor.lessons');
+    Route::get('/instructors/students', [InstructorStudentController::class, 'students'])->name('instructor.students');
+    Route::get('/instructors/reschedules', [InstructorStudentController::class, 'reschedules'])->name('instructor.reschedules');
     // FIX/CREATE ROUTE CONTROLLER METHOD
     Route::get('/instructor/settings', [InstructorLessonController::class, 'settings'])->name('instructor.settings');
 });
@@ -233,6 +235,9 @@ Route::middleware(['auth', 'verified', 'role:parent'])->group(function () {
 });
 
 Auth::routes(['verify' => true]);
+
+// Public email resend route (for users who haven't verified yet)
+Route::post('/email/public-resend', [\App\Http\Controllers\Auth\PublicEmailResendController::class, 'resend'])->name('email.public-resend');
 
 Route::get('/', function() {
     // Check if user is authenticated
@@ -531,5 +536,77 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::put('/carousel/{id}/update', [\App\Http\Controllers\Admin\CarouselController::class, 'update'])->name('carousel.update');
     Route::delete('/carousel/{id}/delete', [\App\Http\Controllers\Admin\CarouselController::class, 'destroy'])->name('carousel.destroy');
     Route::post('/carousel/reorder', [\App\Http\Controllers\Admin\CarouselController::class, 'reorder'])->name('carousel.reorder');
+});
+
+// ========================================
+// TUTOR/INSTRUCTOR COURSE MANAGEMENT ROUTES
+// ========================================
+Route::middleware(['auth', 'verified', 'role:instructor'])->prefix('tutor')->name('tutor.')->group(function () {
+    // Course Management
+    Route::get('/courses', [CourseController::class, 'adminIndex'])->name('courses.index');
+    Route::get('/courses/create', [CourseController::class, 'adminCreate'])->name('courses.create');
+    Route::post('/courses', [CourseController::class, 'adminStore'])->name('courses.store');
+    Route::get('/courses/{course}', [CourseController::class, 'adminShow'])->name('courses.show');
+    Route::get('/courses/{course}/edit', [CourseController::class, 'adminEdit'])->name('courses.edit');
+    Route::put('/courses/{course}', [CourseController::class, 'adminUpdate'])->name('courses.update');
+    Route::delete('/courses/{course}', [CourseController::class, 'adminDestroy'])->name('courses.destroy');
+
+    // Course Content
+    Route::get('/courses/{course}/content', [CourseContentController::class, 'adminIndex'])->name('course-contents.index');
+    Route::get('/courses/{course}/content/create', [CourseContentController::class, 'adminCreate'])->name('course-contents.create');
+    Route::post('/courses/{course}/content', [CourseContentController::class, 'adminStore'])->name('course-contents.store');
+    Route::get('/courses/{course}/content/{content}', [CourseContentController::class, 'adminShow'])->name('course-contents.show');
+    Route::get('/courses/{course}/content/{content}/edit', [CourseContentController::class, 'adminEdit'])->name('course-contents.edit');
+    Route::put('/courses/{course}/content/{content}', [CourseContentController::class, 'adminUpdate'])->name('course-contents.update');
+    Route::delete('/courses/{course}/content/{content}', [CourseContentController::class, 'adminDestroy'])->name('course-contents.destroy');
+
+    // Course Quizzes
+    Route::get('/courses/{course}/quiz', [CourseQuizController::class, 'adminIndex'])->name('course-quizzes.index');
+    Route::get('/courses/{course}/quiz/create', [CourseQuizController::class, 'adminCreate'])->name('course-quizzes.create');
+    Route::post('/courses/{course}/quiz', [CourseQuizController::class, 'adminStore'])->name('course-quizzes.store');
+    Route::get('/courses/{course}/quiz/{quiz}', [CourseQuizController::class, 'adminShow'])->name('course-quizzes.show');
+    Route::get('/courses/{course}/quiz/{quiz}/edit', [CourseQuizController::class, 'adminEdit'])->name('course-quizzes.edit');
+    Route::put('/courses/{course}/quiz/{quiz}', [CourseQuizController::class, 'adminUpdate'])->name('course-quizzes.update');
+    Route::delete('/courses/{course}/quiz/{quiz}', [CourseQuizController::class, 'adminDestroy'])->name('course-quizzes.destroy');
+
+    // Quiz Questions
+    Route::get('/courses/{course}/quiz/{quiz}/questions', [QuizQuestionController::class, 'index'])->name('quiz-questions.index');
+    Route::post('/courses/{course}/quiz/{quiz}/questions', [QuizQuestionController::class, 'store'])->name('quiz-questions.store');
+    Route::put('/courses/{course}/quiz/{quiz}/questions/{question}', [QuizQuestionController::class, 'update'])->name('quiz-questions.update');
+    Route::delete('/courses/{course}/quiz/{quiz}/questions/{question}', [QuizQuestionController::class, 'destroy'])->name('quiz-questions.destroy');
+
+    // Quiz Submissions & Grading
+    Route::get('/courses/{course}/quiz/{quiz}/submissions', [QuizSubmissionController::class, 'submissions'])->name('course-quizzes.submissions');
+    Route::get('/courses/{course}/quiz/{quiz}/submissions/{submission}', [QuizSubmissionController::class, 'viewSubmission'])->name('quiz.view-submission');
+    Route::post('/courses/{course}/quiz/{quiz}/submissions/{submission}/review', [QuizSubmissionController::class, 'markReviewed'])->name('quiz.mark-reviewed');
+    Route::post('/courses/{course}/quiz/{quiz}/submissions/{submission}/feedback', [QuizSubmissionController::class, 'saveFeedback'])->name('quiz.save-feedback');
+
+    // Live Sessions
+    Route::get('/courses/{course}/live-session', [LiveSessionController::class, 'adminIndex'])->name('live-sessions.index');
+    Route::get('/courses/{course}/live-session/create', [LiveSessionController::class, 'adminCreate'])->name('live-sessions.create');
+    Route::post('/courses/{course}/live-session', [LiveSessionController::class, 'adminStore'])->name('live-sessions.store');
+    Route::get('/courses/{course}/live-session/{session}', [LiveSessionController::class, 'adminShow'])->name('live-sessions.show');
+    Route::get('/courses/{course}/live-session/{session}/edit', [LiveSessionController::class, 'adminEdit'])->name('live-sessions.edit');
+    Route::put('/courses/{course}/live-session/{session}', [LiveSessionController::class, 'adminUpdate'])->name('live-sessions.update');
+    Route::delete('/courses/{course}/live-session/{session}', [LiveSessionController::class, 'adminDestroy'])->name('live-sessions.destroy');
+
+    // Enrollments
+    Route::get('/courses/{course}/enrollments', [CourseEnrollmentController::class, 'adminIndex'])->name('course-enrollments.index');
+    Route::get('/course-enrollments/{enrollment}', [CourseEnrollmentController::class, 'adminShow'])->name('course-enrollments.show');
+    Route::put('/course-enrollments/{enrollment}', [CourseEnrollmentController::class, 'adminUpdate'])->name('course-enrollments.update');
+
+    // Discussions
+    Route::get('/courses/{course}/discussions', [CourseDiscussionController::class, 'adminIndex'])->name('discussions.index');
+    Route::get('/discussions/{discussion}', [CourseDiscussionController::class, 'adminShow'])->name('discussions.show');
+    Route::post('/discussions/{discussion}/pin', [CourseDiscussionController::class, 'togglePin'])->name('discussions.pin');
+    Route::post('/discussions/{discussion}/lock', [CourseDiscussionController::class, 'toggleLock'])->name('discussions.lock');
+    Route::delete('/discussions/{discussion}', [CourseDiscussionController::class, 'adminDestroy'])->name('discussions.destroy');
+
+    // Announcements
+    Route::get('/courses/{course}/announcement/create', [CourseBulkMessageController::class, 'create'])->name('course.announcement.create');
+    Route::post('/courses/{course}/announcement', [CourseBulkMessageController::class, 'store'])->name('course.announcement.store');
+    Route::get('/courses/{course}/announcement/history', [CourseBulkMessageController::class, 'history'])->name('course.announcement.history');
+    Route::get('/announcement/{message}', [CourseBulkMessageController::class, 'show'])->name('course.announcement.show');
+    Route::post('/announcement/{message}/send', [CourseBulkMessageController::class, 'send'])->name('course.announcement.send');
 });
 

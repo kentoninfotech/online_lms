@@ -15,6 +15,7 @@ class HomepageSettingController extends Controller
     {
         $sections = HomepageSetting::getAllSections();
         $availableSections = [
+            'visibility' => 'Page Visibility Settings',
             'hero' => 'Hero Section',
             'about' => 'About Us Section',
             'features' => 'Why Choose Us Features',
@@ -37,9 +38,15 @@ class HomepageSettingController extends Controller
      */
     public function editSection($section)
     {
+        // Special handling for visibility section
+        if ($section === 'visibility') {
+            return view('admin.homepage-settings.visibility');
+        }
+
         $settings = HomepageSetting::getSection($section);
         
         $sectionLabels = [
+            'visibility' => 'Page Visibility Settings',
             'hero' => 'Hero Section',
             'about' => 'About Us Section',
             'features' => 'Why Choose Us Features',

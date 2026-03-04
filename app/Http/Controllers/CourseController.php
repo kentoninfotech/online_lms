@@ -171,11 +171,22 @@ class CourseController extends Controller
      */
     public function adminIndex()
     {
-        $this->authorize('isAdmin');
-
-        $courses = Course::with('category', 'facilitator')
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
+        // Admin can view all courses, instructor can view their own
+        if (auth()->user()->user_type === 'admin') {
+            $courses = Course::with('category', 'facilitator')
+                ->orderBy('created_at', 'desc')
+                ->paginate(15);
+        } else {
+            // Instructors see only their assigned courses
+            $instructor = auth()->user()->instructor;
+            if (!$instructor) {
+                return abort(403);
+            }
+            $courses = $instructor->courses()
+                ->with('category', 'facilitator')
+                ->orderBy('created_at', 'desc')
+                ->paginate(15);
+        }
 
         return view('admin.courses.index', compact('courses'));
     }
@@ -185,7 +196,10 @@ class CourseController extends Controller
      */
     public function adminCreate()
     {
-        $this->authorize('isAdmin');
+        // Only admin and instructor can create courses
+        if (!in_array(auth()->user()->user_type, ['admin', 'instructor'])) {
+            abort(403);
+        }
 
         $categories = CourseCategory::where('is_active', true)->get();
         // Get only facilitators who are registered tutors (have user_type = 'instructor')
@@ -201,7 +215,10 @@ class CourseController extends Controller
      */
     public function adminStore(Request $request)
     {
-        $this->authorize('isAdmin');
+        // Only admin and instructor can create courses
+        if (!in_array(auth()->user()->user_type, ['admin', 'instructor'])) {
+            abort(403);
+        }
 
         $validated = $request->validate([
             'code' => 'required|string|unique:courses',
@@ -289,6 +306,9 @@ class CourseController extends Controller
         // Attach facilitators to course
         if (!empty($facilitatorIds)) {
             $course->facilitators()->attach($facilitatorIds);
+            
+            // Also auto-assign facilitators as instructors
+            $this->assignFacilitatorsAsInstructors($course, $facilitatorIds);
         }
 
         // Create course dates and venues
@@ -331,7 +351,7 @@ class CourseController extends Controller
      */
     public function adminEdit(Course $course)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('update', $course);
 
         $categories = CourseCategory::where('is_active', true)->get();
         // Get only facilitators who are registered tutors (have user_type = 'instructor')
@@ -350,7 +370,7 @@ class CourseController extends Controller
      */
     public function adminUpdate(Request $request, Course $course)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('update', $course);
 
         $validated = $request->validate([
             'code' => 'required|string|unique:courses,code,' . $course->id,
@@ -434,6 +454,11 @@ class CourseController extends Controller
 
         // Sync facilitators to course
         $course->facilitators()->sync($facilitatorIds);
+        
+        // Also auto-assign facilitators as instructors
+        if (!empty($facilitatorIds)) {
+            $this->assignFacilitatorsAsInstructors($course, $facilitatorIds);
+        }
 
         // Update course dates and venues
         // Delete all existing dates and venues for this course
@@ -479,7 +504,7 @@ class CourseController extends Controller
      */
     public function adminShow(Course $course)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('view', $course);
 
         $course->load('category', 'facilitator', 'courseDates.venues', 'enrollees');
 
@@ -491,7 +516,7 @@ class CourseController extends Controller
      */
     public function adminDestroy(Course $course)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('delete', $course);
 
         $course->delete();
 
@@ -579,7 +604,7 @@ class CourseController extends Controller
      */
     public function generateVenuesForCourse(Course $course)
     {
-        $this->authorize('isAdmin');
+        $this->authorize('update', $course);
 
         $venues = ['Lagos', 'Abuja', 'Port Harcourt', 'Nasarawa', 'Bauchi'];
 
@@ -698,4 +723,48 @@ class CourseController extends Controller
             ], 500);
         }
     }
-}
+
+    /**
+     * Helper method to assign facilitators as instructors in the instructor_course pivot table
+     * This allows instructors to see the course in their "My Courses" dashboard
+     */
+    private function assignFacilitatorsAsInstructors(Course $course, array $facilitatorIds)
+    {
+        try {
+            // Get all facilitators with their user relationships
+            $facilitators = \App\Models\Facilitator::whereIn('id', $facilitatorIds)
+                ->with('user')
+                ->get();
+
+            // For each facilitator, find or create corresponding instructor and attach to course
+            foreach ($facilitators as $facilitator) {
+                if (!$facilitator->user) {
+                    continue; // Skip if no user associated
+                }
+
+                // Find or create instructor for this user
+                $instructor = \App\Models\Instructor::firstOrCreate(
+                    ['user_id' => $facilitator->user_id],
+                    [
+                        'name' => $facilitator->user->name ?? $facilitator->name,
+                        'email' => $facilitator->user->email ?? $facilitator->email,
+                        'bio' => $facilitator->bio,
+                    ]
+                );
+
+                // Attach instructor to course with default settings (only if not already attached)
+                if (!$course->instructors()->where('instructor_id', $instructor->id)->exists()) {
+                    $course->instructors()->attach($instructor->id, [
+                        'role' => 'lead', // Default role
+                        'can_manage_content' => true,
+                        'can_manage_quizzes' => true,
+                        'can_manage_enrollees' => false,
+                        'is_active' => true,
+                    ]);
+                }
+            }
+        } catch (\Exception $e) {
+            \Log::error('Failed to assign facilitators as instructors: ' . $e->getMessage());
+            // Don't fail the course creation/update if instructor assignment fails
+        }
+    }}

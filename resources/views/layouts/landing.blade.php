@@ -908,7 +908,7 @@
                  background-attachment: fixed;
                  @endif
                  opacity: {{ ($designSettings['main_bg_opacity'] ?? 100) / 100 }};">
-        @yield('content', '<section style="background-color: ' . $designSettings['container_bg_color'] . '; padding: 2rem 0;"><div class="container-lg"></div></section>')
+        @yield('content')
     </main>
 
     <!-- Footer -->

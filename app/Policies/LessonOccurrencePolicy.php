@@ -13,9 +13,34 @@ class LessonOccurrencePolicy
      */
     public function view(User $user, LessonOccurrence $occurrence): bool
     {
-        return $user->hasRole('admin') ||
-            $occurrence->lesson->instructor_id === $user->instructor->id ||
-            $occurrence->lesson->student_id === optional($user->student)->id;
+        // Admin can always view
+        if ($user->user_type === 'admin') {
+            return true;
+        }
+
+        // Instructor can view if they teach the course the lesson belongs to
+        if ($user->user_type === 'instructor') {
+            $instructor = $user->instructor;
+            if ($instructor && $occurrence->lesson && $occurrence->lesson->course) {
+                return $occurrence->lesson->course->instructors()
+                    ->where('instructor_id', $instructor->id)
+                    ->exists();
+            }
+            return false;
+        }
+
+        // Student can view if they're enrolled in the course
+        if ($user->user_type === 'student') {
+            $student = $user->student;
+            if ($student && $occurrence->lesson && $occurrence->lesson->course) {
+                return $occurrence->lesson->course->enrollees()
+                    ->where('student_id', $student->id)
+                    ->exists();
+            }
+            return false;
+        }
+
+        return false;
     }
 
     /**
