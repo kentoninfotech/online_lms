@@ -33,9 +33,8 @@
                                 <th>Student</th>
                                 <th>Course</th>
                                 <th>Enrollment Date</th>
-                                <th>Start Date</th>
-                                <th>End Date</th>
                                 <th>Status</th>
+                                <th>Payment Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -43,39 +42,81 @@
                             @forelse($enrollments as $enrollment)
                                 <tr>
                                     <td>
-                                        <strong>{{ $enrollment->student->user->name ?? 'Unknown' }}</strong><br>
-                                        <small class="text-muted">{{ $enrollment->student->user->email ?? '-' }}</small>
+                                        <strong>{{ $enrollment->user?->name ?? 'Unknown' }}</strong><br>
+                                        <small class="text-muted">{{ $enrollment->user?->email ?? '-' }}</small>
                                     </td>
                                     <td>
-                                        {{ $enrollment->course->title ?? 'Deleted' }}
+                                        <a href="{{ route('admin.courses.show', $enrollment->course) }}">
+                                            {{ $enrollment->course->title ?? 'Deleted' }}
+                                        </a>
                                     </td>
                                     <td>
                                         {{ $enrollment->created_at?->format('M d, Y') }}
                                     </td>
                                     <td>
-                                        {{ $enrollment->start_date?->format('M d, Y') }}
+                                        @php
+                                            $statusColors = [
+                                                'pending' => 'warning',
+                                                'active' => 'success',
+                                                'completed' => 'info',
+                                                'cancelled' => 'danger'
+                                            ];
+                                            $status = $enrollment->status ?? 'pending';
+                                            $color = $statusColors[$status] ?? 'secondary';
+                                        @endphp
+                                        <span class="badge bg-{{ $color }}">{{ ucfirst($status) }}</span>
                                     </td>
                                     <td>
-                                        {{ $enrollment->end_date?->format('M d, Y') }}
-                                    </td>
-                                    <td>
-                                        @if($enrollment->is_active)
-                                            <span class="badge bg-success">Active</span>
-                                        @else
-                                            <span class="badge bg-secondary">Inactive</span>
-                                        @endif
+                                        @php
+                                            $paymentStatusColors = [
+                                                'pending' => 'warning',
+                                                'completed' => 'success',
+                                                'failed' => 'danger'
+                                            ];
+                                            $paymentStatus = $enrollment->payment_status ?? 'pending';
+                                            $paymentColor = $paymentStatusColors[$paymentStatus] ?? 'secondary';
+                                        @endphp
+                                        <span class="badge bg-{{ $paymentColor }}">{{ ucfirst($paymentStatus) }}</span>
                                     </td>
                                     <td>
                                         <div class="btn-group btn-group-sm" role="group">
-                                            <a href="#" class="btn btn-outline-info" title="View Details">
+                                            <a href="{{ route('admin.course-enrollments.show', $enrollment) }}" class="btn btn-outline-info" title="View Details">
                                                 <i class="bi bi-eye"></i>
                                             </a>
+                                            <button type="button" class="btn btn-outline-danger" title="Delete Enrollment" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $enrollment->id }}">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
+
+                                <!-- Delete Modal -->
+                                <div class="modal fade" id="deleteModal{{ $enrollment->id }}" tabindex="-1">
+                                    <div class="modal-dialog modal-sm">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Delete Enrollment?</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p class="mb-0">
+                                                    Are you sure you want to delete this enrollment for <strong>{{ $enrollment->user->name }}</strong> in <strong>{{ $enrollment->course->title }}</strong>?
+                                                </p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                                                <form action="{{ route('admin.course-enrollments.destroy', $enrollment) }}" method="POST" style="display: inline;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center text-muted py-4">
+                                    <td colspan="6" class="text-center text-muted py-4">
                                         <i class="bi bi-inbox" style="font-size: 2rem; opacity: 0.5;"></i>
                                         <p class="mt-2">No enrollments found.</p>
                                     </td>

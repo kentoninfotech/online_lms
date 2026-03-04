@@ -220,4 +220,24 @@ class CourseEnrollmentController extends Controller
             )
             ->with('success', 'Enrollment status updated successfully.');
     }
+
+    /**
+     * Admin: Delete enrollment
+     */
+    public function adminDestroy(CourseEnrollee $enrollment)
+    {
+        // Check if user can update this course's enrollments
+        $this->authorize('update', $enrollment->course);
+
+        $courseName = $enrollment->course?->title ?? 'Unknown Course';
+        $studentName = $enrollment->user?->name ?? 'Unknown Student';
+        
+        // Soft delete the enrollment
+        $enrollment->delete();
+
+        return redirect()->route(
+                auth()->user()->user_type === 'instructor' ? 'tutor.course-enrollments.index' : 'admin.course-enrollments.index'
+            )
+            ->with('success', "Enrollment for {$studentName} in {$courseName} has been deleted successfully.");
+    }
 }

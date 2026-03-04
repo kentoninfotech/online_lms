@@ -454,6 +454,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::get('/course-enrollments', [CourseEnrollmentController::class, 'adminIndex'])->name('course-enrollments.index');
     Route::get('/course-enrollments/{enrollment}', [CourseEnrollmentController::class, 'adminShow'])->name('course-enrollments.show');
     Route::put('/course-enrollments/{enrollment}', [CourseEnrollmentController::class, 'adminUpdate'])->name('course-enrollments.update');
+    Route::delete('/course-enrollments/{enrollment}', [CourseEnrollmentController::class, 'adminDestroy'])->name('course-enrollments.destroy');
 
     // Payments (Course Enrollment Payments)
     Route::get('/course-payments', [CoursePaymentController::class, 'adminIndex'])->name('course-payments.index');
@@ -594,6 +595,7 @@ Route::middleware(['auth', 'verified', 'role:instructor'])->prefix('tutor')->nam
     Route::get('/courses/{course}/enrollments', [CourseEnrollmentController::class, 'adminIndex'])->name('course-enrollments.index');
     Route::get('/course-enrollments/{enrollment}', [CourseEnrollmentController::class, 'adminShow'])->name('course-enrollments.show');
     Route::put('/course-enrollments/{enrollment}', [CourseEnrollmentController::class, 'adminUpdate'])->name('course-enrollments.update');
+    Route::delete('/course-enrollments/{enrollment}', [CourseEnrollmentController::class, 'adminDestroy'])->name('course-enrollments.destroy');
 
     // Discussions
     Route::get('/courses/{course}/discussions', [CourseDiscussionController::class, 'adminIndex'])->name('discussions.index');

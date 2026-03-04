@@ -161,12 +161,12 @@
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title">Enrollment Status</h5>
+                    <h5 class="card-title">Enrollment Actions</h5>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
                         <label class="form-label text-muted">Current Status</label>
-                        <div>
+                        <div class="mb-3">
                             @php
                                 $status = $enrollment->status ?? 'pending';
                             @endphp
@@ -176,45 +176,73 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label text-muted">Progress</label>
-                        @php
-                            $progress = $enrollment->progress ?? 0;
-                        @endphp
-                        <div>
-                            <div class="progress" style="height: 24px;">
-                                <div class="progress-bar bg-{{ $progress >= 75 ? 'success' : ($progress >= 50 ? 'info' : ($progress >= 25 ? 'warning' : 'danger')) }}" 
-                                     role="progressbar" 
-                                     style="width: {{ $progress }}%" 
-                                     aria-valuenow="{{ $progress }}" 
-                                     aria-valuemin="0" 
-                                     aria-valuemax="100">
-                                    {{ $progress }}%
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <hr>
 
-                    <form action="{{ route('admin.course-enrollments.update', $enrollment) }}" method="POST" class="mb-3">
-                        @csrf
-                        @method('PUT')
-                        
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Update Status</label>
-                            <select name="status" class="form-select form-select-sm">
+                    <!-- Status Update Form -->
+                    <div class="mb-4">
+                        <p class="text-muted small mb-2">Update Enrollment Status</p>
+                        <form action="{{ route('admin.course-enrollments.update', $enrollment) }}" method="POST" class="mb-2">
+                            @csrf
+                            @method('PUT')
+                            
+                            <select name="status" class="form-select form-select-sm mb-2">
                                 <option value="pending" {{ ($enrollment->status ?? 'pending') === 'pending' ? 'selected' : '' }}>Pending</option>
                                 <option value="active" {{ ($enrollment->status ?? 'pending') === 'active' ? 'selected' : '' }}>Active</option>
                                 <option value="completed" {{ ($enrollment->status ?? 'pending') === 'completed' ? 'selected' : '' }}>Completed</option>
                                 <option value="cancelled" {{ ($enrollment->status ?? 'pending') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                             </select>
-                        </div>
 
-                        <button type="submit" class="btn btn-primary btn-sm w-100">
-                            <i class="bi bi-check-circle me-2"></i>Update Status
-                        </button>
-                    </form>
+                            <button type="submit" class="btn btn-primary btn-sm w-100">
+                                <i class="bi bi-check-circle me-2"></i>Update Status
+                            </button>
+                        </form>
+                    </div>
+
+                    <hr>
+
+                    <!-- Quick Action Buttons -->
+                    <div class="mb-4">
+                        <p class="text-muted small mb-2">Quick Actions</p>
+                        
+                        @if(($enrollment->status ?? 'pending') !== 'active')
+                            <form action="{{ route('admin.course-enrollments.update', $enrollment) }}" method="POST" class="mb-2">
+                                @csrf
+                                @method('PUT')
+                                <input type="hidden" name="status" value="active">
+                                <button type="submit" class="btn btn-success btn-sm w-100">
+                                    <i class="bi bi-check-circle me-2"></i>Activate
+                                </button>
+                            </form>
+                        @else
+                            <button type="button" class="btn btn-success btn-sm w-100" disabled>
+                                <i class="bi bi-check-circle me-2"></i>Active
+                            </button>
+                        @endif
+
+                        @if(($enrollment->status ?? 'pending') !== 'cancelled')
+                            <form action="{{ route('admin.course-enrollments.update', $enrollment) }}" method="POST" class="mb-2">
+                                @csrf
+                                @method('PUT')
+                                <input type="hidden" name="status" value="cancelled">
+                                <button type="submit" class="btn btn-warning btn-sm w-100">
+                                    <i class="bi bi-pause-circle me-2"></i>Suspend
+                                </button>
+                            </form>
+                        @else
+                            <button type="button" class="btn btn-warning btn-sm w-100" disabled>
+                                <i class="bi bi-pause-circle me-2"></i>Suspended
+                            </button>
+                        @endif
+                    </div>
+
+                    <hr>
+
+                    <!-- Delete Button -->
+                    <button type="button" class="btn btn-danger btn-sm w-100" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <i class="bi bi-trash me-2"></i>Delete Enrollment
+                    </button>
+
+                    <hr>
 
                     <div class="d-grid">
                         <a href="{{ route('admin.course-enrollments.index') }}" class="btn btn-outline-secondary btn-sm">
@@ -234,6 +262,36 @@
 
                     <label class="form-label text-muted">Last Updated</label>
                     <div>{{ $enrollment->updated_at->format('M d, Y H:i') }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Delete Enrollment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3">
+                        <strong>Are you sure you want to delete this enrollment?</strong>
+                    </p>
+                    <div class="alert alert-warning" role="alert">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        This action will delete the enrollment for <strong>{{ $enrollment->user->name }}</strong> in <strong>{{ $enrollment->course->title }}</strong>. 
+                        This cannot be undone.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="{{ route('admin.course-enrollments.destroy', $enrollment) }}" method="POST" style="display: inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">Delete Enrollment</button>
+                    </form>
                 </div>
             </div>
         </div>
