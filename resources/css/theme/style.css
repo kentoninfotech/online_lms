@@ -6200,13 +6200,59 @@ textarea.form-control-lg {
 
 .carousel-caption {
   position: absolute;
-  right: 15%;
-  bottom: 1.25rem;
-  left: 15%;
-  padding-top: 1.25rem;
-  padding-bottom: 1.25rem;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  left: auto;
+  width: auto;
+  max-width: none;
+  padding: 0.25rem 0.4rem;
   color: #ffffff;
-  text-align: center;
+  text-align: left;
+  font-size: 0.6rem;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.carousel-caption h1,
+.carousel-caption h2,
+.carousel-caption h3,
+.carousel-caption h4,
+.carousel-caption h5,
+.carousel-caption h6 {
+  font-size: 0.65rem !important;
+  margin: 0 !important;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: normal;
+}
+
+.carousel-caption p {
+  font-size: 0.55rem;
+  margin: 0 !important;
+  line-height: 1;
+  white-space: normal;
+}
+
+.carousel-caption .btn {
+  padding: 0.2rem 0.4rem !important;
+  font-size: 0.5rem !important;
+  height: auto;
+  line-height: 1.2;
+}
+
+.carousel-caption .btn-lg,
+.carousel-caption .btn-primary {
+  padding: 0.2rem 0.4rem !important;
+  font-size: 0.5rem !important;
+}
+
+.carousel-caption .display-3,
+.carousel-caption .lead {
+  font-size: inherit !important;
+  margin: 0 !important;
 }
 
 .carousel-dark .carousel-control-prev-icon,

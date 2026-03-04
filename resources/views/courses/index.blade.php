@@ -37,10 +37,10 @@
             @foreach($carouselImages as $key => $image)
                 <div class="carousel-item @if($key == 0) active @endif h-100">
                     <img src="{{ asset($image->image_path) }}" class="d-block w-100 h-100 object-fit-cover" alt="{{ $image->value }}">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h1 class="display-3 fw-bold text-white" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
+                    <div class="carousel-caption d-none d-md-block" style="padding: 2px !important; width: 50% !important; margin: auto; bottom: 50px">
+                        <h3 class="fw-bold text-white" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
                             {{ $image->value }}
-                        </h1>
+                        </h3>
                         @if($image->description)
                             <p class="lead text-white" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
                                 {{ $image->description }}
