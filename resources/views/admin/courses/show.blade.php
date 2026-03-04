@@ -219,25 +219,27 @@
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
-                        <a href="{{ route('admin.course-contents.index', $course) }}" class="btn btn-outline-primary btn-sm">
+                        <a href="{{ route(auth()->user()->user_type === 'instructor' ? 'tutor.course-contents.index' : 'admin.course-contents.index', $course) }}" class="btn btn-outline-primary btn-sm">
                             <i class="bi bi-book-fill me-2"></i>Manage Content
                         </a>
-                        <a href="{{ route('admin.live-sessions.create', $course) }}" class="btn btn-outline-success btn-sm">
+                        <a href="{{ route(auth()->user()->user_type === 'instructor' ? 'tutor.live-sessions.create' : 'admin.live-sessions.create', $course) }}" class="btn btn-outline-success btn-sm">
                             <i class="bi bi-camera-video me-2"></i>Create Live Session
                         </a>
-                        <a href="{{ route('admin.course-quizzes.index', $course) }}" class="btn btn-outline-primary btn-sm">
+                        <a href="{{ route(auth()->user()->user_type === 'instructor' ? 'tutor.course-quizzes.index' : 'admin.course-quizzes.index', $course) }}" class="btn btn-outline-primary btn-sm">
                             <i class="bi bi-question-circle me-2"></i>Manage Quizzes
                         </a>
                         <a href="#" class="btn btn-outline-primary btn-sm">
                             <i class="bi bi-chat-dots me-2"></i>Discussions
                         </a>
-                        <form action="{{ auth()->user()->user_type === 'instructor' ? route('tutor.courses.destroy', $course) : route('admin.courses.destroy', $course) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure? This will delete the course and all associated content.');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-outline-danger btn-sm w-100">
-                                <i class="bi bi-trash me-2"></i>Delete Course
-                            </button>
-                        </form>
+                        @if(auth()->user()->user_type === 'admin')
+                            <form action="{{ auth()->user()->user_type === 'instructor' ? route('tutor.courses.destroy', $course) : route('admin.courses.destroy', $course) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure? This will delete the course and all associated content.');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                    <i class="bi bi-trash me-2"></i>Delete Course
+                                </button>
+                            </form>
+                        @endif
                     </div>
                 </div>
             </div>

@@ -347,6 +347,51 @@
     </div> <!-- row end -->
    
 </div>
+
+<!-- Report Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Lesson Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="reportForm">
+                @csrf
+                <input type="hidden" id="attendanceId" name="attendance_id">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="reportContent" class="form-label">Report <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="reportContent" name="report" rows="6" placeholder="Enter your lesson report here..." required></textarea>
+                        <small class="text-muted">Include notes about student performance, topics covered, and any observations.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- View Report Modal -->
+<div class="modal fade" id="viewReportModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">View Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="reportContent2" style="white-space: pre-wrap; word-wrap: break-word;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 
@@ -412,50 +457,7 @@
 
 </script>
 
-<!-- Report Modal -->
-<div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Lesson Report</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="reportForm">
-                @csrf
-                <input type="hidden" id="attendanceId" name="attendance_id">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="reportContent" class="form-label">Report <span class="text-danger">*</span></label>
-                        <textarea class="form-control" id="reportContent" name="report" rows="6" placeholder="Enter your lesson report here..." required></textarea>
-                        <small class="text-muted">Include notes about student performance, topics covered, and any observations.</small>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Report</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
-<!-- View Report Modal -->
-<div class="modal fade" id="viewReportModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">View Report</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="reportContent2" style="white-space: pre-wrap; word-wrap: break-word;"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

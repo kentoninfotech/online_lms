@@ -11,10 +11,15 @@
                 <p class="text-muted">{{ $course->title }}</p>
             </div>
             <div class="col-auto">
-                <a href="{{ route('admin.course-contents.edit', [$course, $content]) }}" class="btn btn-primary">
+                @php
+                    $isInstructor = auth()->user()->user_type === 'instructor';
+                    $editRoute = $isInstructor ? route('tutor.course-contents.edit', [$course, $content]) : route('admin.course-contents.edit', [$course, $content]);
+                    $backRoute = $isInstructor ? route('tutor.course-contents.index', $course) : route('admin.course-contents.index', $course);
+                @endphp
+                <a href="{{ $editRoute }}" class="btn btn-primary">
                     <i class="bi bi-pencil me-2"></i>Edit
                 </a>
-                <a href="{{ route('admin.course-contents.index', $course) }}" class="btn btn-secondary">
+                <a href="{{ $backRoute }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left me-2"></i>Back
                 </a>
             </div>
@@ -125,10 +130,15 @@
                     <hr>
 
                     <div class="d-grid gap-2">
-                        <a href="{{ route('admin.course-contents.edit', [$course, $content]) }}" class="btn btn-primary">
+                        @php
+                            $isInstructor = auth()->user()->user_type === 'instructor';
+                            $editRoute = $isInstructor ? route('tutor.course-contents.edit', [$course, $content]) : route('admin.course-contents.edit', [$course, $content]);
+                            $destroyRoute = $isInstructor ? route('tutor.course-contents.destroy', [$course, $content]) : route('admin.course-contents.destroy', [$course, $content]);
+                        @endphp
+                        <a href="{{ $editRoute }}" class="btn btn-primary">
                             <i class="bi bi-pencil me-2"></i>Edit Content
                         </a>
-                        <form action="{{ route('admin.course-contents.destroy', [$course, $content]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this content?');">
+                        <form action="{{ $destroyRoute }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this content?');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-outline-danger w-100">
