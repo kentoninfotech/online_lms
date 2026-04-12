@@ -14,7 +14,10 @@
     <meta name="author" content="{{ \App\Models\HomepageSetting::getSetting('branding', 'site_name') ?? 'LMS Inc' }}"/>
 
     <!-- [Favicon] icon -->
-    <link rel="icon" href="{{ asset('assets/images/favicon.png') }}" type="image/x-icon" />
+    @php
+        $favicon = \App\Models\HomepageSetting::getImagePath('branding', 'favicon') ?? asset('assets/images/favicon.png');
+    @endphp
+    <link rel="icon" href="{{ $favicon }}" type="image/x-icon" />
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />

@@ -14,7 +14,10 @@
     <meta name="author" content="Online Class Management System"/>
 
     <!-- [Favicon] icon -->
-    <link rel="icon" href="{{ asset('assets/images/favicon.png') }}" type="image/x-icon" />
+    @php
+        $favicon = \App\Models\HomepageSetting::getImagePath('branding', 'favicon') ?? asset('assets/images/favicon.png');
+    @endphp
+    <link rel="icon" href="{{ $favicon }}" type="image/x-icon" />
     
     <!-- [Bootstrap] icon -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
