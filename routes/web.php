@@ -129,6 +129,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/payments', [AdminDashboardController::class, 'payments'])->name('admin.payments');
     Route::get('/admin/reschedules', [AdminDashboardController::class, 'reschedules'])->name('admin.reschedules');
     Route::get('/admin/subscriptions', [AdminDashboardController::class, 'subscriptions'])->name('admin.subscriptions');
+    Route::get('/admin/statistics', [AdminDashboardController::class, 'statistics'])->name('admin.statistics');
+    Route::get('/admin/statistics/download-pdf', [AdminDashboardController::class, 'downloadStatisticsPdf'])->name('admin.statistics.pdf');
     Route::post('/admin/subscriptions/{subscription}/active', [SubscriptionController::class, 'activate'])->name('subscriptions.activate');
     Route::post('/admin/subscriptions/{subscription}/cancel', [SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
     Route::patch('/admin/subscriptions/{subscription}/update-dates', [SubscriptionController::class, 'updateDates'])->name('subscriptions.update-dates');

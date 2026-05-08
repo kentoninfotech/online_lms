@@ -5,7 +5,12 @@
 @section('content')
 <!-- <div class="row"> -->
 <div class="container">
-    <h5>Welcome back {{ Auth::user()->name }}</h5>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5>Welcome back {{ Auth::user()->name }}</h5>
+        <a href="{{ route('admin.statistics') }}" class="btn btn-info btn-sm">
+            <i class="bi bi-bar-chart"></i> View Statistics
+        </a>
+    </div>
 
     <div class="row">
         <!-- [col-8] start -->
