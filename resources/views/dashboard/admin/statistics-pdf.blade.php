@@ -228,14 +228,6 @@
                 <td>Expired Subscriptions</td>
                 <td style="text-align: right; color: #dc3545;"><strong>{{ $expiredSubscriptions }}</strong></td>
             </tr>
-            <tr>
-                <td>Pending Payments</td>
-                <td style="text-align: right; color: #ffc107;"><strong>{{ $pendingPayments }}</strong></td>
-            </tr>
-            <tr style="background-color: #f0f0f0;">
-                <td><strong>Total Revenue</strong></td>
-                <td style="text-align: right;"><strong>₦{{ number_format($totalRevenue, 2) }}</strong></td>
-            </tr>
         </table>
     </div>
 
