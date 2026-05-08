@@ -135,7 +135,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>Virtual Academy - Admin Statistics Report</h1>
+        <h1>The Virtual Academy - Admin Statistics Report</h1>
         <p>Generated on {{ now()->format('F j, Y \a\t g:i A') }}</p>
     </div>
 
