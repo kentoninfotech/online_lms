@@ -35,6 +35,12 @@
         </a>
     </li>
     <li class="pc-item">
+        <a href="{{ route('admin.attendances') }}" class="pc-link">
+            <span class="pc-micon"><i class="bi bi-clipboard-check" style="color: #330952;"></i></span>
+            <span class="pc-mtext">Attendances</span>
+        </a>
+    </li>
+    <li class="pc-item">
         <a href="{{ route('admin.reschedules') }}" class="pc-link">
             <span class="pc-micon"><i class="bi bi-calendar-week-fill" style="color: #330952;"></i></span>
             <span class="pc-mtext">Reschedule Request</span>
@@ -64,6 +70,13 @@
         <a href="{{ route('admin.plans') }}" class="pc-link">
             <span class="pc-micon"><i class="fa fa-clipboard-list" style="color: #330952;"></i></span>
             <span class="pc-mtext">Plans</span>
+        </a>
+    </li>
+
+    <li class="pc-item">
+        <a href="{{ route('admin.statistics') }}" class="pc-link">
+            <span class="pc-micon"><i class="bi bi-bar-chart-fill" style="color: #f0c221;"></i></span>
+            <span class="pc-mtext">Statistics</span>
         </a>
     </li>
 

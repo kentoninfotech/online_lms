@@ -167,6 +167,56 @@
                 </div>
             </div>
 
+            <!-- Recent Attendances -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>Recent Attendances</span>
+                    <a href="{{ route('admin.attendances') }}" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body table-responsive">
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>Attendable</th>
+                                <th>Type</th>
+                                <th>Subject</th>
+                                <th>Duration</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($recentAttendances as $attendance)
+                                <tr>
+                                    <td>
+                                        <small>{{ $attendance->attendable?->name ?? 'N/A' }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ class_basename($attendance->attendable_type) }}</span>
+                                    </td>
+                                    <td>
+                                        <small>{{ $attendance->occurrence?->lesson?->subject ?? '-' }}</small>
+                                    </td>
+                                    <td>
+                                        @if($attendance->duration_minutes)
+                                            <span class="badge bg-info">{{ $attendance->duration_minutes }}m</span>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ $attendance->status === 'present' ? 'success' : ($attendance->status === 'absent' ? 'danger' : 'warning') }}">
+                                            {{ ucfirst($attendance->status) }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="5" class="text-center text-muted">No recent attendances.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         
         </div><!-- [col-8] end -->
 

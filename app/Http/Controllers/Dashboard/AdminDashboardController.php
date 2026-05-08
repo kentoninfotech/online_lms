@@ -46,6 +46,12 @@ class AdminDashboardController extends Controller
             ->take(5)
             ->get();
 
+        // Recent attendances
+        $recentAttendances = Attendance::with([
+            'occurrence.lesson.student',
+            'occurrence.lesson.instructor',
+            'attendable'
+        ])->latest()->take(5)->get();
 
         // Notifications
         $notifications = Auth::user()->notifications()->latest()->take(5)->get();
@@ -58,6 +64,7 @@ class AdminDashboardController extends Controller
             'upcomingLessons',
             'recentPayments',
             'pendingReschedules',
+            'recentAttendances',
             'notifications'
         ));
     }
@@ -254,6 +261,39 @@ class AdminDashboardController extends Controller
 
         $pdf = Pdf::loadView('dashboard.admin.statistics-pdf', $stats);
         return $pdf->download('admin-statistics-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+    public function attendances()
+    {
+        $status = request('status');
+        
+        $query = Attendance::with([
+            'occurrence.lesson.student',
+            'occurrence.lesson.instructor',
+            'attendable'
+        ])->latest();
+
+        if ($status && in_array($status, ['present', 'absent', 'late'])) {
+            $query->where('status', $status);
+        }
+
+        $attendances = $query->paginate(100);
+
+        return view('dashboard.admin.attendances', compact('attendances', 'status'));
+    }
+
+    public function bulkUpdateAttendances()
+    {
+        $ids = request('attendance_ids', []);
+        $status = request('status');
+
+        if (empty($ids) || !in_array($status, ['present', 'absent', 'late'])) {
+            return response()->json(['error' => 'Invalid data'], 422);
+        }
+
+        Attendance::whereIn('id', $ids)->update(['status' => $status]);
+
+        return response()->json(['success' => true, 'message' => 'Attendance updated successfully']);
     }
 
 }
