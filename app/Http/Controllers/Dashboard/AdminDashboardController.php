@@ -277,7 +277,7 @@ class AdminDashboardController extends Controller
             $query->where('status', $status);
         }
 
-        $attendances = $query->paginate(100);
+        $attendances = $query->paginate(500);
 
         return view('dashboard.admin.attendances', compact('attendances', 'status'));
     }
