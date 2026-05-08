@@ -291,7 +291,28 @@ class AdminDashboardController extends Controller
             return response()->json(['error' => 'Invalid data'], 422);
         }
 
-        Attendance::whereIn('id', $ids)->update(['status' => $status]);
+        $attendances = Attendance::whereIn('id', $ids)->with('occurrence')->get();
+
+        foreach ($attendances as $attendance) {
+            $updateData = ['status' => $status];
+
+            // If marking as present, auto-generate join/leave times
+            if ($status === 'present' && $attendance->occurrence) {
+                $joinTime = $attendance->occurrence->scheduled_start;
+                
+                // Subtract 2-5 minutes from lesson duration for leave time
+                $minutesToSubtract = rand(2, 5);
+                $lessonDuration = $attendance->occurrence->duration_minutes;
+                $leaveDuration = $lessonDuration - $minutesToSubtract;
+                $leaveTime = $joinTime->copy()->addMinutes($leaveDuration);
+                
+                $updateData['join_time'] = $joinTime;
+                $updateData['leave_time'] = $leaveTime;
+                $updateData['duration_minutes'] = $leaveDuration;
+            }
+
+            $attendance->update($updateData);
+        }
 
         return response()->json(['success' => true, 'message' => 'Attendance updated successfully']);
     }
