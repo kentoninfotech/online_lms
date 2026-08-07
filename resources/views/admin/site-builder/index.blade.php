@@ -63,6 +63,13 @@
                             </div>
                             <i class="bi bi-chevron-right text-primary"></i>
                         </a>
+                        <a href="{{ route('admin.site-builder.page-titles') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Page Titles</strong>
+                                <small class="d-block text-muted">Landing & page titles</small>
+                            </div>
+                            <i class="bi bi-chevron-right text-primary"></i>
+                        </a>
                     </div>
                 </div>
             </div>

@@ -110,7 +110,7 @@
         </div>
 
         <!-- Course Search Bar -->
-        <div class="mb-5" style="position: relative; z-index: 10;">
+        <div class="mb-5" style="position: relative; z-index: 5;">
             @include('components.course-search-bar', ['categoryId' => $activeCategory])
         </div>
 

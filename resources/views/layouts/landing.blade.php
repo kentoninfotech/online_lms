@@ -32,7 +32,7 @@
     <meta name="keywords" content="online learning, courses, education, professional development, training"/>
     <meta name="author" content="{{ $brandingSettings['site_name'] }}"/>
 
-<title>@yield('title', $brandingSettings['site_name'] . ' - Professional Online Learning Platform')</title>
+    <title>@yield('title', $brandingSettings['site_name'] . ' - Professional Online Learning Platform')</title>
 
     <!-- Favicon -->
     @php
@@ -81,7 +81,7 @@
             box-shadow: 0 2px 15px rgba(0,0,0,0.08);
             padding: 1rem 0;
             transition: all 0.3s ease;
-            z-index: 9999 !important;
+            z-index: 99999999 !important;
             top: 0 !important;
             position: fixed !important;
             width: 100% !important;
@@ -244,6 +244,10 @@
             margin-top: 0;
             border-radius: 8px;
             min-width: 200px;
+            z-index: 999999999999999;
+            margin-bottom: 20px;
+            height: 500px;
+            overflow: scroll;
         }
 
         .dropdown-submenu:hover > .dropdown-menu {

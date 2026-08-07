@@ -240,6 +240,8 @@
         </div>
     </div>
 </div>
+<!-- TinyMCE Editor -->
+<script src="https://cdn.tiny.cloud/1/{{ config('services.tinymce.api_key') }}/tinymce/7/tinymce.min.js"></script>
 
 <script>
 // Handle image preview
@@ -255,6 +257,14 @@ document.getElementById('featured_image').addEventListener('change', function(e)
         }
         reader.readAsDataURL(file);
     }
+});
+
+tinymce.init({
+    selector: '#body',
+    height: 400,
+    plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
 });
 
 // Drag and drop
