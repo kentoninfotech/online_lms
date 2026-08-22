@@ -28,9 +28,10 @@ class CourseCSVImportService
      * @param int $categoryId
      * @param string $fileExtension
      * @param string $csvFormat Either 'standard' or 'dates_venues'
+     * @param string $level The course level to assign to all imported courses
      * @return array
      */
-    public function import(string $filePath, int $categoryId, string $fileExtension = 'csv', string $csvFormat = 'standard'): array
+    public function import(string $filePath, int $categoryId, string $fileExtension = 'csv', string $csvFormat = 'standard', string $level = null): array
     {
         $category = CourseCategory::findOrFail($categoryId);
         
@@ -58,16 +59,16 @@ class CourseCSVImportService
 
         // Route to appropriate import method
         if ($csvFormat === 'dates_venues') {
-            return $this->importDatesVenuesFormat($rows, $category, $categoryId);
+            return $this->importDatesVenuesFormat($rows, $category, $categoryId, $level);
         } else {
-            return $this->importStandardFormat($rows, $category, $categoryId);
+            return $this->importStandardFormat($rows, $category, $categoryId, $level);
         }
     }
 
     /**
      * Import courses in standard format
      */
-    private function importStandardFormat(array $rows, CourseCategory $category, int $categoryId): array
+    private function importStandardFormat(array $rows, CourseCategory $category, int $categoryId, string $level = null): array
     {
         $imported = [];
         $errors = [];
@@ -107,7 +108,7 @@ class CourseCSVImportService
                 }
 
                 // Map row data to columns
-                $data = $this->mapStandardRowData($row, $columnMap, $categoryId);
+                $data = $this->mapStandardRowData($row, $columnMap, $categoryId, $level);
 
                 // Validate required fields
                 if (empty($data['code']) || empty($data['title'])) {
@@ -155,7 +156,7 @@ class CourseCSVImportService
     /**
      * Import courses in dates & venues format
      */
-    private function importDatesVenuesFormat(array $rows, CourseCategory $category, int $categoryId): array
+    private function importDatesVenuesFormat(array $rows, CourseCategory $category, int $categoryId, string $level = null): array
     {
         $imported = [];
         $errors = [];
@@ -227,12 +228,13 @@ class CourseCSVImportService
                 }
 
                 try {
-                    // Create course
+                    // Create course with initial fee (will be updated from venues if in dates_venues format)
                     $course = Course::create([
                         'code' => $code,
                         'title' => $title,
                         'category_id' => $categoryId,
-                        'fee' => $this->parseFee($feeStr),
+                        'level' => $level,
+                        'fee' => 0, // Will be set from venue fees
                         'currency' => 'NGN',
                         'is_active' => true,
                         'is_online' => false,
@@ -241,6 +243,7 @@ class CourseCSVImportService
                     ]);
                     
                     // Parse and create dates and venues
+                    // This will update the course fee from the first venue fee
                     $this->importDatesAndVenues($course, $datesString, $venuesString, $rowNum, $errors);
                     
                     $imported[] = [
@@ -283,40 +286,41 @@ class CourseCSVImportService
      * Single line: "23 - 27 Mar., 25 - 29 May, 13 - 17 Jul., 05 - 09 Oct., 2026"
      *              with venues: "Ibadan, Lagos, Bauchi, Nasarawa"
      * 
-     * Multi-line: "date1\ndate2\ndate3"
-     *             with venues: "venue1a, venue1b\nvenue2a, venue2b"
+     * Multi-line with fees: "date1\ndate2\ndate3"
+     *                       with venues: "VENUE1 – $FEE1\nVENUE2 – $FEE2"
      */
     private function importDatesAndVenues(Course $course, string $datesString, string $venuesString, int $rowNum, array &$errors): void
     {
-        // First, try to split by newlines (multi-line format)
+        // Parse dates
         $datesByNewline = array_filter(
             array_map('trim', preg_split('/\r\n|\r|\n/', $datesString)),
             fn($d) => !empty($d)
         );
         
-        // If we have newline-separated dates, use them
-        if (count($datesByNewline) > 1) {
-            $dates = $datesByNewline;
-            $venueLines = array_filter(
-                array_map('trim', preg_split('/\r\n|\r|\n/', $venuesString)),
-                fn($v) => !empty($v)
-            );
-        } else {
-            // Otherwise, parse as comma-separated dates on single line
-            // Need to be careful not to split on commas within date expressions like "13 - 17 Apr., 25 - 29 May"
-            $dates = $this->parseCommaSeparatedDates($datesString);
-            
-            // For venues, split by comma since they're simple venue names
-            $venueLines = [$this->parseCommaSeparatedVenues($venuesString)];
-        }
+        // Parse venues with fees (expecting "VENUE – $FEE" format)
+        $venuesByNewline = array_filter(
+            array_map('trim', preg_split('/\r\n|\r|\n/', $venuesString)),
+            fn($v) => !empty($v)
+        );
+        
+        $dates = !empty($datesByNewline) ? array_values($datesByNewline) : [];
+        $venuesWithFees = !empty($venuesByNewline) ? array_values($venuesByNewline) : [];
 
         if (empty($dates)) {
             $errors[] = "Row $rowNum: No valid dates found";
             return;
         }
 
+        // Extract venue data with fees
+        $venuesData = [];
+        foreach ($venuesWithFees as $venueEntry) {
+            $parsed = $this->parseVenueWithFee($venueEntry);
+            $venuesData[] = $parsed;
+        }
+
         // Track created venues for this course to prevent duplicates
         $createdVenues = [];
+        $firstFee = null;
 
         // For each date, create a CourseDate entry
         foreach ($dates as $sequence => $dateLabel) {
@@ -329,22 +333,17 @@ class CourseCSVImportService
                     'end_date' => null,
                 ]);
 
-                // Get venues for this sequence
-                $venuesForDate = [];
-                if (count($venueLines) === 1) {
-                    // Single venue line - split by comma and assign sequentially
-                    $allVenues = $venueLines[0];
-                    if ($sequence < count($allVenues)) {
-                        $venuesForDate = [$allVenues[$sequence]];
+                // Get venue data for this sequence
+                if ($sequence < count($venuesData)) {
+                    $venueData = $venuesData[$sequence];
+                    $venueName = $venueData['venue'];
+                    $venueFee = $venueData['fee'];
+                    
+                    // Store the first fee for the course record
+                    if ($firstFee === null && $venueFee !== null) {
+                        $firstFee = $venueFee;
                     }
-                } else if (isset($venueLines[$sequence])) {
-                    // Multiple venue lines - one per date
-                    $venuesForDate = $venueLines[$sequence];
-                }
-
-                // Create venue entries for this date (skip duplicates)
-                foreach ($venuesForDate as $venueName) {
-                    $venueName = trim($venueName);
+                    
                     // Normalize venue name for duplicate checking (case-insensitive)
                     $normalizedVenueKey = strtolower($venueName);
                     
@@ -353,6 +352,7 @@ class CourseCSVImportService
                         CourseVenue::create([
                             'course_date_id' => $courseDate->id,
                             'venue_name' => $venueName,
+                            'fee' => $venueFee,
                             'address' => null,
                             'city' => null,
                             'state' => null,
@@ -369,6 +369,42 @@ class CourseCSVImportService
                 $errors[] = "Row $rowNum: Error creating date/venue - " . $e->getMessage();
             }
         }
+        
+        // Update course fee from first venue fee if we have one
+        if ($firstFee !== null) {
+            $course->update(['fee' => $firstFee]);
+        }
+    }
+
+    /**
+     * Parse a venue entry in format: "VENUE – $FEE" or "VENUE - $FEE"
+     * Returns array with 'venue' and 'fee' keys
+     * 
+     * @param string $venueEntry e.g., "USA – $6,500"
+     * @return array ['venue' => 'USA', 'fee' => 6500.00]
+     */
+    private function parseVenueWithFee(string $venueEntry): array
+    {
+        $venueEntry = trim($venueEntry);
+        
+        // Try to match pattern: "VENUE – $FEE" or "VENUE - $FEE"
+        // The pattern looks for text followed by dash and optional dollar sign and number
+        if (preg_match('/^(.+?)\s*[-–]\s*\$?([\d,\.]+)/', $venueEntry, $matches)) {
+            $venue = trim($matches[1]);
+            $feeStr = trim($matches[2]);
+            $fee = floatval(str_replace(',', '', $feeStr));
+            
+            return [
+                'venue' => $venue,
+                'fee' => $fee
+            ];
+        }
+        
+        // If no fee pattern found, return venue name with null fee
+        return [
+            'venue' => $venueEntry,
+            'fee' => null
+        ];
     }
 
     /**
@@ -523,13 +559,37 @@ class CourseCSVImportService
      */
     private function readExcelFile(string $filePath): array
     {
-        // For now, return helpful message or use basic implementation
-        // In production, user can convert Excel to CSV or we install maatwebsite/excel
-        throw new \Exception(
-            "Excel file support requires installing a package.\n" .
-            "Please convert your .xlsx/.xls file to CSV format and try again.\n" .
-            "Or, ask your admin to install: composer require maatwebsite/excel"
-        );
+        try {
+            $rows = [];
+            
+            // Use PhpSpreadsheet if available
+            if (class_exists('PhpOffice\PhpSpreadsheet\IOFactory')) {
+                $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($filePath);
+                $sheet = $spreadsheet->getActiveSheet();
+                
+                foreach ($sheet->getRowIterator() as $row) {
+                    $rowData = [];
+                    foreach ($row->getCellIterator() as $cell) {
+                        $rowData[] = $cell->getValue();
+                    }
+                    $rows[] = $rowData;
+                }
+                
+                return $rows;
+            }
+            
+            // Fallback: try using basic CSV reading on Excel-generated temp CSV
+            // This is less ideal but works for basic cases
+            return $this->readCsvFile($filePath);
+            
+        } catch (\Exception $e) {
+            throw new \Exception(
+                "Excel file support requires PhpSpreadsheet.\n" .
+                "Install with: composer require phpoffice/phpspreadsheet\n" .
+                "Or convert your file to CSV format.\n" .
+                "Error: " . $e->getMessage()
+            );
+        }
     }
 
     /**
@@ -614,10 +674,11 @@ class CourseCSVImportService
     /**
      * Map row data for standard format
      */
-    private function mapStandardRowData(array $row, array $columnMap, int $categoryId): array
+    private function mapStandardRowData(array $row, array $columnMap, int $categoryId, string $level = null): array
     {
         $data = [
             'category_id' => $categoryId,
+            'level' => $level,
             'currency' => 'NGN',
             'is_active' => true,
             'is_online' => false,

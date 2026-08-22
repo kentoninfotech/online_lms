@@ -24,6 +24,7 @@ class CourseVenue extends Model
         'latitude',
         'longitude',
         'capacity',
+        'fee',
         'enrolled_count',
         'notes'
     ];
@@ -31,6 +32,7 @@ class CourseVenue extends Model
     protected $casts = [
         'latitude' => 'double',
         'longitude' => 'double',
+        'fee' => 'decimal:2',
     ];
 
     /**

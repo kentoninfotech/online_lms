@@ -81,6 +81,20 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="level" class="form-label">Course Level <span class="text-danger">*</span></label>
+                            <select class="form-select @error('level') is-invalid @enderror" id="level" name="level" required>
+                                <option value="" selected disabled>-- Select a level --</option>
+                                <option value="local" {{ old('level') == 'local' ? 'selected' : '' }}>Local</option>
+                                <option value="international" {{ old('level') == 'international' ? 'selected' : '' }}>International</option>
+                                <option value="diploma" {{ old('level') == 'diploma' ? 'selected' : '' }}>Diploma</option>
+                            </select>
+                            <small class="form-text text-muted">All imported courses will be assigned to this level</small>
+                            @error('level')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
                             <label class="form-label">CSV Format <span class="text-danger">*</span></label>
                             <div class="form-check">
                                 <input class="form-check-input format-radio" type="radio" name="csv_format" id="format_standard" value="standard" {{ old('csv_format', 'standard') === 'standard' ? 'checked' : '' }}>

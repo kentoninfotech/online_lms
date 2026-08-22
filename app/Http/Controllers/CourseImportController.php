@@ -36,6 +36,7 @@ class CourseImportController extends Controller
         $validated = $request->validate([
             'file' => 'required|file|mimes:csv,txt,xlsx,xls',
             'category_id' => 'required|exists:course_categories,id',
+            'level' => 'required|in:local,international,diploma',
             'csv_format' => 'required|in:standard,dates_venues'
         ]);
 
@@ -51,7 +52,8 @@ class CourseImportController extends Controller
                 $filePath,
                 $validated['category_id'],
                 $fileExt,
-                $validated['csv_format']
+                $validated['csv_format'],
+                $validated['level']
             );
 
             if ($result['imported'] > 0) {
