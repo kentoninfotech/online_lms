@@ -48,7 +48,22 @@
             @forelse($subscriptions as $sub)
                 <tr>
                     <td>{{ $sub->student->name }}</td>
-                    <td>{{ $sub->plan->name }}</td>
+                    <td>
+                        <form action="{{ route('subscriptions.change-plan', $sub) }}" method="post" class="d-inline-flex align-items-center gap-2">
+                            @csrf
+                            @method('patch')
+                            <select name="plan_id" class="form-select form-select-sm" style="width: auto;" onchange="if(confirm('Change subscription plan to this plan?')) this.form.submit(); else this.value='{{ $sub->plan_id }}';">
+                                @php
+                                    $plans = \App\Models\Plan::all();
+                                @endphp
+                                @foreach($plans as $plan)
+                                    <option value="{{ $plan->id }}" {{ $sub->plan_id === $plan->id ? 'selected' : '' }}>
+                                        {{ $plan->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </form>
+                    </td>
                     <td>
                         <span class="badge bg-{{ $sub->status === 'active' ? 'primary' : ($sub->status === 'pending' ? 'warning' : 'danger') }}">
                             {{ ucfirst($sub->status) }}

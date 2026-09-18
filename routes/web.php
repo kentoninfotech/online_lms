@@ -74,6 +74,11 @@ Route::middleware(['auth'])->group(function () {
     // Add Subscription
     Route::get('/subscriptions/{student}', [SubscriptionController::class, 'create'])->name('subscription.create');
     Route::post('/subscriptions/{student}/{plan}/store', [SubscriptionController::class, 'store'])->name('subscription.store');
+    // Parent/Student Relationship Routes
+    Route::post('/student/{student}/add-parent', [UserController::class, 'addParentToStudent'])->name('student.add-parent');
+    Route::delete('/student/{student}/parent/{parent}', [UserController::class, 'removeParentFromStudent'])->name('student.remove-parent');
+    Route::post('/parent/{parent}/add-child', [UserController::class, 'addChildToParent'])->name('parent.add-child');
+    Route::delete('/parent/{parent}/child/{student}', [UserController::class, 'removeChildFromParent'])->name('parent.remove-child');
     // LESSON ROUTE
     Route::get('/lesson/add', [LessonController::class, 'create'])->name('lesson.create');
     Route::get('/lesson/{lesson}/edit', [LessonController::class, 'edit'])->name('lesson.edit');
@@ -132,6 +137,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/subscriptions/{subscription}/active', [SubscriptionController::class, 'activate'])->name('subscriptions.activate');
     Route::post('/admin/subscriptions/{subscription}/cancel', [SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
     Route::patch('/admin/subscriptions/{subscription}/update-dates', [SubscriptionController::class, 'updateDates'])->name('subscriptions.update-dates');
+    Route::patch('/admin/subscriptions/{subscription}/change-plan', [SubscriptionController::class, 'changePlan'])->name('subscriptions.change-plan');
     Route::get('/admin/plans', [PlanController::class, 'plans'])->name('admin.plans');
     Route::post('/admin/plans/create', [PlanController::class, 'create'])->name('plan.create');
     Route::put('/admin/plans/{plan}', [PlanController::class, 'update'])->name('plan.update');

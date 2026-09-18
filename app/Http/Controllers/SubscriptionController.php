@@ -104,4 +104,33 @@ class SubscriptionController extends Controller
                 ->back()
                 ->with('success', 'Subscription dates updated successfully.');
     }
+
+    public function changePlan(Request $request, Subscription $subscription)
+    {
+        // Check authorization
+        $this->authorize('update', $subscription);
+
+        // Validate the request
+        $validated = $request->validate([
+            'plan_id' => 'required|exists:plans,id',
+        ]);
+
+        $newPlan = Plan::findOrFail($validated['plan_id']);
+
+        // Check if it's the same plan
+        if ($subscription->plan_id === $newPlan->id) {
+            return redirect()
+                ->back()
+                ->with('info', 'The subscription is already on this plan.');
+        }
+
+        // Update the plan
+        $subscription->update([
+            'plan_id' => $newPlan->id,
+        ]);
+
+        return redirect()
+                ->back()
+                ->with('success', 'Subscription plan changed successfully to ' . $newPlan->name . '.');
+    }
 }

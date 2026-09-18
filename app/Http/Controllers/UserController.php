@@ -142,4 +142,116 @@ class UserController extends Controller
                  ->back()
                  ->with('success', 'User deleted successfully!');
     }
+
+    /**
+     * Add parent to student
+     */
+    public function addParentToStudent(Request $request, Student $student)
+    {
+        // Authorization check - admin or the student themselves
+        if (auth()->user()->id !== $student->user_id && !auth()->user()->hasRole('admin')) {
+            abort(403, 'Unauthorized');
+        }
+
+        $validated = $request->validate([
+            'parent_id' => 'required|exists:parents,id',
+        ]);
+
+        $parent = ParentModel::findOrFail($validated['parent_id']);
+
+        // Check if already linked
+        if ($student->parents()->where('parent_id', $parent->id)->exists()) {
+            return redirect()->back()
+                ->with('error', 'This parent is already linked to this student.')
+                ->withFragment('parents');
+        }
+
+        // Link parent to student
+        $student->parents()->syncWithoutDetaching([$parent->id]);
+
+        return redirect()->back()
+            ->with('success', 'Parent added successfully.')
+            ->withFragment('parents');
+    }
+
+    /**
+     * Remove parent from student
+     */
+    public function removeParentFromStudent(Student $student, ParentModel $parent)
+    {
+        // Authorization check - admin or the student themselves
+        if (auth()->user()->id !== $student->user_id && !auth()->user()->hasRole('admin')) {
+            abort(403, 'Unauthorized');
+        }
+
+        // Check if the parent is linked to this student
+        if (!$student->parents()->where('parent_id', $parent->id)->exists()) {
+            return redirect()->back()
+                ->with('error', 'This parent is not linked to this student.')
+                ->withFragment('parents');
+        }
+
+        // Remove the link
+        $student->parents()->detach($parent->id);
+
+        return redirect()->back()
+            ->with('success', 'Parent removed successfully.')
+            ->withFragment('parents');
+    }
+
+    /**
+     * Add child to parent
+     */
+    public function addChildToParent(Request $request, ParentModel $parent)
+    {
+        // Authorization check - admin or the parent themselves
+        if (auth()->user()->id !== $parent->user_id && !auth()->user()->hasRole('admin')) {
+            abort(403, 'Unauthorized');
+        }
+
+        $validated = $request->validate([
+            'student_id' => 'required|exists:students,id',
+        ]);
+
+        $student = Student::findOrFail($validated['student_id']);
+
+        // Check if already linked
+        if ($parent->students()->where('student_id', $student->id)->exists()) {
+            return redirect()->back()
+                ->with('error', 'This student is already linked to this parent.')
+                ->withFragment('add-child');
+        }
+
+        // Link student to parent
+        $parent->students()->syncWithoutDetaching([$student->id]);
+
+        return redirect()->back()
+            ->with('success', 'Child added successfully.')
+            ->withFragment('add-child');
+    }
+
+    /**
+     * Remove child from parent
+     */
+    public function removeChildFromParent(ParentModel $parent, Student $student)
+    {
+        // Authorization check - admin or the parent themselves
+        if (auth()->user()->id !== $parent->user_id && !auth()->user()->hasRole('admin')) {
+            abort(403, 'Unauthorized');
+        }
+
+        // Check if the student is linked to this parent
+        if (!$parent->students()->where('student_id', $student->id)->exists()) {
+            return redirect()->back()
+                ->with('error', 'This student is not linked to this parent.')
+                ->withFragment('add-child');
+        }
+
+        // Remove the link
+        $parent->students()->detach($student->id);
+
+        return redirect()->back()
+            ->with('success', 'Child removed successfully.')
+            ->withFragment('add-child');
+    }
 }

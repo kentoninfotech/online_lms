@@ -37,6 +37,13 @@
 
                 @role('parent')
                 <li class="nav-item mb-2">
+                    <button class="nav-link @if($activeTab === 'add-child') active @endif"
+                            id="add-child-tab" data-bs-toggle="pill" data-bs-target="#add-child"
+                            type="button" role="tab">
+                        <i class="ph ph-user-plus me-2"></i> Add Child
+                    </button>
+                </li>
+                <li class="nav-item mb-2">
                     <button class="nav-link @if($activeTab === 'link-child') active @endif"
                             id="link-child-tab" data-bs-toggle="pill" data-bs-target="#link-child"
                             type="button" role="tab">
@@ -46,6 +53,13 @@
                 @endrole
 
                 @role('student')
+                <li class="nav-item mb-2">
+                    <button class="nav-link @if($activeTab === 'parents') active @endif"
+                            id="parents-tab" data-bs-toggle="pill" data-bs-target="#parents"
+                            type="button" role="tab">
+                        <i class="ph ph-users me-2"></i> Parents
+                    </button>
+                </li>
                 <li class="nav-item mb-2">
                     <button class="nav-link @if($activeTab === 'link-code') active @endif"
                             id="link-code-tab" data-bs-toggle="pill" data-bs-target="#link-code"
@@ -95,6 +109,16 @@
                 </div>
 
                 @role('parent')
+                <div class="tab-pane fade @if($activeTab === 'add-child') show active @endif" 
+                     id="add-child" role="tabpanel">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-light fw-bold">Add Child</div>
+                        <div class="card-body">
+                            @include('layouts.partials.users.add-child', ['parent' => $user->parent])
+                        </div>
+                    </div>
+                </div>
+
                 <div class="tab-pane fade @if($activeTab === 'link-child') show active @endif" 
                      id="link-child" role="tabpanel">
                     <div class="card shadow-sm border-0 mb-4">
@@ -107,6 +131,16 @@
                 @endrole
 
                 @role('student')
+                <div class="tab-pane fade @if($activeTab === 'parents') show active @endif" 
+                     id="parents" role="tabpanel">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-light fw-bold">Manage Parents</div>
+                        <div class="card-body">
+                            @include('layouts.partials.users.manage-parents', ['student' => $user->student])
+                        </div>
+                    </div>
+                </div>
+
                 <div class="tab-pane fade @if($activeTab === 'link-code') show active @endif" 
                      id="link-code" role="tabpanel">
                     <div class="card shadow-sm border-0 mb-4">
