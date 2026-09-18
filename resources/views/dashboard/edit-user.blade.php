@@ -35,7 +35,7 @@
                     </button>
                 </li>
 
-                @role('parent')
+                @if($role === 'parent')
                 <li class="nav-item mb-2">
                     <button class="nav-link @if($activeTab === 'add-child') active @endif"
                             id="add-child-tab" data-bs-toggle="pill" data-bs-target="#add-child"
@@ -50,9 +50,9 @@
                         <i class="ph ph-link me-2"></i> Link a Child
                     </button>
                 </li>
-                @endrole
+                @endif
 
-                @role('student')
+                @if($role === 'student')
                 <li class="nav-item mb-2">
                     <button class="nav-link @if($activeTab === 'parents') active @endif"
                             id="parents-tab" data-bs-toggle="pill" data-bs-target="#parents"
@@ -67,7 +67,7 @@
                         <i class="ph ph-key me-2"></i> Link Code
                     </button>
                 </li>
-                @endrole
+                @endif
             </ul>
         </div>
 
@@ -108,7 +108,7 @@
                     </div>
                 </div>
 
-                @role('parent')
+                @if($role === 'parent')
                 <div class="tab-pane fade @if($activeTab === 'add-child') show active @endif" 
                      id="add-child" role="tabpanel">
                     <div class="card shadow-sm border-0 mb-4">
@@ -128,9 +128,9 @@
                         </div>
                     </div>
                 </div>
-                @endrole
+                @endif
 
-                @role('student')
+                @if($role === 'student')
                 <div class="tab-pane fade @if($activeTab === 'parents') show active @endif" 
                      id="parents" role="tabpanel">
                     <div class="card shadow-sm border-0 mb-4">
@@ -150,7 +150,7 @@
                         </div>
                     </div>
                 </div>
-                @endrole
+                @endif
 
             </div>
         </div>
