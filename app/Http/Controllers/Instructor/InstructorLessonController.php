@@ -34,4 +34,11 @@ class InstructorLessonController extends Controller
         return view('dashboard.instructor.lessons', compact('lessons', 'students', 'todayLessons'));
     }
 
+    public function settings()
+    {
+        $user = Auth::user();
+        
+        return view('dashboard.instructor.settings', compact('user'));
+    }
+
 }

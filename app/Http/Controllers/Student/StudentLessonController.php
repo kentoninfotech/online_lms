@@ -23,4 +23,11 @@ class StudentLessonController extends Controller
         return view('dashboard.student.lessons', compact('lessons'));
     }
 
+    public function settings()
+    {
+        $user = Auth::user();
+        
+        return view('dashboard.student.settings', compact('user'));
+    }
+
 }

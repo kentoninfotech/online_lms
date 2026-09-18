@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use App\Models\Student;
 use App\Models\Instructor;
 use App\Models\ParentModel;
@@ -59,10 +60,21 @@ class AdminDashboardController extends Controller
         ));
     }
 
-    public function students()
+    public function students(Request $request)
     {
-        $students = Student::with(['subscription.plan', 'parents'])->paginate(20);
-        return view('dashboard.admin.students', compact('students'));
+        $query = Student::with(['subscription.plan', 'parents']);
+
+        // Search functionality
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('email', 'like', '%' . $search . '%');
+        }
+
+        $students = $query->paginate(20)->appends(request()->query());
+        $searchTerm = $request->search ?? '';
+
+        return view('dashboard.admin.students', compact('students', 'searchTerm'));
     }
 
     public function instructors()
@@ -71,10 +83,21 @@ class AdminDashboardController extends Controller
         return view('dashboard.admin.instructors', compact('instructors'));
     }
 
-    public function parents()
+    public function parents(Request $request)
     {
-        $parents = ParentModel::with('students')->paginate(20);
-        return view('dashboard.admin.parents', compact('parents'));
+        $query = ParentModel::with('students');
+
+        // Search functionality
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('email', 'like', '%' . $search . '%');
+        }
+
+        $parents = $query->paginate(20)->appends(request()->query());
+        $searchTerm = $request->search ?? '';
+
+        return view('dashboard.admin.parents', compact('parents', 'searchTerm'));
     }
 
     public function subscriptions()

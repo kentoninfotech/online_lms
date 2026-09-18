@@ -33,6 +33,23 @@
 
 <!-- [ Main Content ] start -->
 
+<!-- Search Box -->
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="GET" action="{{ route('admin.students') }}" class="d-flex gap-2">
+            <input type="text" name="search" class="form-control" placeholder="Search by name or email..." value="{{ $searchTerm ?? '' }}">
+            <button type="submit" class="btn btn-primary">
+                <i class="ph ph-magnifying-glass"></i> Search
+            </button>
+            @if($searchTerm)
+                <a href="{{ route('admin.students') }}" class="btn btn-secondary">
+                    <i class="ph ph-x"></i> Clear
+                </a>
+            @endif
+        </form>
+    </div>
+</div>
+
 <!-- Students -->
 <div class="card">
     <div class="card-body">

@@ -145,7 +145,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('create/{role}', [UserController::class, 'create'])->name('admin.users.create');
     Route::post('store/{role}', [UserController::class, 'store'])->name('admin.users.store');
     Route::delete('user/{user}/delete', [UserController::class, 'delete'])->name('admin.users.delete');
-    Route::get('/admin/settings', [InstructorLessonController::class, 'settings'])->name('admin.settings');
+    Route::get('/admin/settings', [SettingController::class, 'index'])->name('admin.settings');
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
     // manual finalize attendance for occurrence
@@ -163,7 +163,6 @@ Route::middleware(['auth', 'role:student'])->group(function () {
     Route::post('/generate-link-code', [LinkStudentParentController::class, 'generateLinkCode'])->name('generate.link.code');
     Route::get('/my-lessons', [StudentLessonController::class, 'lessons'])->name('student.lessons');
     Route::get('/my-attendance', [StudentAttendanceController::class, 'attendance'])->name('student.attendance');
-    // FIX/CREATE ROUTE CONTROLLER METHOD
     Route::get('/student/settings', [StudentLessonController::class, 'settings'])->name('student.settings');
 });
 
@@ -175,7 +174,6 @@ Route::middleware(['auth', 'role:instructor'])->group(function () {
     Route::get('instructors/lessons', [InstructorLessonController::class, 'lessons'])->name('instructor.lessons');
     Route::get('instructors/students', [InstructorStudentController::class, 'students'])->name('instructor.students');
     Route::get('instructors/reschedules', [InstructorStudentController::class, 'reschedules'])->name('instructor.reschedules');
-    // FIX/CREATE ROUTE CONTROLLER METHOD
     Route::get('/instructor/settings', [InstructorLessonController::class, 'settings'])->name('instructor.settings');
 });
 
@@ -190,9 +188,7 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
     Route::get('/payments', [ParentDashboardController::class, 'payments'])->name('parent.payments');
     Route::get('/payments/upload', [PaymentController::class, 'uploadEvidence'])->name('payment.upload');
     Route::post('/link-child', [LinkStudentParentController::class, 'linkChild'])->name('parent.link.child');
-    // Route::get('/parent/lessons', [InstructorLessonController::class, 'lessons'])->name('parent.lessons');
-    // FIX/CREATE ROUTE CONTROLLER METHOD
-    // Route::get('/parent/settings', [InstructorLessonController::class, 'settings'])->name('parent.settings');
+    Route::get('/parent/settings', [ParentDashboardController::class, 'settings'])->name('parent.settings');
 });
 
 Auth::routes();

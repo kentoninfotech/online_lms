@@ -167,4 +167,11 @@ class ParentDashboardController extends Controller
 
         return view('dashboard.parent.reschedules', compact('requests'));
     }
+
+    public function settings()
+    {
+        $user = Auth::user();
+        
+        return view('dashboard.parent.settings', compact('user'));
+    }
 }
