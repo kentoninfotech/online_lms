@@ -187,4 +187,20 @@ class AdminDashboardController extends Controller
         return view('admin.visitors.index', compact('visitors', 'stats', 'topCountries', 'availableCountries'));
     }
 
+    public function bulkDeleteVisitors(Request $request)
+    {
+        $validated = $request->validate([
+            'visitor_ids' => ['required', 'array', 'min:1'],
+            'visitor_ids.*' => ['required', 'integer', 'distinct', 'exists:site_visitors,id'],
+        ]);
+
+        $deletedCount = SiteVisitor::whereIn('id', $validated['visitor_ids'])->delete();
+
+        if ($deletedCount === 0) {
+            return back()->with('error', 'No visitor records were deleted.');
+        }
+
+        return back()->with('success', $deletedCount . ' visitor record(s) deleted successfully.');
+    }
+
 }

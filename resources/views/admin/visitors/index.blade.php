@@ -107,13 +107,21 @@
     </div>
 
     <div class="card">
-        <div class="card-header">
+        <div class="card-header d-flex justify-content-between align-items-center gap-2">
             <h6 class="mb-0">Recent Visitor Activity</h6>
+            <button type="submit" form="bulkDeleteVisitorsForm" id="bulkDeleteBtn" class="btn btn-sm btn-danger" disabled>
+                Delete Selected
+            </button>
         </div>
+        <form id="bulkDeleteVisitorsForm" method="POST" action="{{ route('admin.visitors.bulk-delete') }}" onsubmit="return confirm('Delete selected visitor records? This action cannot be undone.');">
+            @csrf
         <div class="table-responsive">
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
+                        <th style="width: 40px;">
+                            <input type="checkbox" id="selectAllVisitors" aria-label="Select all visitor records">
+                        </th>
                         <th>Datetime</th>
                         <th>Country</th>
                         <th>Location</th>
@@ -125,6 +133,15 @@
                 <tbody>
                     @forelse($visitors as $visitor)
                         <tr>
+                            <td>
+                                <input
+                                    type="checkbox"
+                                    class="visitor-checkbox"
+                                    name="visitor_ids[]"
+                                    value="{{ $visitor->id }}"
+                                    aria-label="Select visitor {{ $visitor->id }}"
+                                >
+                            </td>
                             <td>{{ $visitor->visited_at?->format('M d, Y h:i A') ?? '-' }}</td>
                             <td>{{ $visitor->country ?? 'Unknown' }}</td>
                             <td>{{ $visitor->location ?? 'Unknown' }}</td>
@@ -138,12 +155,13 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center py-4 text-muted">No visitor records found.</td>
+                            <td colspan="7" class="text-center py-4 text-muted">No visitor records found.</td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
+        </form>
         @if($visitors->hasPages())
             <div class="card-footer">
                 {{ $visitors->links() }}
@@ -151,4 +169,44 @@
         @endif
     </div>
 </div>
+
+<script>
+    (function () {
+        const selectAllVisitors = document.getElementById('selectAllVisitors');
+        const visitorCheckboxes = Array.from(document.querySelectorAll('.visitor-checkbox'));
+        const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+
+        if (!selectAllVisitors || !bulkDeleteBtn || visitorCheckboxes.length === 0) {
+            return;
+        }
+
+        const updateBulkDeleteState = function () {
+            const selectedCount = visitorCheckboxes.filter(function (checkbox) {
+                return checkbox.checked;
+            }).length;
+
+            bulkDeleteBtn.disabled = selectedCount === 0;
+            bulkDeleteBtn.textContent = selectedCount > 0
+                ? 'Delete Selected (' + selectedCount + ')'
+                : 'Delete Selected';
+
+            const allChecked = selectedCount === visitorCheckboxes.length;
+            selectAllVisitors.checked = allChecked;
+            selectAllVisitors.indeterminate = selectedCount > 0 && !allChecked;
+        };
+
+        selectAllVisitors.addEventListener('change', function () {
+            visitorCheckboxes.forEach(function (checkbox) {
+                checkbox.checked = selectAllVisitors.checked;
+            });
+            updateBulkDeleteState();
+        });
+
+        visitorCheckboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('change', updateBulkDeleteState);
+        });
+
+        updateBulkDeleteState();
+    })();
+</script>
 @endsection
