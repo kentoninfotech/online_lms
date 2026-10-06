@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Models\SiteVisitor;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
 use App\Models\Student;
@@ -15,6 +16,7 @@ use App\Models\LessonOccurrence;
 use App\Models\RescheduleRequest;
 use App\Models\Course;
 use App\Models\Facilitator;
+use Illuminate\Http\Request;
 
 class AdminDashboardController extends Controller
 {
@@ -142,6 +144,47 @@ class AdminDashboardController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function visitors(Request $request)
+    {
+        $visitorsQuery = SiteVisitor::query()
+            ->when($request->filled('country'), function ($query) use ($request) {
+                $query->where('country', $request->string('country'));
+            })
+            ->when($request->filled('from'), function ($query) use ($request) {
+                $query->whereDate('visited_at', '>=', $request->date('from'));
+            })
+            ->when($request->filled('to'), function ($query) use ($request) {
+                $query->whereDate('visited_at', '<=', $request->date('to'));
+            })
+            ->with('user')
+            ->latest('visited_at');
+
+        $visitors = $visitorsQuery->paginate(30)->withQueryString();
+
+        $stats = [
+            'total' => SiteVisitor::count(),
+            'today' => SiteVisitor::whereDate('visited_at', today())->count(),
+            'this_week' => SiteVisitor::whereBetween('visited_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
+            'unique_countries' => SiteVisitor::whereNotNull('country')->distinct('country')->count('country'),
+        ];
+
+        $topCountries = SiteVisitor::query()
+            ->whereNotNull('country')
+            ->selectRaw('country, COUNT(*) as total_visits')
+            ->groupBy('country')
+            ->orderByDesc('total_visits')
+            ->limit(10)
+            ->get();
+
+        $availableCountries = SiteVisitor::query()
+            ->whereNotNull('country')
+            ->distinct()
+            ->orderBy('country')
+            ->pluck('country');
+
+        return view('admin.visitors.index', compact('visitors', 'stats', 'topCountries', 'availableCountries'));
     }
 
 }

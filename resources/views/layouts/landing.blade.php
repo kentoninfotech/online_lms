@@ -1116,3 +1116,5 @@ s0.parentNode.insertBefore(s1,s0);
 })();
     </script>
     <!-- End Tawk.to Chat Widget -->
+
+    @include('layouts.partials.whatsapp-chat-widget')

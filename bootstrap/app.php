@@ -71,6 +71,7 @@ return Application::configure(dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // Add timezone detection middleware
         $middleware->append(\App\Http\Middleware\DetectTimezone::class);
+        $middleware->append(\App\Http\Middleware\TrackSiteVisitor::class);
         
         // Register route middleware aliases
         $middleware->alias([

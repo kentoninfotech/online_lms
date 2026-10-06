@@ -132,6 +132,8 @@
 {{-- Footer --}}
 @include('layouts.partials.footer')
 <!-- [footer] end -->
+
+@include('layouts.partials.whatsapp-chat-widget')
     
 </body>
 <!-- [Body] end -->

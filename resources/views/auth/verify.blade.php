@@ -18,7 +18,14 @@
         </div>
 
         <!-- Warning/Info Message -->
-        @if (session('resent'))
+        @if (session('registration_success'))
+            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert" style="border-left: 5px solid #198754;">
+                <i class="bi bi-check-circle-fill me-2" style="font-size: 1.2rem; color: #198754;"></i>
+                <strong style="font-size: 1.05rem;">Registration Complete! ✓</strong><br>
+                <span style="font-size: 0.95rem;">Your account has been created successfully. Please click the verification link sent to your email to continue.</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @elseif (session('resent'))
             <div class="alert alert-success alert-dismissible fade show mb-4" role="alert" style="border-left: 5px solid #28a745;">
                 <i class="bi bi-check-circle-fill me-2" style="font-size: 1.2rem; color: #28a745;"></i>
                 <strong style="font-size: 1.05rem;">Email Sent Successfully! ✓</strong><br>

@@ -24,6 +24,7 @@ class RegistrationRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed', 'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d@$!%*?&]+$/'],
             'user_type' => ['required', 'string', 'in:student,instructor,parent'],
+            'selected_course_id' => ['nullable', 'integer', 'exists:courses,id'],
             'terms' => ['required', 'accepted'],
         ];
     }

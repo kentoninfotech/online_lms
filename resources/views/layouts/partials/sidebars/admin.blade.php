@@ -28,6 +28,13 @@
             <span class="pc-mtext">Parents/Guardian</span>
         </a>
     </li>
+
+    <li class="pc-item">
+        <a href="{{ route('admin.visitors.index') }}" class="pc-link">
+            <span class="pc-micon"><i class="bi bi-geo-alt-fill" style="color: #5c61f2;"></i></span>
+            <span class="pc-mtext">Site Visitors</span>
+        </a>
+    </li>
     <li class="pc-item pc-hasmenu">
         <a href="#" class="pc-link">
             <span class="pc-micon"><i class="bi bi-book-fill" style="color: #f0c221;"></i></span>

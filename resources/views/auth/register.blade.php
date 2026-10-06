@@ -129,6 +129,30 @@
                 @enderror
             </div>
 
+            <!-- Course Selection -->
+            <div class="form-group">
+                <label for="selected_course_id">Select Course to Enroll</label>
+                <select
+                    id="selected_course_id"
+                    name="selected_course_id"
+                    class="form-control @error('selected_course_id') is-invalid @enderror"
+                >
+                    <option value="">-- Choose a course (optional) --</option>
+                    @foreach(($courses ?? collect()) as $course)
+                        <option
+                            value="{{ $course->id }}"
+                            {{ (string) old('selected_course_id', $selectedCourseId ?? '') === (string) $course->id ? 'selected' : '' }}
+                        >
+                            {{ $course->title }}
+                        </option>
+                    @endforeach
+                </select>
+                <small class="text-muted d-block mt-1">Selecting a course returns you to that course page after email verification.</small>
+                @error('selected_course_id')
+                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                @enderror
+            </div>
+
             <!-- Confirm Password -->
             <div class="form-group">
                 <label for="password_confirmation">Confirm Password <span style="color: #dc3545;">*</span></label>

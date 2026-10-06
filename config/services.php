@@ -69,4 +69,8 @@ return [
         'server_url' => env('JITSI_SERVER_URL', 'https://meet.jitsi'),
     ],
 
+    'whatsapp' => [
+        'number' => env('WHATSAPP_NUMBER'),
+    ],
+
 ];

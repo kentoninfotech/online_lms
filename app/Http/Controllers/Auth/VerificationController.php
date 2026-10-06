@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Course;
 use Illuminate\Foundation\Auth\VerifiesEmails;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class VerificationController extends Controller
 {
@@ -81,8 +83,23 @@ class VerificationController extends Controller
         // Log in the user
         auth()->login($user);
 
-        return redirect($this->redirectTo)
-                    ->with('verified', 'Your email has been verified successfully! You can now access all features.');
+        $redirectUrl = $this->redirectTo;
+        $selectedCourseId = Cache::pull("registration:selected_course:{$user->id}");
+
+        if (!empty($selectedCourseId)) {
+            $course = Course::query()
+                ->whereKey($selectedCourseId)
+                ->where('is_active', true)
+                ->first();
+
+            if ($course) {
+                $redirectUrl = route('courses.show', $course);
+            }
+        }
+
+        return redirect($redirectUrl)
+            ->with('verified', 'Your email has been verified successfully! You can now access all features.')
+            ->with('registration_success', true);
     }
 
     /**

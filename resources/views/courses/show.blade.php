@@ -256,7 +256,7 @@
                                     Login to Enroll
                                 </a>
                                 <p class="text-center small">
-                                    Don't have an account? <a href="{{ route('register') }}" class="text-primary fw-semibold">Sign up</a>
+                                    Don't have an account? <a href="{{ route('register', ['course' => $course->id]) }}" class="text-primary fw-semibold">Sign up</a>
                                 </p>
                             @endauth
                         @endif

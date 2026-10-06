@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Course;
 use App\Models\User;
 use App\Models\Student;
 use App\Models\Instructor;
@@ -10,6 +11,7 @@ use App\Models\ParentModel;
 use App\Http\Requests\RegistrationRequest;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -43,6 +45,26 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+    }
+
+    /**
+     * Show the registration form.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function showRegistrationForm()
+    {
+        $selectedCourseId = request()->integer('course');
+        $selectedCourseId = Course::whereKey($selectedCourseId)->where('is_active', true)->exists()
+            ? $selectedCourseId
+            : null;
+
+        $courses = Course::query()
+            ->where('is_active', true)
+            ->orderBy('title')
+            ->get(['id', 'title']);
+
+        return view('auth.register', compact('courses', 'selectedCourseId'));
     }
 
     /**
@@ -148,12 +170,21 @@ class RegisterController extends Controller
         // Log in the user (unverified state is okay)
         auth()->login($user, remember: false);
 
+        if (!empty($request->selected_course_id)) {
+            Cache::put(
+                "registration:selected_course:{$user->id}",
+                (int) $request->selected_course_id,
+                now()->addDays(7)
+            );
+        }
+
         // Send email verification notification
         $user->sendEmailVerificationNotification();
 
         // Redirect to /email/verify page so user can check inbox
         return redirect($this->redirectTo)
             ->with('email', $user->email)
+            ->with('registration_success', true)
             ->with('warning', 'A verification link has been sent to your email address.');
     }
 }

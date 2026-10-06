@@ -148,6 +148,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/admin/students', [AdminDashboardController::class, 'students'])->name('admin.students');
     Route::get('/admin/instructors', [AdminDashboardController::class, 'instructors'])->name('admin.instructors');
     Route::get('/admin/parents', [AdminDashboardController::class, 'parents'])->name('admin.parents');
+    Route::get('/admin/visitors', [AdminDashboardController::class, 'visitors'])->name('admin.visitors.index');
     Route::get('/admin/lessons', [LessonController::class, 'lessons'])->name('admin.lessons');
     Route::get('/admin/payments', [AdminDashboardController::class, 'payments'])->name('admin.payments');
     Route::get('/admin/reschedules', [AdminDashboardController::class, 'reschedules'])->name('admin.reschedules');
@@ -611,4 +612,3 @@ Route::middleware(['auth', 'verified', 'role:instructor'])->prefix('tutor')->nam
     Route::get('/announcement/{message}', [CourseBulkMessageController::class, 'show'])->name('course.announcement.show');
     Route::post('/announcement/{message}/send', [CourseBulkMessageController::class, 'send'])->name('course.announcement.send');
 });
-
