@@ -38,7 +38,7 @@
                 <!-- Payment Methods -->
                 <div class="row g-3">
                     <!-- Paystack Payment -->
-                    <div class="col-12">
+                    <!-- <div class="col-12">
                         <a href="{{ route('course.payment.paystack', $payment) }}" class="card payment-method-card h-100" style="text-decoration: none; border: 2px solid #f0f0f0; transition: all 0.3s;">
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
@@ -57,7 +57,7 @@
                                 </div>
                             </div>
                         </a>
-                    </div>
+                    </div> -->
 
                     <!-- Bank Transfer -->
                     <div class="col-12">
