@@ -40,11 +40,33 @@ class TrackSiteVisitor
             return false;
         }
 
+        if ($request->ajax()) {
+            return false;
+        }
+
+        if ($request->isXmlHttpRequest()) {
+            return false;
+        }
+
         if ($request->expectsJson()) {
             return false;
         }
 
+        if ($request->wantsJson()) {
+            return false;
+        }
+
+        $acceptHeader = (string) $request->header('Accept', '');
+        if (str_contains(strtolower($acceptHeader), 'application/json')) {
+            return false;
+        }
+
         if ($response->getStatusCode() >= 400) {
+            return false;
+        }
+
+        $contentType = strtolower((string) $response->headers->get('Content-Type', ''));
+        if (!str_contains($contentType, 'text/html')) {
             return false;
         }
 
@@ -53,6 +75,7 @@ class TrackSiteVisitor
             'admin',
             'dashboard',
             'api',
+            'calendar',
             '_debugbar',
             'up',
             'storage',
