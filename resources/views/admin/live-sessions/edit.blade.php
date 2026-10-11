@@ -323,19 +323,55 @@
         }
     });
 
-    // Convert datetime-local format (YYYY-MM-DDTHH:mm) to Y-m-d H:i format for server
+    // Convert datetime formats to Y-m-d H:i format for server validation
     document.querySelector('form').addEventListener('submit', function(e) {
-        const scheduledStart = document.getElementById('scheduled_start').value;
-        const scheduledEnd = document.getElementById('scheduled_end').value;
+        const startInput = document.getElementById('scheduled_start');
+        const endInput = document.getElementById('scheduled_end');
         
-        if (scheduledStart) {
-            // Convert from 2026-10-16T15:00 to 2026-10-16 15:00
-            document.getElementById('scheduled_start').value = scheduledStart.replace('T', ' ');
+        function formatDatetime(value) {
+            if (!value) return '';
+            
+            // Handle datetime-local format: YYYY-MM-DDTHH:mm
+            if (value.includes('T')) {
+                return value.replace('T', ' ');
+            }
+            
+            // Handle DD/MM/YYYY HH:mm format
+            if (value.match(/^\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}/)) {
+                const [datePart, timePart] = value.split(' ');
+                const [day, month, year] = datePart.split('/');
+                return `${year}-${month}-${day} ${timePart}`;
+            }
+            
+            // Handle YYYY-MM-DD HH:mm format (already correct)
+            if (value.match(/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}/)) {
+                return value;
+            }
+            
+            // Try parsing as Date and formatting
+            try {
+                const date = new Date(value);
+                if (!isNaN(date)) {
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const hours = String(date.getHours()).padStart(2, '0');
+                    const minutes = String(date.getMinutes()).padStart(2, '0');
+                    return `${year}-${month}-${day} ${hours}:${minutes}`;
+                }
+            } catch (err) {
+                console.error('Date parsing error:', err);
+            }
+            
+            return value;
         }
         
-        if (scheduledEnd) {
-            // Convert from 2026-10-16T16:00 to 2026-10-16 16:00
-            document.getElementById('scheduled_end').value = scheduledEnd.replace('T', ' ');
+        if (startInput.value) {
+            startInput.value = formatDatetime(startInput.value);
+        }
+        
+        if (endInput.value) {
+            endInput.value = formatDatetime(endInput.value);
         }
     });
 </script>
