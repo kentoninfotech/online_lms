@@ -1,0 +1,147 @@
+version: '3.8'
+
+services:
+  # Jitsi Web UI
+  jitsi-web:
+    image: jitsi/web:latest
+    container_name: jitsi-web
+    hostname: jitsi-web
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - XMPP_SERVER=jitsi-xmpp
+      - XMPP_DOMAIN=meet.jitsi.local
+      - XMPP_AUTH_DOMAIN=auth.meet.jitsi.local
+      - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi.local
+      - XMPP_MUC_DOMAIN=muc.meet.jitsi.local
+      - JICOFO_COMPONENT_SECRET=jicofo-secret-123
+      - JVB_SECRET=jvb-secret-456
+      - JIGASI_XMPP_PASSWORD=jigasi-secret-789
+      - JIBRI_XMPP_PASSWORD=jibri-secret-012
+      - CHROME_EXTENSION_ID=
+      - PUBLIC_URL=https://meet.jitsi.local
+      - TZ=UTC
+      - ENABLE_LETSENCRYPT=0
+      - ENABLE_HTTP_REDIRECT=1
+      - ENABLE_TRANSCRIPTIONS=0
+      - ENABLE_RECORDING=1
+      - ENABLE_REMOTEDEBUGGING=0
+      - ETHERPAD_URL_BASE=http://jitsi-etherpad:9001
+      - USERS_INCLUDE_DOMAIN=true
+      - SHOW_WATERMARK=false
+      - SHOW_BRAND_WATERMARK=false
+      - BRAND_WATERMARK_LINK=https://nountutor.com.ng
+    volumes:
+      - ./jitsi/web/config:/config:ro
+      - ./jitsi/web/certs:/etc/jitsi/web/certs:ro
+      - ./jitsi/web/transcripts:/tmp/transcripts
+    networks:
+      - jitsi-network
+    depends_on:
+      - jitsi-prosody
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # XMPP Server (Prosody)
+  jitsi-prosody:
+    image: jitsi/prosody:latest
+    container_name: jitsi-prosody
+    hostname: jitsi-prosody
+    environment:
+      - XMPP_DOMAIN=meet.jitsi.local
+      - XMPP_AUTH_DOMAIN=auth.meet.jitsi.local
+      - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi.local
+      - XMPP_MUC_DOMAIN=muc.meet.jitsi.local
+      - JICOFO_COMPONENT_SECRET=jicofo-secret-123
+      - JVB_SECRET=jvb-secret-456
+      - JIGASI_XMPP_PASSWORD=jigasi-secret-789
+      - JIBRI_XMPP_PASSWORD=jibri-secret-012
+      - TZ=UTC
+    volumes:
+      - ./jitsi/prosody/config:/config
+      - ./jitsi/prosody/prosody-plugins:/prosody-plugins-custom
+    networks:
+      - jitsi-network
+
+  # Jicofo (Jitsi Conference Focus)
+  jitsi-jicofo:
+    image: jitsi/jicofo:latest
+    container_name: jitsi-jicofo
+    hostname: jitsi-jicofo
+    environment:
+      - XMPP_DOMAIN=meet.jitsi.local
+      - XMPP_AUTH_DOMAIN=auth.meet.jitsi.local
+      - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi.local
+      - XMPP_MUC_DOMAIN=muc.meet.jitsi.local
+      - JICOFO_COMPONENT_SECRET=jicofo-secret-123
+      - JICOFO_AUTH_USER=focus
+      - JICOFO_AUTH_PASSWORD=jicofo-pass-123
+      - TZ=UTC
+    networks:
+      - jitsi-network
+    depends_on:
+      - jitsi-prosody
+
+  # Jitsi Videobridge (JVB)
+  jitsi-jvb:
+    image: jitsi/jvb:latest
+    container_name: jitsi-jvb
+    hostname: jitsi-jvb
+    ports:
+      - "10000:10000/udp"
+      - "10000:10000/tcp"
+      - "4443:4443/tcp"
+    environment:
+      - XMPP_SERVER=jitsi-prosody
+      - XMPP_DOMAIN=meet.jitsi.local
+      - XMPP_AUTH_DOMAIN=auth.meet.jitsi.local
+      - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi.local
+      - XMPP_MUC_DOMAIN=muc.meet.jitsi.local
+      - JVB_SECRET=jvb-secret-456
+      - JVB_AUTH_USER=jvb
+      - JVB_AUTH_PASSWORD=jvb-pass-456
+      - JVB_BREWERY_MUC=jvbbrewery
+      - JICOFO_AUTH_USER=focus
+      - JVB_TCP_HARVESTER_DISABLED=false
+      - JVB_TCP_PORT=4443
+      - JVB_STUN_SERVERS=stun1.l.google.com:19302,stun2.l.google.com:19302
+      - TZ=UTC
+      - ENABLE_COLIBRI_WEBSOCKET=1
+    networks:
+      - jitsi-network
+    depends_on:
+      - jitsi-prosody
+
+  # Optional: Etherpad for collaborative notes
+  jitsi-etherpad:
+    image: etherpad/etherpad:latest
+    container_name: jitsi-etherpad
+    hostname: jitsi-etherpad
+    ports:
+      - "9001:9001"
+    environment:
+      - TITLE=Jitsi Etherpad
+      - PAD_OPTIONS_NO_COLORS=false
+      - PAD_OPTIONS_SHOW_CONTROLS=true
+      - PAD_OPTIONS_SHOW_CHAT=true
+      - PAD_OPTIONS_SHOW_LINE_NUMBERS=true
+      - PAD_OPTIONS_USE_MONOSPACE_FONT=false
+    networks:
+      - jitsi-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9001/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  jitsi-network:
+    driver: bridge
+
+volumes:
+  jitsi_web_config:
+  jitsi_prosody_config:

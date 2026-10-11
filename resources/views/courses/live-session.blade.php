@@ -199,10 +199,15 @@
 
 <!-- Jitsi Meet Script -->
 @if($session->jitsi_room_name)
-    <script src='https://meet.jitsi/external_api.js'></script>
+    @php
+        $jitsiDomain = config('services.jitsi.domain', 'meet.jitsi.local');
+        $jitsiServerUrl = config('services.jitsi.server_url', 'https://meet.jitsi.local');
+        $jitsiProtocol = parse_url($jitsiServerUrl, PHP_URL_SCHEME) ?? 'https';
+    @endphp
+    <script src='{{ $jitsiProtocol }}://{{ $jitsiDomain }}/external_api.js'></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var domain = "{{ config('services.jitsi.domain', 'meet.jitsi') }}";
+            var domain = "{{ $jitsiDomain }}";
             var options = {
                 roomName: "{{ $session->jitsi_room_name }}",
                 width: '100%',
