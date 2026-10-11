@@ -182,4 +182,62 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    
+    function formatDatetime(dateString) {
+        if (!dateString) return '';
+        
+        // Try ISO format (2026-10-16T15:00)
+        if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(dateString)) {
+            return dateString.replace('T', ' ').substring(0, 16);
+        }
+        
+        // Try DD/MM/YYYY HH:mm format
+        const ddmmMatch = dateString.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})/);
+        if (ddmmMatch) {
+            const [, dd, mm, yyyy, hh, mi] = ddmmMatch;
+            return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
+        }
+        
+        // Try YYYY-MM-DD HH:mm format
+        if (/^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}/.test(dateString)) {
+            return dateString.substring(0, 16);
+        }
+        
+        // Try Date object or other formats
+        try {
+            const date = new Date(dateString);
+            if (!isNaN(date.getTime())) {
+                return date.getFullYear() + '-' +
+                    String(date.getMonth() + 1).padStart(2, '0') + '-' +
+                    String(date.getDate()).padStart(2, '0') + ' ' +
+                    String(date.getHours()).padStart(2, '0') + ':' +
+                    String(date.getMinutes()).padStart(2, '0');
+            }
+        } catch (e) {
+            console.error('Error parsing date:', e);
+        }
+        
+        return '';
+    }
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const startTimeInput = document.getElementById('start_time');
+            const endTimeInput = document.getElementById('end_time');
+            
+            if (startTimeInput && startTimeInput.value) {
+                startTimeInput.value = formatDatetime(startTimeInput.value);
+            }
+            
+            if (endTimeInput && endTimeInput.value) {
+                endTimeInput.value = formatDatetime(endTimeInput.value);
+            }
+        });
+    }
+});
+</script>
 @endsection
