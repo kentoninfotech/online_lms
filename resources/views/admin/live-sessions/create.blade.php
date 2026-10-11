@@ -315,6 +315,22 @@
             jitsiInput.placeholder = roomName || 'auto-generated-' + Date.now();
         }
     });
+
+    // Convert datetime-local format (YYYY-MM-DDTHH:mm) to Y-m-d H:i format for server
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const scheduledStart = document.getElementById('scheduled_start').value;
+        const scheduledEnd = document.getElementById('scheduled_end').value;
+        
+        if (scheduledStart) {
+            // Convert from 2026-10-16T15:00 to 2026-10-16 15:00
+            document.getElementById('scheduled_start').value = scheduledStart.replace('T', ' ');
+        }
+        
+        if (scheduledEnd) {
+            // Convert from 2026-10-16T16:00 to 2026-10-16 16:00
+            document.getElementById('scheduled_end').value = scheduledEnd.replace('T', ' ');
+        }
+    });
 </script>
 
 @endsection

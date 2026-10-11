@@ -55,6 +55,18 @@ class LiveSessionController extends Controller
     }
 
     /**
+     * Admin: Edit live session form
+     */
+    public function adminEdit(Course $course, CourseLiveSession $session)
+    {
+        $this->authorize('update', $course);
+
+        $facilitators = \App\Models\Facilitator::where('is_active', true)->get();
+
+        return view('admin.live-sessions.edit', compact('course', 'session', 'facilitators'));
+    }
+
+    /**
      * Admin: Create live session
      */
     public function adminCreate(Course $course)
