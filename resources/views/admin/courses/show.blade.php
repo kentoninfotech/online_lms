@@ -219,6 +219,9 @@
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
+                        <a href="{{ route('admin.course-lessons.calendar', $course) }}" class="btn btn-outline-info btn-sm">
+                            <i class="bi bi-calendar-event me-2"></i>Schedule Calendar
+                        </a>
                         <a href="{{ route(auth()->user()->user_type === 'instructor' ? 'tutor.course-contents.index' : 'admin.course-contents.index', $course) }}" class="btn btn-outline-primary btn-sm">
                             <i class="bi bi-book-fill me-2"></i>Manage Content
                         </a>
