@@ -3,6 +3,8 @@
 @section('title', 'Edit Course Content')
 
 @section('content')
+<!-- TinyMCE Editor -->
+<script src="https://cdn.tiny.cloud/1/{{ config('services.tinymce.api_key') }}/tinymce/7/tinymce.min.js"></script>
 <div class="container-fluid">
     <div class="page-header">
         <div class="row align-items-center">
@@ -344,6 +346,24 @@ document.addEventListener('DOMContentLoaded', function() {
     fileHelpBtn.addEventListener('click', function() {
         fileHelpText.style.display = fileHelpText.style.display === 'none' ? 'block' : 'none';
     });
+});
+
+// Initialize TinyMCE for Description field
+tinymce.init({
+    selector: '#description',
+    height: 300,
+    plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+});
+
+// Initialize TinyMCE for Content field
+tinymce.init({
+    selector: '#content',
+    height: 400,
+    plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
 });
 </script>
 
