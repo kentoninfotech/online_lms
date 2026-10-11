@@ -96,6 +96,7 @@
                                     <!-- <div class="dropdown-divider"></div> -->
                                     <form class="d-inline" action="{{ route('admin.users.delete', $student->user) }}" method="post">
                                         @csrf
+                                        @method('DELETE')
                                         <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Are you sure you want to delete this student, and all its records?');">
                                           <i class="ph ph-trash"></i> Delete
                                         </button>
