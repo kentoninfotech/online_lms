@@ -453,6 +453,20 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::put('/courses/{course}/live-session/{session}', [LiveSessionController::class, 'adminUpdate'])->name('live-sessions.update');
     Route::delete('/courses/{course}/live-session/{session}', [LiveSessionController::class, 'adminDestroy'])->name('live-sessions.destroy');
 
+    // Course Lessons Calendar
+    Route::get('/courses/{course}/calendar', [CourseLessonController::class, 'calendar'])->name('course-lessons.calendar');
+    Route::get('/courses/{course}/lessons', [CourseLessonController::class, 'index'])->name('course-lessons.index');
+    Route::get('/courses/{course}/lessons/create', [CourseLessonController::class, 'create'])->name('course-lessons.create');
+    Route::post('/courses/{course}/lessons', [CourseLessonController::class, 'store'])->name('course-lessons.store');
+    Route::get('/courses/{course}/lessons/{lesson}', [CourseLessonController::class, 'show'])->name('course-lessons.show');
+    Route::get('/courses/{course}/lessons/{lesson}/edit', [CourseLessonController::class, 'edit'])->name('course-lessons.edit');
+    Route::put('/courses/{course}/lessons/{lesson}', [CourseLessonController::class, 'update'])->name('course-lessons.update');
+    Route::delete('/courses/{course}/lessons/{lesson}', [CourseLessonController::class, 'destroy'])->name('course-lessons.destroy');
+    
+    // Course Lessons API
+    Route::get('/api/courses/{course}/lessons/calendar', [CourseLessonController::class, 'getCalendarLessons'])->name('api.course-lessons.calendar');
+    Route::get('/api/upcoming-lessons', [CourseLessonController::class, 'getUpcomingLessons'])->name('api.upcoming-lessons');
+
     // Enrollments
     Route::get('/course-enrollments', [CourseEnrollmentController::class, 'adminIndex'])->name('course-enrollments.index');
     Route::get('/course-enrollments/{enrollment}', [CourseEnrollmentController::class, 'adminShow'])->name('course-enrollments.show');
