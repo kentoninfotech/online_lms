@@ -77,9 +77,11 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="start_time" class="form-label">Start Time <span class="text-danger">*</span></label>
-                                    <input type="datetime-local" class="form-control @error('start_time') is-invalid @enderror"
+                                    <input type="text" class="form-control @error('start_time') is-invalid @enderror"
                                         id="start_time" name="start_time" 
-                                        value="{{ old('start_time', $lesson->start_time?->format('Y-m-d\TH:i')) }}" required>
+                                        value="{{ old('start_time', $lesson->start_time?->format('d/m/Y H:i')) }}" 
+                                        placeholder="DD/MM/YYYY HH:mm" required>
+                                    <small class="text-muted">Format: DD/MM/YYYY HH:mm (e.g., 16/10/2026 15:00)</small>
                                     @error('start_time')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -88,9 +90,11 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="end_time" class="form-label">End Time <span class="text-danger">*</span></label>
-                                    <input type="datetime-local" class="form-control @error('end_time') is-invalid @enderror"
+                                    <input type="text" class="form-control @error('end_time') is-invalid @enderror"
                                         id="end_time" name="end_time" 
-                                        value="{{ old('end_time', $lesson->end_time?->format('Y-m-d\TH:i')) }}" required>
+                                        value="{{ old('end_time', $lesson->end_time?->format('d/m/Y H:i')) }}" 
+                                        placeholder="DD/MM/YYYY HH:mm" required>
+                                    <small class="text-muted">Format: DD/MM/YYYY HH:mm (e.g., 16/10/2026 15:00)</small>
                                     @error('end_time')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -187,38 +191,59 @@
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form');
     
-    function formatDatetime(dateString) {
+    function formatDatetoDDMMYYYY(dateString) {
         if (!dateString) return '';
         
-        // Try ISO format (2026-10-16T15:00)
-        if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(dateString)) {
-            return dateString.replace('T', ' ').substring(0, 16);
+        // If already in DD/MM/YYYY HH:mm format, return as-is
+        if (/^\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}$/.test(dateString)) {
+            return dateString;
         }
         
-        // Try DD/MM/YYYY HH:mm format
-        const ddmmMatch = dateString.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})/);
-        if (ddmmMatch) {
-            const [, dd, mm, yyyy, hh, mi] = ddmmMatch;
-            return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
-        }
-        
-        // Try YYYY-MM-DD HH:mm format
+        // Convert from Y-m-d H:i format to DD/MM/YYYY HH:mm
         if (/^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}/.test(dateString)) {
-            return dateString.substring(0, 16);
+            const [datePart, timePart] = dateString.split(' ');
+            const [yyyy, mm, dd] = datePart.split('-');
+            return `${dd}/${mm}/${yyyy} ${timePart}`;
         }
         
-        // Try Date object or other formats
+        // Convert from ISO format to DD/MM/YYYY HH:mm
+        if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(dateString)) {
+            const [datePart, timePart] = dateString.split('T');
+            const [yyyy, mm, dd] = datePart.split('-');
+            return `${dd}/${mm}/${yyyy} ${timePart}`;
+        }
+        
+        // Try to parse as Date object
         try {
             const date = new Date(dateString);
             if (!isNaN(date.getTime())) {
-                return date.getFullYear() + '-' +
-                    String(date.getMonth() + 1).padStart(2, '0') + '-' +
-                    String(date.getDate()).padStart(2, '0') + ' ' +
-                    String(date.getHours()).padStart(2, '0') + ':' +
-                    String(date.getMinutes()).padStart(2, '0');
+                const dd = String(date.getDate()).padStart(2, '0');
+                const mm = String(date.getMonth() + 1).padStart(2, '0');
+                const yyyy = date.getFullYear();
+                const hh = String(date.getHours()).padStart(2, '0');
+                const mi = String(date.getMinutes()).padStart(2, '0');
+                return `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
             }
         } catch (e) {
             console.error('Error parsing date:', e);
+        }
+        
+        return dateString;
+    }
+    
+    function convertToBackendFormat(dateString) {
+        if (!dateString) return '';
+        
+        // Convert DD/MM/YYYY HH:mm to Y-m-d H:i
+        const match = dateString.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})$/);
+        if (match) {
+            const [, dd, mm, yyyy, hh, mi] = match;
+            return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
+        }
+        
+        // If already in backend format, return as-is
+        if (/^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}$/.test(dateString)) {
+            return dateString;
         }
         
         return '';
@@ -230,11 +255,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const endTimeInput = document.getElementById('end_time');
             
             if (startTimeInput && startTimeInput.value) {
-                startTimeInput.value = formatDatetime(startTimeInput.value);
+                const converted = convertToBackendFormat(startTimeInput.value);
+                if (converted) {
+                    startTimeInput.value = converted;
+                }
             }
             
             if (endTimeInput && endTimeInput.value) {
-                endTimeInput.value = formatDatetime(endTimeInput.value);
+                const converted = convertToBackendFormat(endTimeInput.value);
+                if (converted) {
+                    endTimeInput.value = converted;
+                }
             }
         });
     }

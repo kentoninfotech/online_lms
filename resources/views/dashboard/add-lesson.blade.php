@@ -119,8 +119,9 @@
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Start Time (Africa/Lagos - UTC+1)</label>
                     {{-- All lessons are created in Africa/Lagos time for instructors in Nigeria --}}
-                    <input type="datetime-local" name="start_time" class="form-control @error('start_time') is-invalid @enderror" value="{{ old('start_time') }}" required>
-                    <small class="text-muted">Enter class time in your local timezone (Africa/Lagos)</small>
+                    <input type="text" name="start_time" class="form-control @error('start_time') is-invalid @enderror" 
+                        value="{{ old('start_time') }}" placeholder="DD/MM/YYYY HH:mm" required>
+                    <small class="text-muted">Format: DD/MM/YYYY HH:mm (e.g., 16/10/2026 15:00) - Africa/Lagos timezone</small>
                     @error('start_time') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
@@ -268,5 +269,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Initialize on page load
     toggleRecurrenceFields();
+});
+
+// Datetime format conversion for form submission
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form[action*="lesson.store"]');
+    
+    function convertToBackendFormat(dateString) {
+        if (!dateString) return '';
+        
+        // Convert DD/MM/YYYY HH:mm to Y-m-d H:i
+        const match = dateString.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})$/);
+        if (match) {
+            const [, dd, mm, yyyy, hh, mi] = match;
+            return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
+        }
+        
+        // If already in backend format, return as-is
+        if (/^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}$/.test(dateString)) {
+            return dateString;
+        }
+        
+        return '';
+    }
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const startTimeInput = document.querySelector('input[name="start_time"]');
+            
+            if (startTimeInput && startTimeInput.value) {
+                const converted = convertToBackendFormat(startTimeInput.value);
+                if (converted) {
+                    startTimeInput.value = converted;
+                }
+            }
+        });
+    }
 });
 </script>
