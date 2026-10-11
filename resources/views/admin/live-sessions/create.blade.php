@@ -81,8 +81,10 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="scheduled_start" class="form-label">Start Date & Time *</label>
-                            <input type="datetime-local" class="form-control @error('scheduled_start') is-invalid @enderror" 
-                                   id="scheduled_start" name="scheduled_start" value="{{ old('scheduled_start') }}" required>
+                            <input type="text" class="form-control @error('scheduled_start') is-invalid @enderror" 
+                                   id="scheduled_start" name="scheduled_start" placeholder="DD/MM/YYYY HH:mm"
+                                   value="{{ old('scheduled_start') }}" required>
+                            <small class="text-muted">Format: DD/MM/YYYY HH:mm (e.g., 16/10/2026 15:00)</small>
                             @error('scheduled_start')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
@@ -90,8 +92,10 @@
 
                         <div class="col-md-6 mb-3">
                             <label for="scheduled_end" class="form-label">End Date & Time *</label>
-                            <input type="datetime-local" class="form-control @error('scheduled_end') is-invalid @enderror" 
-                                   id="scheduled_end" name="scheduled_end" value="{{ old('scheduled_end') }}" required>
+                            <input type="text" class="form-control @error('scheduled_end') is-invalid @enderror" 
+                                   id="scheduled_end" name="scheduled_end" placeholder="DD/MM/YYYY HH:mm"
+                                   value="{{ old('scheduled_end') }}" required>
+                            <small class="text-muted">Format: DD/MM/YYYY HH:mm (e.g., 16/10/2026 16:00)</small>
                             @error('scheduled_end')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
@@ -284,20 +288,51 @@
 
 <script>
     // Auto-calculate duration when dates change
+    function parseDatetime(value) {
+        if (!value) return null;
+        
+        // Handle DD/MM/YYYY HH:mm format
+        const ddmmMatch = value.match(/^(\d{2})\/(\d{2})\/(\d{4})\s(\d{2}):(\d{2})$/);
+        if (ddmmMatch) {
+            const [, day, month, year, hours, minutes] = ddmmMatch;
+            return new Date(year, month - 1, day, hours, minutes);
+        }
+        
+        // Handle datetime-local format: YYYY-MM-DDTHH:mm
+        if (value.includes('T')) {
+            const [date, time] = value.split('T');
+            const [year, month, day] = date.split('-');
+            const [hours, minutes] = time.split(':');
+            return new Date(year, month - 1, day, hours, minutes);
+        }
+        
+        // Handle YYYY-MM-DD HH:mm format
+        const yyyymmMatch = value.match(/^(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2})$/);
+        if (yyyymmMatch) {
+            const [, year, month, day, hours, minutes] = yyyymmMatch;
+            return new Date(year, month - 1, day, hours, minutes);
+        }
+        
+        return null;
+    }
+
     document.getElementById('scheduled_start').addEventListener('change', calculateDuration);
     document.getElementById('scheduled_end').addEventListener('change', calculateDuration);
 
     function calculateDuration() {
-        const start = document.getElementById('scheduled_start').value;
-        const end = document.getElementById('scheduled_end').value;
+        const startValue = document.getElementById('scheduled_start').value;
+        const endValue = document.getElementById('scheduled_end').value;
         
-        if (start && end) {
-            const startTime = new Date(start);
-            const endTime = new Date(end);
-            const duration = Math.round((endTime - startTime) / (1000 * 60));
+        if (startValue && endValue) {
+            const startTime = parseDatetime(startValue);
+            const endTime = parseDatetime(endValue);
             
-            if (duration > 0) {
-                document.getElementById('duration_minutes').value = duration;
+            if (startTime && endTime) {
+                const duration = Math.round((endTime - startTime) / (1000 * 60));
+                
+                if (duration > 0) {
+                    document.getElementById('duration_minutes').value = duration;
+                }
             }
         }
     }
@@ -316,57 +351,45 @@
         }
     });
 
-    // Convert datetime formats to Y-m-d H:i format for server validation
+    // Format and validate datetime inputs
     document.querySelector('form').addEventListener('submit', function(e) {
         const startInput = document.getElementById('scheduled_start');
         const endInput = document.getElementById('scheduled_end');
         
-        function formatDatetime(value) {
-            if (!value) return '';
-            
-            // Handle datetime-local format: YYYY-MM-DDTHH:mm
-            if (value.includes('T')) {
-                return value.replace('T', ' ');
-            }
-            
-            // Handle DD/MM/YYYY HH:mm format
-            if (value.match(/^\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}/)) {
-                const [datePart, timePart] = value.split(' ');
-                const [day, month, year] = datePart.split('/');
-                return `${year}-${month}-${day} ${timePart}`;
-            }
-            
-            // Handle YYYY-MM-DD HH:mm format (already correct)
-            if (value.match(/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}/)) {
-                return value;
-            }
-            
-            // Try parsing as Date and formatting
-            try {
-                const date = new Date(value);
-                if (!isNaN(date)) {
-                    const year = date.getFullYear();
-                    const month = String(date.getMonth() + 1).padStart(2, '0');
-                    const day = String(date.getDate()).padStart(2, '0');
-                    const hours = String(date.getHours()).padStart(2, '0');
-                    const minutes = String(date.getMinutes()).padStart(2, '0');
-                    return `${year}-${month}-${day} ${hours}:${minutes}`;
-                }
-            } catch (err) {
-                console.error('Date parsing error:', err);
-            }
-            
-            return value;
-        }
-        
-        if (startInput.value) {
-            startInput.value = formatDatetime(startInput.value);
-        }
-        
-        if (endInput.value) {
-            endInput.value = formatDatetime(endInput.value);
-        }
+        // Keep the DD/MM/YYYY HH:mm format as-is, don't convert
+        // The server will handle the conversion
     });
+    
+    // Add datetime picker input event listeners for formatting assistance
+    const startInput = document.getElementById('scheduled_start');
+    const endInput = document.getElementById('scheduled_end');
+    
+    function formatInput(event) {
+        let value = event.target.value;
+        
+        // Only process if it looks like a date/time is being entered
+        if (value.length === 16) { // DD/MM/YYYY HH:mm
+            // Validate format
+            if (!/^\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}$/.test(value)) {
+                // Try to auto-format
+                value = value.replace(/\D/g, '');
+                if (value.length >= 12) {
+                    const day = value.substring(0, 2);
+                    const month = value.substring(2, 4);
+                    const year = value.substring(4, 8);
+                    const hours = value.substring(8, 10);
+                    const mins = value.substring(10, 12);
+                    
+                    if (day <= 31 && month <= 12 && hours <= 23 && mins <= 59) {
+                        event.target.value = `${day}/${month}/${year} ${hours}:${mins}`;
+                    }
+                }
+            }
+        }
+    }
+    
+    startInput.addEventListener('blur', formatInput);
+    endInput.addEventListener('blur', formatInput);
 </script>
 
 @endsection

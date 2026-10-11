@@ -189,12 +189,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!dateString) return '';
         
         // If already in DD/MM/YYYY HH:mm format, return as-is
-        if (/^\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}$/.test(dateString)) {
+        if (/^\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}$/.test(dateString)) {
             return dateString;
         }
         
         // Convert from Y-m-d H:i format to DD/MM/YYYY HH:mm
-        if (/^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}/.test(dateString)) {
+        if (/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}/.test(dateString)) {
             const [datePart, timePart] = dateString.split(' ');
             const [yyyy, mm, dd] = datePart.split('-');
             return `${dd}/${mm}/${yyyy} ${timePart}`;
@@ -228,15 +228,15 @@ document.addEventListener('DOMContentLoaded', function() {
     function convertToBackendFormat(dateString) {
         if (!dateString) return '';
         
-        // Convert DD/MM/YYYY HH:mm to Y-m-d H:i
-        const match = dateString.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})$/);
+        // Convert DD/MM/YYYY HH:mm to d/m/Y H:i
+        const match = dateString.match(/^(\d{2})\/(\d{2})\/(\d{4})\s(\d{2}):(\d{2})$/);
         if (match) {
             const [, dd, mm, yyyy, hh, mi] = match;
-            return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
+            return `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
         }
         
         // If already in backend format, return as-is
-        if (/^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}$/.test(dateString)) {
+        if (/^\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}$/.test(dateString)) {
             return dateString;
         }
         

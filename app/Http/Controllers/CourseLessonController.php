@@ -66,8 +66,8 @@ class CourseLessonController extends Controller
             'topic' => 'required|string|max:255',
             'description' => 'nullable|string',
             'scheduled_date' => 'nullable|date',
-            'start_time' => 'nullable|date_format:Y-m-d H:i',
-            'end_time' => 'nullable|date_format:Y-m-d H:i|after:start_time',
+            'start_time' => 'nullable|date_format:d/m/Y H:i|required_with:end_time',
+            'end_time' => 'nullable|date_format:d/m/Y H:i|after:start_time|required_with:start_time',
             'location' => 'nullable|string|max:255',
             'meeting_link' => 'nullable|url',
             'instructor_id' => 'required|exists:instructors,id',
@@ -75,6 +75,14 @@ class CourseLessonController extends Controller
             'notes' => 'nullable|string',
             'is_published' => 'boolean',
         ]);
+
+        // Convert DD/MM/YYYY HH:mm format to datetime
+        if ($validated['start_time']) {
+            $validated['start_time'] = Carbon::createFromFormat('d/m/Y H:i', $validated['start_time']);
+        }
+        if ($validated['end_time']) {
+            $validated['end_time'] = Carbon::createFromFormat('d/m/Y H:i', $validated['end_time']);
+        }
 
         $validated['course_id'] = $course->id;
         $validated['is_published'] = $request->has('is_published');
@@ -124,8 +132,8 @@ class CourseLessonController extends Controller
             'topic' => 'required|string|max:255',
             'description' => 'nullable|string',
             'scheduled_date' => 'nullable|date',
-            'start_time' => 'nullable|date_format:Y-m-d H:i',
-            'end_time' => 'nullable|date_format:Y-m-d H:i|after:start_time',
+            'start_time' => 'nullable|date_format:d/m/Y H:i|required_with:end_time',
+            'end_time' => 'nullable|date_format:d/m/Y H:i|after:start_time|required_with:start_time',
             'location' => 'nullable|string|max:255',
             'meeting_link' => 'nullable|url',
             'instructor_id' => 'required|exists:instructors,id',
@@ -133,6 +141,14 @@ class CourseLessonController extends Controller
             'notes' => 'nullable|string',
             'is_published' => 'boolean',
         ]);
+
+        // Convert DD/MM/YYYY HH:mm format to datetime
+        if ($validated['start_time']) {
+            $validated['start_time'] = Carbon::createFromFormat('d/m/Y H:i', $validated['start_time']);
+        }
+        if ($validated['end_time']) {
+            $validated['end_time'] = Carbon::createFromFormat('d/m/Y H:i', $validated['end_time']);
+        }
 
         $validated['is_published'] = $request->has('is_published');
 

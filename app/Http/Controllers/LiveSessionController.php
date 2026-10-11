@@ -89,8 +89,8 @@ class LiveSessionController extends Controller
             'facilitator_id' => 'required|exists:facilitators,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'scheduled_start' => 'required|date_format:Y-m-d H:i',
-            'scheduled_end' => 'required|date_format:Y-m-d H:i|after:scheduled_start',
+            'scheduled_start' => 'required|date_format:d/m/Y H:i',
+            'scheduled_end' => 'required|date_format:d/m/Y H:i|after:scheduled_start',
             'duration_minutes' => 'nullable|integer|min:15|max:480',
             'is_compulsory' => 'boolean',
             'max_points' => 'nullable|integer|min:0|max:100',
@@ -101,6 +101,10 @@ class LiveSessionController extends Controller
             'meeting_id' => 'nullable|string',
             'meeting_password' => 'nullable|string',
         ]);
+
+        // Convert DD/MM/YYYY HH:mm to datetime
+        $validated['scheduled_start'] = \Carbon\Carbon::createFromFormat('d/m/Y H:i', $validated['scheduled_start']);
+        $validated['scheduled_end'] = \Carbon\Carbon::createFromFormat('d/m/Y H:i', $validated['scheduled_end']);
 
         // Generate Jitsi room name automatically if not provided
         if (!$validated['jitsi_room_name']) {
@@ -132,8 +136,8 @@ class LiveSessionController extends Controller
             'facilitator_id' => 'required|exists:facilitators,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'scheduled_start' => 'required|date_format:Y-m-d H:i',
-            'scheduled_end' => 'required|date_format:Y-m-d H:i|after:scheduled_start',
+            'scheduled_start' => 'required|date_format:d/m/Y H:i',
+            'scheduled_end' => 'required|date_format:d/m/Y H:i|after:scheduled_start',
             'duration_minutes' => 'nullable|integer|min:15|max:480',
             'is_compulsory' => 'boolean',
             'max_points' => 'nullable|integer|min:0|max:100',
@@ -145,6 +149,10 @@ class LiveSessionController extends Controller
             'meeting_password' => 'nullable|string',
             'status' => 'in:scheduled,live,completed,cancelled'
         ]);
+
+        // Convert DD/MM/YYYY HH:mm to datetime
+        $validated['scheduled_start'] = \Carbon\Carbon::createFromFormat('d/m/Y H:i', $validated['scheduled_start']);
+        $validated['scheduled_end'] = \Carbon\Carbon::createFromFormat('d/m/Y H:i', $validated['scheduled_end']);
 
         // Generate Jitsi room name if not provided and not already set
         if (!$validated['jitsi_room_name'] && !$session->jitsi_room_name) {
