@@ -11,6 +11,7 @@ use App\Http\Controllers\LessonController;
 use App\Http\Controllers\ZoomController;
 use App\Http\Controllers\JoinClassController;
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\CourseLessonController;
 use App\Http\Controllers\Dashboard\AdminDashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
@@ -612,4 +613,18 @@ Route::middleware(['auth', 'verified', 'role:instructor'])->prefix('tutor')->nam
     Route::get('/courses/{course}/announcement/history', [CourseBulkMessageController::class, 'history'])->name('course.announcement.history');
     Route::get('/announcement/{message}', [CourseBulkMessageController::class, 'show'])->name('course.announcement.show');
     Route::post('/announcement/{message}/send', [CourseBulkMessageController::class, 'send'])->name('course.announcement.send');
+
+    // Course Lessons Calendar
+    Route::get('/courses/{course}/calendar', [CourseLessonController::class, 'calendar'])->name('admin.course-lessons.calendar');
+    Route::get('/courses/{course}/lessons', [CourseLessonController::class, 'index'])->name('admin.course-lessons.index');
+    Route::get('/courses/{course}/lessons/create', [CourseLessonController::class, 'create'])->name('admin.course-lessons.create');
+    Route::post('/courses/{course}/lessons', [CourseLessonController::class, 'store'])->name('admin.course-lessons.store');
+    Route::get('/courses/{course}/lessons/{lesson}', [CourseLessonController::class, 'show'])->name('admin.course-lessons.show');
+    Route::get('/courses/{course}/lessons/{lesson}/edit', [CourseLessonController::class, 'edit'])->name('admin.course-lessons.edit');
+    Route::put('/courses/{course}/lessons/{lesson}', [CourseLessonController::class, 'update'])->name('admin.course-lessons.update');
+    Route::delete('/courses/{course}/lessons/{lesson}', [CourseLessonController::class, 'destroy'])->name('admin.course-lessons.destroy');
+    
+    // Course Lessons API
+    Route::get('/api/courses/{course}/lessons/calendar', [CourseLessonController::class, 'getCalendarLessons'])->name('api.course-lessons.calendar');
+    Route::get('/api/upcoming-lessons', [CourseLessonController::class, 'getUpcomingLessons'])->name('api.upcoming-lessons');
 });

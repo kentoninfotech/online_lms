@@ -186,4 +186,13 @@ class Course extends Model
         return $this->hasMany(CourseBulkMessage::class, 'course_id')
             ->orderByDesc('created_at');
     }
+
+    /**
+     * Get all lessons for this course
+     */
+    public function lessons(): HasMany
+    {
+        return $this->hasMany(CourseLesson::class, 'course_id')
+            ->orderBy('start_time', 'asc');
+    }
 }
