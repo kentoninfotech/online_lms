@@ -119,8 +119,9 @@
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Start Time (Africa/Lagos - UTC+1)</label>
                     {{-- All lessons are created in Africa/Lagos time for instructors in Nigeria --}}
-                    <input type="text" name="start_time" class="form-control @error('start_time') is-invalid @enderror" 
-                        value="{{ old('start_time') }}" placeholder="DD/MM/YYYY HH:mm" required>
+                    <input type="datetime-local" id="start_time_picker" name="start_time_picker" class="form-control @error('start_time') is-invalid @enderror" 
+                        placeholder="DD/MM/YYYY HH:mm" required data-flatpickr-enabled="true">
+                    <input type="hidden" name="start_time" id="start_time" value="{{ old('start_time') }}">
                     <small class="text-muted">Format: DD/MM/YYYY HH:mm (e.g., 16/10/2026 15:00) - Africa/Lagos timezone</small>
                     @error('start_time') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
@@ -274,11 +275,20 @@ document.addEventListener("DOMContentLoaded", () => {
 // Datetime format conversion for form submission
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form[action*="lesson.store"]');
+    const startTimePickerInput = document.querySelector('#start_time_picker');
+    const startTimeHiddenInput = document.querySelector('#start_time');
     
     function convertToBackendFormat(dateString) {
         if (!dateString) return '';
         
-        // Convert DD/MM/YYYY HH:mm to Y-m-d H:i
+        // Handle datetime-local format (YYYY-MM-DDTHH:mm or YYYY-MM-DD HH:mm)
+        if (/^\d{4}-\d{2}-\d{2}[T\s]\d{2}:\d{2}/.test(dateString)) {
+            const [date, time] = dateString.replace('T', ' ').split(' ');
+            const [yyyy, mm, dd] = date.split('-');
+            return `${yyyy}-${mm}-${dd} ${time}`;
+        }
+        
+        // Convert DD/MM/YYYY HH:mm to Y-m-d H:i (backend format)
         const match = dateString.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})$/);
         if (match) {
             const [, dd, mm, yyyy, hh, mi] = match;
@@ -293,14 +303,33 @@ document.addEventListener('DOMContentLoaded', function() {
         return '';
     }
     
+    // Sync the visible input to hidden input on change
+    if (startTimePickerInput) {
+        startTimePickerInput.addEventListener('change', function() {
+            const converted = convertToBackendFormat(this.value);
+            if (converted && startTimeHiddenInput) {
+                startTimeHiddenInput.value = converted;
+                console.log('Start time updated:', this.value, '→', converted);
+            }
+        });
+        
+        // Also sync on input event for real-time feedback
+        startTimePickerInput.addEventListener('input', function() {
+            const converted = convertToBackendFormat(this.value);
+            if (converted && startTimeHiddenInput) {
+                startTimeHiddenInput.value = converted;
+            }
+        });
+    }
+    
+    // On form submission, ensure hidden field has correct value
     if (form) {
         form.addEventListener('submit', function(e) {
-            const startTimeInput = document.querySelector('input[name="start_time"]');
-            
-            if (startTimeInput && startTimeInput.value) {
-                const converted = convertToBackendFormat(startTimeInput.value);
-                if (converted) {
-                    startTimeInput.value = converted;
+            if (startTimePickerInput && startTimePickerInput.value) {
+                const converted = convertToBackendFormat(startTimePickerInput.value);
+                if (converted && startTimeHiddenInput) {
+                    startTimeHiddenInput.value = converted;
+                    console.log('Form submitted - Start time:', startTimePickerInput.value, '→', startTimeHiddenInput.value);
                 }
             }
         });

@@ -47,6 +47,21 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" id="main-style-link" />
     <link rel="stylesheet" href="{{ asset('assets/css/style-preset.css') }}" />
 
+    <!-- [Flatpickr] Date/Time Picker Library -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/themes/light.css">
+
+    <!-- [Flatpickr Z-Index Fix] Ensure calendar is always visible -->
+    <style>
+        .flatpickr-calendar {
+            z-index: 99999 !important;
+            box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.1) !important;
+        }
+        .flatpickr-input {
+            cursor: pointer;
+        }
+    </style>
+
     <!-- [Timezone Detector] - Load early to detect timezone before page interactions -->
     <script>
         @include('partials.timezone-detector-inline')
@@ -134,6 +149,151 @@
 <!-- [footer] end -->
 
 @include('layouts.partials.whatsapp-chat-widget')
+
+<!-- [Flatpickr] Date/Time Picker Script - Load with defer to ensure it's available -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js" defer></script>
+
+<!-- [Global DateTime Picker Initialization] - Wait for Flatpickr to load -->
+<script>
+    function initializeDatePickers() {
+        // Check if flatpickr is loaded
+        if (typeof flatpickr === 'undefined') {
+            // If not loaded, retry after 100ms
+            setTimeout(initializeDatePickers, 100);
+            return;
+        }
+
+        // Configuration for all datetime pickers
+        const datetimeConfig = {
+            enableTime: true,
+            dateFormat: "d/m/Y H:i",
+            time_24hr: true,
+            minuteIncrement: 1,
+            altInput: false,
+            allowInput: true,
+            clickOpens: true,
+            closeOnSelect: true,
+            static: false,
+            position: 'auto',
+            appendTo: document.body,
+            onClose: function(selectedDates, dateStr, instance) {
+                const hiddenInput = instance.element.parentElement?.querySelector('input[type="hidden"]');
+                if (hiddenInput && dateStr) {
+                    hiddenInput.value = dateStr;
+                    const event = new Event('change', { bubbles: true });
+                    hiddenInput.dispatchEvent(event);
+                }
+            }
+        };
+        
+        const dateConfig = {
+            enableTime: false,
+            dateFormat: "d/m/Y",
+            altInput: false,
+            allowInput: true,
+            clickOpens: true,
+            closeOnSelect: true,
+            static: false,
+            position: 'auto',
+            appendTo: document.body
+        };
+        
+        // Initialize datetime-local inputs with Flatpickr
+        document.querySelectorAll('input[type="datetime-local"]').forEach(function(elem) {
+            if (!elem.hasAttribute('data-flatpickr-initialized')) {
+                try {
+                    flatpickr(elem, datetimeConfig);
+                    elem.setAttribute('data-flatpickr-initialized', 'true');
+                    elem.setAttribute('placeholder', 'DD/MM/YYYY HH:mm');
+                } catch(e) {
+                    console.error('Error initializing datetime picker:', e);
+                }
+            }
+        });
+
+        // Initialize date inputs with Flatpickr
+        document.querySelectorAll('input[type="date"]').forEach(function(elem) {
+            if (!elem.hasAttribute('data-flatpickr-initialized')) {
+                try {
+                    flatpickr(elem, dateConfig);
+                    elem.setAttribute('data-flatpickr-initialized', 'true');
+                    elem.setAttribute('placeholder', 'DD/MM/YYYY');
+                } catch(e) {
+                    console.error('Error initializing date picker:', e);
+                }
+            }
+        });
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeDatePickers);
+    } else {
+        initializeDatePickers();
+    }
+
+    // Re-initialize pickers when new forms are dynamically added
+    window.initializeNewDatePickers = function() {
+        if (typeof flatpickr === 'undefined') {
+            console.warn('Flatpickr not loaded yet');
+            return;
+        }
+
+        const datetimeConfig = {
+            enableTime: true,
+            dateFormat: "d/m/Y H:i",
+            time_24hr: true,
+            minuteIncrement: 1,
+            altInput: false,
+            allowInput: true,
+            clickOpens: true,
+            closeOnSelect: true,
+            static: false,
+            position: 'auto',
+            appendTo: document.body,
+            onClose: function(selectedDates, dateStr, instance) {
+                const hiddenInput = instance.element.parentElement?.querySelector('input[type="hidden"]');
+                if (hiddenInput && dateStr) {
+                    hiddenInput.value = dateStr;
+                    const event = new Event('change', { bubbles: true });
+                    hiddenInput.dispatchEvent(event);
+                }
+            }
+        };
+        
+        const dateConfig = {
+            enableTime: false,
+            dateFormat: "d/m/Y",
+            altInput: false,
+            allowInput: true,
+            clickOpens: true,
+            closeOnSelect: true,
+            static: false,
+            position: 'auto',
+            appendTo: document.body
+        };
+        
+        document.querySelectorAll('input[type="datetime-local"]:not([data-flatpickr-initialized])').forEach(function(elem) {
+            try {
+                flatpickr(elem, datetimeConfig);
+                elem.setAttribute('data-flatpickr-initialized', 'true');
+                elem.setAttribute('placeholder', 'DD/MM/YYYY HH:mm');
+            } catch(e) {
+                console.error('Error initializing datetime picker:', e);
+            }
+        });
+
+        document.querySelectorAll('input[type="date"]:not([data-flatpickr-initialized])').forEach(function(elem) {
+            try {
+                flatpickr(elem, dateConfig);
+                elem.setAttribute('data-flatpickr-initialized', 'true');
+                elem.setAttribute('placeholder', 'DD/MM/YYYY');
+            } catch(e) {
+                console.error('Error initializing date picker:', e);
+            }
+        });
+    };
+</script>
     
 </body>
 <!-- [Body] end -->
