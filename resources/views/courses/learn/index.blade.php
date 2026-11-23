@@ -7,7 +7,7 @@
     .description-preview {
         line-height: 1.5;
         font-size: 0.95rem;
-        color: #6c757d;
+        color: #333;
     }
     
     .description-preview h1,
@@ -33,13 +33,13 @@
     }
     
     .description-preview p {
-        margin: 0.25rem 0;
+        margin: 0.5rem 0;
         font-size: 0.95rem;
     }
     
     .description-preview ul,
     .description-preview ol {
-        margin: 0.5rem 0 0.25rem 1rem;
+        margin: 0.5rem 0 0.5rem 1.5rem;
         padding-left: 0;
         font-size: 0.95rem;
     }
@@ -48,53 +48,23 @@
         margin: 0.25rem 0;
     }
 
-    /* Expandable content card styles */
-    .content-card {
-        height: 500px;
-        overflow: hidden;
-        transition: height 0.3s ease, max-height 0.3s ease;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .content-card.expanded {
-        height: auto;
-        max-height: none;
-    }
-
-    .content-card .card-title {
+    .description-preview strong {
         color: var(--bs-primary);
-        font-weight: 600;
-        margin-bottom: 0.75rem;
+        font-weight: 700;
     }
 
-    .content-card .card-body {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        overflow: hidden;
+    /* Table styling */
+    .content-row {
+        cursor: pointer;
+        transition: background-color 0.2s ease;
     }
 
-    .content-card .description-preview {
-        flex: 1;
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
+    .content-row:hover {
+        background-color: #f8f9fa;
     }
 
-    .content-card.collapsed .description-preview {
-        -webkit-line-clamp: 8;
-    }
-
-    .content-card.expanded .description-preview {
-        -webkit-line-clamp: unset;
-        overflow: visible;
-    }
-
-    .content-card .btn {
-        flex-shrink: 0;
-        margin-top: auto;
+    .table-hover tbody tr.content-row:hover {
+        background-color: #f0f7ff;
     }
 </style>
 
@@ -234,25 +204,57 @@
                     <h5 class="mt-4">Available Content</h5>
                     
                     @if(isset($courseContents) && $courseContents->count() > 0)
-                        <div class="row">
-                            @foreach($courseContents as $content)
-                                <div class="col-md-6 mb-3">
-                                    <div class="card h-100 d-flex flex-column content-card collapsed" data-content-id="{{ $content->id }}" onclick="toggleCardExpand(this, event)">
-                                        <div class="card-body d-flex flex-column">
-                                            <h6 class="card-title">
-                                                <i class="bi {{ $content->content_type === 'video' ? 'bi-play-circle' : 'bi-file-text' }} me-2"></i>
-                                                {{ $content->title }}
-                                            </h6>
-                                            <div class="card-text small text-muted flex-grow-1 description-preview">
-                                                {!! $content->description ?? '<em>No description</em>' !!}
-                                            </div>
-                                            <a href="{{ route('courses.learn.content', [$course, $content]) }}" class="btn btn-sm btn-primary mt-auto" onclick="event.stopPropagation()">
-                                                Start Learning
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 5%;">#</th>
+                                        <th style="width: 50%;">Title</th>
+                                        <th style="width: 15%;">Type</th>
+                                        <th style="width: 15%;">Reading Time</th>
+                                        <th style="width: 15%;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($courseContents as $index => $content)
+                                        <tr class="content-row cursor-pointer" data-content-id="{{ $content->id }}" onclick="toggleDescriptionRow(this, event)">
+                                            <td>{{ $index + 1 }}</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="bi {{ $content->content_type === 'video' ? 'bi-play-circle' : 'bi-file-text' }} me-2" style="color: var(--bs-primary);"></i>
+                                                    <span style="color: var(--bs-primary); font-weight: 600;">{{ $content->title }}</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge {{ $content->content_type === 'video' ? 'bg-info' : 'bg-secondary' }}">
+                                                    {{ ucfirst($content->content_type) }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">
+                                                    {{ $content->min_reading_time_minutes ?? 'N/A' }} min
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <a href="{{ route('courses.learn.content', [$course, $content]) }}" class="btn btn-sm btn-primary" onclick="event.stopPropagation()">
+                                                    <i class="bi bi-eye me-1"></i>View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <!-- Description row (hidden by default) -->
+                                        <tr class="description-row" id="desc-{{ $content->id }}" style="display: none;">
+                                            <td colspan="5">
+                                                <div class="p-3 bg-light rounded">
+                                                    <strong>Description:</strong>
+                                                    <div class="mt-2 description-preview">
+                                                        {!! $content->description ?? '<em>No description available</em>' !!}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     @else
                         <div class="alert alert-warning">
@@ -266,32 +268,35 @@
 </div>
 
 <script>
-function toggleCardExpand(cardElement, event) {
-    event.stopPropagation();
-    
-    const isExpanded = cardElement.classList.contains('expanded');
-    
-    // If clicking on the button, don't toggle
+function toggleDescriptionRow(rowElement, event) {
+    // Don't toggle if clicking the View button
     if (event.target.closest('.btn-primary')) {
         return;
     }
+
+    const contentId = rowElement.dataset.contentId;
+    const descriptionRow = document.getElementById('desc-' + contentId);
     
-    if (isExpanded) {
-        cardElement.classList.remove('expanded');
-        cardElement.classList.add('collapsed');
-    } else {
-        cardElement.classList.remove('collapsed');
-        cardElement.classList.add('expanded');
+    if (descriptionRow) {
+        const isHidden = descriptionRow.style.display === 'none';
+        
+        // Hide all other open description rows
+        document.querySelectorAll('.description-row').forEach(row => {
+            row.style.display = 'none';
+        });
+        
+        // Toggle current row
+        if (isHidden) {
+            descriptionRow.style.display = 'table-row';
+        }
     }
 }
 
-// Close expanded cards when clicking outside
+// Close description rows when clicking outside table
 document.addEventListener('click', function(event) {
-    if (!event.target.closest('.content-card')) {
-        const expandedCards = document.querySelectorAll('.content-card.expanded');
-        expandedCards.forEach(card => {
-            card.classList.remove('expanded');
-            card.classList.add('collapsed');
+    if (!event.target.closest('.table')) {
+        document.querySelectorAll('.description-row').forEach(row => {
+            row.style.display = 'none';
         });
     }
 });
