@@ -5,10 +5,9 @@
 @section('content')
 <style>
     .description-preview {
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        overflow: visible;
-        line-height: 1.4;
+        line-height: 1.5;
+        font-size: 0.95rem;
+        color: #6c757d;
     }
     
     .description-preview h1,
@@ -19,8 +18,18 @@
     .description-preview h6 {
         font-size: 1rem;
         font-weight: 600;
-        margin: 0.25rem 0;
+        margin: 0.5rem 0 0.25rem 0;
         line-height: 1.4;
+        color: #333;
+    }
+
+    .description-preview h1:first-child,
+    .description-preview h2:first-child,
+    .description-preview h3:first-child,
+    .description-preview h4:first-child,
+    .description-preview h5:first-child,
+    .description-preview h6:first-child {
+        margin-top: 0;
     }
     
     .description-preview p {
@@ -30,9 +39,13 @@
     
     .description-preview ul,
     .description-preview ol {
-        margin: 0.25rem 0;
-        padding-left: 1rem;
+        margin: 0.5rem 0 0.25rem 1rem;
+        padding-left: 0;
         font-size: 0.95rem;
+    }
+
+    .description-preview li {
+        margin: 0.25rem 0;
     }
 
     /* Expandable content card styles */
@@ -41,6 +54,8 @@
         overflow: hidden;
         transition: height 0.3s ease, max-height 0.3s ease;
         cursor: pointer;
+        display: flex;
+        flex-direction: column;
     }
 
     .content-card.expanded {
@@ -51,20 +66,35 @@
     .content-card .card-title {
         color: var(--bs-primary);
         font-weight: 600;
+        margin-bottom: 0.75rem;
     }
 
     .content-card .card-body {
-        position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .content-card .description-preview {
+        flex: 1;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
     }
 
     .content-card.collapsed .description-preview {
-        -webkit-line-clamp: 10;
-        overflow: hidden;
+        -webkit-line-clamp: 8;
     }
 
     .content-card.expanded .description-preview {
         -webkit-line-clamp: unset;
         overflow: visible;
+    }
+
+    .content-card .btn {
+        flex-shrink: 0;
+        margin-top: auto;
     }
 </style>
 
