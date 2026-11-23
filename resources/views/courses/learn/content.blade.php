@@ -149,26 +149,6 @@
                             {!! $content->description !!}
                         </div>
                     @endif
-                            <h5 class="mb-3">Content & Files</h5>
-                            <div class="content-body">
-                                {!! nl2br(e($content->content)) !!}
-                            </div>
-                        </div>
-                    @elseif($content->content_type === 'html' || ($content->content_type === 'text' && !$content->content))
-                        <div class="mb-4">
-                            <h5 class="mb-3">Content & Files</h5>
-                            <div class="content-body">
-                                {!! $content->content !!}
-                            </div>
-                        </div>
-                    @endif
-
-                    <!-- Description (if not shown above) -->
-                    @if(!empty($content->description) && !($content->content_type === 'text' && $content->content))
-                        <div class="content-description">
-                            {!! $content->description !!}
-                        </div>
-                    @endif
 
                     @if($content->content_type === 'document' && $content->content_url)
                         <div class="mt-4">

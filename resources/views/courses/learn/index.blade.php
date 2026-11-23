@@ -148,7 +148,7 @@
                                                 <i class="bi {{ $content->content_type === 'video' ? 'bi-play-circle' : 'bi-file-text' }} me-2"></i>
                                                 {{ $content->title }}
                                             </h6>
-                                            <p class="card-text small text-muted flex-grow-1">{{ $content->description ?? 'No description' }}</p>
+                                            <p class="card-text small text-muted flex-grow-1">{{ strip_tags($content->description) ?? 'No description' }}</p>
                                             <a href="{{ route('courses.learn.content', [$course, $content]) }}" class="btn btn-sm btn-primary mt-auto">
                                                 Start Learning
                                             </a>
