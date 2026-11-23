@@ -142,14 +142,14 @@
                         <div class="row">
                             @foreach($courseContents as $content)
                                 <div class="col-md-6 mb-3">
-                                    <div class="card">
-                                        <div class="card-body">
+                                    <div class="card h-100 d-flex flex-column">
+                                        <div class="card-body d-flex flex-column">
                                             <h6 class="card-title">
                                                 <i class="bi {{ $content->content_type === 'video' ? 'bi-play-circle' : 'bi-file-text' }} me-2"></i>
                                                 {{ $content->title }}
                                             </h6>
-                                            <p class="card-text small text-muted">{{ Str::limit($content->description ?? 'No description', 80) }}</p>
-                                            <a href="{{ route('courses.learn.content', [$course, $content]) }}" class="btn btn-sm btn-primary">
+                                            <p class="card-text small text-muted flex-grow-1">{{ $content->description ?? 'No description' }}</p>
+                                            <a href="{{ route('courses.learn.content', [$course, $content]) }}" class="btn btn-sm btn-primary mt-auto">
                                                 Start Learning
                                             </a>
                                         </div>

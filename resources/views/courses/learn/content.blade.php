@@ -3,6 +3,39 @@
 @section('title', 'Learning - ' . $course->title . ' - ' . $content->title)
 
 @section('content')
+<style>
+    .content-container {
+        display: flex;
+        gap: 2rem;
+        position: relative;
+    }
+    
+    .sidebar-fixed {
+        position: fixed;
+        top: 150px;
+        left: 20px;
+        width: 320px;
+        max-height: 80vh;
+        overflow-y: auto;
+        z-index: 1000;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    
+    .main-content {
+        flex: 1;
+        width: 100%;
+    }
+    
+    @media (max-width: 991.98px) {
+        .sidebar-fixed {
+            position: static;
+            width: 100%;
+            max-height: none;
+            box-shadow: none;
+        }
+    }
+</style>
+
 <div class="container-fluid py-4">
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-4">
@@ -21,62 +54,60 @@
         </button>
     </div>
 
-    <div class="row">
-        <!-- Collapsible Sidebar (Collapsed by default) -->
-        <div class="col-lg-3">
-            <!-- Sidebar Content -->
-            <div class="collapse" id="courseContentSidebar">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Course Content</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-toggle="collapse" data-bs-target="#courseContentSidebar" aria-label="Close"></button>
-                    </div>
-                    <div class="list-group list-group-flush">
-                        @if($courseContents && $courseContents->count() > 0)
-                            @foreach($courseContents as $c)
-                                <a href="{{ route('courses.learn.content', [$course, $c]) }}" 
-                                   class="list-group-item list-group-item-action {{ $c->id === $content->id ? 'active' : '' }}">
-                                    <div class="d-flex align-items-center">
-                                        <i class="bi {{ $c->content_type === 'video' ? 'bi-play-circle' : 'bi-file-text' }} me-2"></i>
-                                        <div class="flex-grow-1">
-                                            <small>{{ Str::limit($c->title, 40) }}</small>
-                                        </div>
-                                        @if($c->is_published)
-                                            <i class="bi bi-check-circle text-success"></i>
-                                        @endif
-                                    </div>
-                                </a>
-                            @endforeach
-                        @endif
-                    </div>
+    <!-- Content Wrapper -->
+    <div class="content-container">
+        <!-- Collapsible Sidebar (Floats on top when expanded) -->
+        <div class="collapse" id="courseContentSidebar" style="width: 100%;">
+            <div class="card shadow-sm mb-4" id="sidebarContent">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Course Content</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-toggle="collapse" data-bs-target="#courseContentSidebar" aria-label="Close"></button>
                 </div>
+                <div class="list-group list-group-flush">
+                    @if($courseContents && $courseContents->count() > 0)
+                        @foreach($courseContents as $c)
+                            <a href="{{ route('courses.learn.content', [$course, $c]) }}" 
+                               class="list-group-item list-group-item-action {{ $c->id === $content->id ? 'active' : '' }}">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi {{ $c->content_type === 'video' ? 'bi-play-circle' : 'bi-file-text' }} me-2"></i>
+                                    <div class="flex-grow-1">
+                                        <small>{{ Str::limit($c->title, 40) }}</small>
+                                    </div>
+                                    @if($c->is_published)
+                                        <i class="bi bi-check-circle text-success"></i>
+                                    @endif
+                                </div>
+                            </a>
+                        @endforeach
+                    @endif
+                </div>
+            </div>
 
-                <div class="card shadow-sm">
-                    <div class="card-header">
-                        <h5 class="mb-0">Progress</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="progress mb-3" style="height: 30px;">
-                            @php
-                                $progress = $enrollment->progress_percentage ?? 0;
-                            @endphp
-                            <div class="progress-bar bg-{{ $progress >= 75 ? 'success' : ($progress >= 50 ? 'info' : ($progress >= 25 ? 'warning' : 'danger')) }}" 
-                                 role="progressbar" 
-                                 style="width: {{ $progress }}%" 
-                                 aria-valuenow="{{ $progress }}" 
-                                 aria-valuemin="0" 
-                                 aria-valuemax="100">
-                                {{ $progress }}%
-                            </div>
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Progress</h5>
+                </div>
+                <div class="card-body">
+                    <div class="progress mb-3" style="height: 30px;">
+                        @php
+                            $progress = $enrollment->progress_percentage ?? 0;
+                        @endphp
+                        <div class="progress-bar bg-{{ $progress >= 75 ? 'success' : ($progress >= 50 ? 'info' : ($progress >= 25 ? 'warning' : 'danger')) }}" 
+                             role="progressbar" 
+                             style="width: {{ $progress }}%" 
+                             aria-valuenow="{{ $progress }}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="100">
+                            {{ $progress }}%
                         </div>
-                        <small class="text-muted">Keep learning to progress through the course!</small>
                     </div>
+                    <small class="text-muted">Keep learning to progress through the course!</small>
                 </div>
             </div>
         </div>
 
-        <!-- Main Content (Full width when sidebar is collapsed) -->
-        <div class="col-lg-9" id="mainContentCol">
+        <!-- Main Content Section -->
+        <div class="main-content">
             <div class="card shadow-sm mb-4">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
@@ -98,6 +129,26 @@
                     <!-- Main Content Section -->
                     @if($content->content_type === 'text' && $content->content)
                         <div class="mb-4">
+                            <h5 class="mb-3">Content & Files</h5>
+                            <div class="content-body">
+                                {!! $content->content !!}
+                            </div>
+                        </div>
+                    @elseif($content->content_type === 'html' || ($content->content_type === 'text' && !$content->content))
+                        <div class="mb-4">
+                            <h5 class="mb-3">Content & Files</h5>
+                            <div class="content-body">
+                                {!! $content->content !!}
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Description (if not shown above) -->
+                    @if(!empty($content->description) && !($content->content_type === 'text' && $content->content))
+                        <div class="content-description">
+                            {!! $content->description !!}
+                        </div>
+                    @endif
                             <h5 class="mb-3">Content & Files</h5>
                             <div class="content-body">
                                 {!! nl2br(e($content->content)) !!}
@@ -291,18 +342,42 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1000);
     }
 
-    // Handle sidebar toggle button text
+    // Handle sidebar toggle button text and positioning
     const sidebarToggle = document.getElementById('courseContentSidebar');
-    const toggleBtn = document.querySelector('[data-bs-target="#courseContentSidebar"]');
+    const toggleBtn = document.querySelector('[data-bs-toggle="collapse"][data-bs-target="#courseContentSidebar"]');
     const toggleText = document.getElementById('toggleText');
+    const sidebarContent = document.getElementById('sidebarContent');
 
     if (sidebarToggle && toggleBtn && toggleText) {
+        // Update text on show
         sidebarToggle.addEventListener('show.bs.collapse', function() {
             toggleText.textContent = 'Hide Course Content';
+            
+            // Apply fixed positioning on larger screens
+            if (window.innerWidth >= 992) {
+                if (sidebarContent) {
+                    sidebarContent.classList.add('sidebar-fixed');
+                }
+            }
         });
 
+        // Update text on hide and remove fixed positioning
         sidebarToggle.addEventListener('hide.bs.collapse', function() {
             toggleText.textContent = 'View Course Content';
+            if (sidebarContent) {
+                sidebarContent.classList.remove('sidebar-fixed');
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (sidebarToggle.classList.contains('show') || sidebarToggle.style.display !== 'none') {
+                if (window.innerWidth < 992 && sidebarContent) {
+                    sidebarContent.classList.remove('sidebar-fixed');
+                } else if (window.innerWidth >= 992 && sidebarContent && toggleBtn.getAttribute('aria-expanded') === 'true') {
+                    sidebarContent.classList.add('sidebar-fixed');
+                }
+            }
         });
     }
 });
