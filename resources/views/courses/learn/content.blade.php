@@ -68,7 +68,7 @@
     <!-- Content Wrapper -->
     <div class="content-container">
         <!-- Collapsible Sidebar (Floats on mobile, fixed on desktop) -->
-        <div class="collapse show" id="courseContentSidebar">
+        <div class="collapse" id="courseContentSidebar">
             <div class="card shadow-sm mb-4 sidebar-fixed" id="sidebarContent">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Course Content</h5>
@@ -183,8 +183,8 @@
                             @endphp
 
                             @if($minReadingTime > 0)
-                                <!-- Minimum Time Warning -->
-                                <div class="alert alert-info mb-3" id="minTimeAlert" role="alert">
+                                <!-- Minimum Time Warning - Hidden initially, shown when requirement is met -->
+                                <div class="alert alert-info mb-3" id="minTimeAlert" role="alert" style="display: none;">
                                     <i class="bi bi-clock-history me-2"></i>
                                     <strong>Minimum Reading/Viewing Time Required:</strong>
                                     <span id="requiredTimeDisplay">{{ $minReadingTime }} minute(s)</span>
@@ -208,10 +208,11 @@
                                 <!-- Hidden input to send time spent -->
                                 <input type="hidden" id="timeSpentInput" name="time_spent_minutes" value="0">
 
-                                <!-- Mark Complete Form -->
+                                <!-- Mark Complete Form - Hidden initially, shown when time requirement is met -->
                                 <form action="{{ route('courses.learn.content.complete', [$course, $content]) }}" 
                                       method="POST" 
-                                      id="markCompleteForm">
+                                      id="markCompleteForm"
+                                      style="display: none;">
                                     @csrf
                                     <button type="button" 
                                             id="markCompleteBtn" 
@@ -307,6 +308,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const timeDisplay = document.getElementById('timeDisplay');
         const timeSpentInput = document.getElementById('timeSpentInput');
         const minTimeProgress = document.getElementById('minTimeProgress');
+        const minTimeAlert = document.getElementById('minTimeAlert');
+        const markCompleteForm = document.getElementById('markCompleteForm');
+        let timeRequirementMet = false;
 
         // Update timer every second
         const timer = setInterval(function() {
@@ -321,9 +325,17 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update time display
             timeDisplay.textContent = timeSpentMinutes + ' / ' + minTimeMinutes + ' min';
 
-            // Enable button if minimum time reached
-            if (timeSpentMinutes >= minTimeMinutes) {
+            // Enable button and show alert/form when minimum time reached
+            if (timeSpentMinutes >= minTimeMinutes && !timeRequirementMet) {
+                timeRequirementMet = true;
                 markCompleteBtn.disabled = false;
+                // Show the alert and form
+                if (minTimeAlert) {
+                    minTimeAlert.style.display = 'block';
+                }
+                if (markCompleteForm) {
+                    markCompleteForm.style.display = 'block';
+                }
                 clearInterval(timer);
             }
 

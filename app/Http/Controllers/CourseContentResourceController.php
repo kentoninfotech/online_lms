@@ -30,7 +30,7 @@ class CourseContentResourceController extends Controller
         // Increment download count
         $resource->incrementDownloadCount();
 
-        // Return the file - file_path already includes 'storage/' prefix
+        // Get the file path and normalize it
         $filePath = $resource->file_path;
         
         // Remove 'storage/' prefix if it exists for the actual file path
@@ -38,12 +38,20 @@ class CourseContentResourceController extends Controller
             $filePath = substr($filePath, 8);
         }
 
-        // Check if file exists
+        // Check if file exists in the public disk
         if (!Storage::disk('public')->exists($filePath)) {
-            abort(404, 'Resource file not found.');
+            // Try to find the file by checking if it was stored with an absolute path
+            $filename = basename($filePath);
+            $potentialPath = 'uploads/courses/' . $course->id . '/resources/' . $filename;
+            
+            if (Storage::disk('public')->exists($potentialPath)) {
+                $filePath = $potentialPath;
+            } else {
+                abort(404, 'Resource file not found.');
+            }
         }
 
-        return response()->download(storage_path('app/public/' . $filePath), basename($resource->file_path));
+        return response()->download(Storage::disk('public')->path($filePath), basename($resource->file_path));
     }
 
     /**
