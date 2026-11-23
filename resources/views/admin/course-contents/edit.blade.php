@@ -463,7 +463,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Create a form to send delete request
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = `{{ route($resourceDestroyRoute, '') }}/${resourceId}`;
+                // Build the URL based on the route prefix
+                const prefix = "{{ request()->routeIs('tutor.*') ? '/tutor' : '/admin' }}";
+                form.action = `${prefix}/course-content-resources/${resourceId}`;
                 form.innerHTML = '<input type="hidden" name="_method" value="DELETE"><input type="hidden" name="_token" value="{{ csrf_token() }}">';
                 document.body.appendChild(form);
                 form.submit();
