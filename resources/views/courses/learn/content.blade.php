@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Learning - ' . $course->title . ' - ' . $content->title)
 
@@ -23,7 +23,7 @@
     
     .main-content {
         flex: 1;
-        width: 100%;
+        width: calc(100% - 352px);
         margin-right: 0;
     }
     
@@ -41,6 +41,7 @@
         }
         
         .main-content {
+            width: 100%;
             margin-right: 0;
         }
     }
@@ -66,6 +67,55 @@
 
     <!-- Content Wrapper -->
     <div class="content-container">
+        <!-- Collapsible Sidebar (Floats on mobile, fixed on desktop) -->
+        <div class="collapse show" id="courseContentSidebar">
+            <div class="card shadow-sm mb-4 sidebar-fixed" id="sidebarContent">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Course Content</h5>
+                    <button type="button" class="btn-close btn-close-white d-lg-none" data-bs-toggle="collapse" data-bs-target="#courseContentSidebar" aria-label="Close"></button>
+                </div>
+                <div class="list-group list-group-flush">
+                    <!-- Progress Item at the top of the list -->
+                    <div class="list-group-item" style="border-bottom: 1px solid rgba(0,0,0,.125);">
+                        <div class="mb-2">
+                            <h6 class="mb-2">Progress</h6>
+                            <div class="progress" style="height: 30px;">
+                                @php
+                                    $progress = $enrollment->progress_percentage ?? 0;
+                                @endphp
+                                <div class="progress-bar bg-{{ $progress >= 75 ? 'success' : ($progress >= 50 ? 'info' : ($progress >= 25 ? 'warning' : 'danger')) }}" 
+                                     role="progressbar" 
+                                     style="width: {{ $progress }}%" 
+                                     aria-valuenow="{{ $progress }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">
+                                    {{ $progress }}%
+                                </div>
+                            </div>
+                            <small class="text-muted">Keep learning to progress through the course!</small>
+                        </div>
+                    </div>
+                    
+                    @if($courseContents && $courseContents->count() > 0)
+                        @foreach($courseContents as $c)
+                            <a href="{{ route('courses.learn.content', [$course, $c]) }}" 
+                               class="list-group-item list-group-item-action {{ $c->id === $content->id ? 'active' : '' }}">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi {{ $c->content_type === 'video' ? 'bi-play-circle' : 'bi-file-text' }} me-2"></i>
+                                    <div class="flex-grow-1">
+                                        <small>{{ Str::limit($c->title, 40) }}</small>
+                                    </div>
+                                    @if($c->is_published)
+                                        <i class="bi bi-check-circle text-success"></i>
+                                    @endif
+                                </div>
+                            </a>
+                        @endforeach
+                    @endif
+                </div>
+            </div>
+        </div>
+
         <!-- Main Content Section (Left side) -->
         <div class="main-content">
             <div class="card shadow-sm mb-4">
@@ -244,59 +294,10 @@
                 </div>
             @endif
         </div>
-
-        <!-- Collapsible Sidebar (Right side - Floats on top when expanded) -->
-        <div class="collapse" id="courseContentSidebar" style="width: 100%;">
-            <div class="card shadow-sm mb-4" id="sidebarContent">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Course Content</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-toggle="collapse" data-bs-target="#courseContentSidebar" aria-label="Close"></button>
-                </div>
-                <div class="list-group list-group-flush">
-                    <!-- Progress Item at the top of the list -->
-                    <div class="list-group-item" style="border-bottom: 1px solid rgba(0,0,0,.125);">
-                        <div class="mb-2">
-                            <h6 class="mb-2">Progress</h6>
-                            <div class="progress" style="height: 30px;">
-                                @php
-                                    $progress = $enrollment->progress_percentage ?? 0;
-                                @endphp
-                                <div class="progress-bar bg-{{ $progress >= 75 ? 'success' : ($progress >= 50 ? 'info' : ($progress >= 25 ? 'warning' : 'danger')) }}" 
-                                     role="progressbar" 
-                                     style="width: {{ $progress }}%" 
-                                     aria-valuenow="{{ $progress }}" 
-                                     aria-valuemin="0" 
-                                     aria-valuemax="100">
-                                    {{ $progress }}%
-                                </div>
-                            </div>
-                            <small class="text-muted">Keep learning to progress through the course!</small>
-                        </div>
-                    </div>
-                    
-                    @if($courseContents && $courseContents->count() > 0)
-                        @foreach($courseContents as $c)
-                            <a href="{{ route('courses.learn.content', [$course, $c]) }}" 
-                               class="list-group-item list-group-item-action {{ $c->id === $content->id ? 'active' : '' }}">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi {{ $c->content_type === 'video' ? 'bi-play-circle' : 'bi-file-text' }} me-2"></i>
-                                    <div class="flex-grow-1">
-                                        <small>{{ Str::limit($c->title, 40) }}</small>
-                                    </div>
-                                    @if($c->is_published)
-                                        <i class="bi bi-check-circle text-success"></i>
-                                    @endif
-                                </div>
-                            </a>
-                        @endforeach
-                    @endif
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
-                    @if($content->content_type === 'document' && $content->content_url)
+@endsection
                         <div class="mt-4">
                             <a href="{{ $content->content_url }}" target="_blank" class="btn btn-primary">
                                 <i class="bi bi-download me-2"></i>Download Document

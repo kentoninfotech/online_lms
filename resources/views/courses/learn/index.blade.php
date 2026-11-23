@@ -6,9 +6,8 @@
 <style>
     .description-preview {
         display: -webkit-box;
-        -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
-        overflow: hidden;
+        overflow: visible;
         line-height: 1.4;
     }
     

@@ -250,7 +250,7 @@
                                     <label for="available_from" class="form-label">Available From</label>
                                     <input type="datetime-local" class="form-control @error('available_from') is-invalid @enderror" 
                                         id="available_from" name="available_from" 
-                                        value="{{ old('available_from') !== null ? old('available_from') : ($content->available_from ? $content->available_from->format('Y-m-d\TH:i') : '') }}">
+                                        value="@if(old('available_from') !== null){{ old('available_from') }}@elseif(!empty($content->available_from) && is_object($content->available_from)){{ $content->available_from->format('Y-m-d\TH:i') }}@endif">
                                     <small class="text-muted">Students cannot access before this date</small>
                                     @error('available_from') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
@@ -260,7 +260,7 @@
                                     <label for="available_until" class="form-label">Available Until</label>
                                     <input type="datetime-local" class="form-control @error('available_until') is-invalid @enderror" 
                                         id="available_until" name="available_until" 
-                                        value="{{ old('available_until') !== null ? old('available_until') : ($content->available_until ? $content->available_until->format('Y-m-d\TH:i') : '') }}">
+                                        value="@if(old('available_until') !== null){{ old('available_until') }}@elseif(!empty($content->available_until) && is_object($content->available_until)){{ $content->available_until->format('Y-m-d\TH:i') }}@endif">
                                     <small class="text-muted">Students cannot access after this date</small>
                                     @error('available_until') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
@@ -420,6 +420,30 @@ document.addEventListener('DOMContentLoaded', function() {
     fileHelpBtn.addEventListener('click', function() {
         fileHelpText.style.display = fileHelpText.style.display === 'none' ? 'block' : 'none';
     });
+
+    // Fix datetime fields to ensure they don't show unwanted default values
+    const availableFromInput = document.getElementById('available_from');
+    const availableUntilInput = document.getElementById('available_until');
+    
+    // If the fields show a value like "20/06/2026" or similar unwanted defaults, clear them
+    if (availableFromInput && availableFromInput.value) {
+        // Check if the value looks like a problematic default (20/06/2026 00:00)
+        // The datetime-local field stores as YYYY-MM-DDTHH:MM
+        // If it's empty or if it's a date that shouldn't be there, clear it
+        const fromValue = availableFromInput.value;
+        // Only keep the value if it matches the expected format
+        if (!fromValue.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/)) {
+            availableFromInput.value = '';
+        }
+    }
+    
+    if (availableUntilInput && availableUntilInput.value) {
+        const untilValue = availableUntilInput.value;
+        // Only keep the value if it matches the expected format
+        if (!untilValue.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/)) {
+            availableUntilInput.value = '';
+        }
+    }
 
     // Resource management
     addResourceBtn.addEventListener('click', function() {
