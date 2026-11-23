@@ -155,6 +155,42 @@
                     </div>
                 </div>
 
+                <!-- Course Content Resources -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-paperclip me-2"></i>Course Content Resources
+                        </h5>
+                        <small class="text-muted d-block mt-1">Upload additional files (PDFs, documents, etc.) that students can download</small>
+                    </div>
+                    <div class="card-body">
+                        <div id="resources-section">
+                            <div class="resource-item mb-3 p-3 border rounded bg-light">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Resource Title</label>
+                                        <input type="text" class="form-control" name="resource_titles[]" placeholder="e.g., Lecture Notes">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Resource Description</label>
+                                        <input type="text" class="form-control" name="resource_descriptions[]" placeholder="Brief description">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Select File</label>
+                                    <input type="file" class="form-control" name="resource_files[]" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip">
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-danger remove-resource-btn">
+                                    <i class="bi bi-trash me-1"></i>Remove
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" id="add-resource-btn" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-plus-circle me-1"></i>Add Another Resource
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Timeline & Availability -->
                 <div class="card mb-3">
                     <div class="card-header">
@@ -315,6 +351,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileSection = document.getElementById('file-upload-section');
     const fileHelpBtn = document.getElementById('fileHelp');
     const fileHelpText = document.getElementById('file-help-text');
+    const addResourceBtn = document.getElementById('add-resource-btn');
+    const resourcesSection = document.getElementById('resources-section');
 
     function updateContentDisplay() {
         const selectedType = contentTypeSelect.value;
@@ -335,6 +373,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
     fileHelpBtn.addEventListener('click', function() {
         fileHelpText.style.display = fileHelpText.style.display === 'none' ? 'block' : 'none';
+    });
+
+    // Resource management
+    addResourceBtn.addEventListener('click', function() {
+        const resourceItem = document.createElement('div');
+        resourceItem.className = 'resource-item mb-3 p-3 border rounded bg-light';
+        resourceItem.innerHTML = `
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Resource Title</label>
+                    <input type="text" class="form-control" name="resource_titles[]" placeholder="e.g., Lecture Notes">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Resource Description</label>
+                    <input type="text" class="form-control" name="resource_descriptions[]" placeholder="Brief description">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Select File</label>
+                <input type="file" class="form-control" name="resource_files[]" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip">
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-danger remove-resource-btn">
+                <i class="bi bi-trash me-1"></i>Remove
+            </button>
+        `;
+        resourcesSection.appendChild(resourceItem);
+        attachRemoveListener(resourceItem.querySelector('.remove-resource-btn'));
+    });
+
+    function attachRemoveListener(btn) {
+        btn.addEventListener('click', function() {
+            this.closest('.resource-item').remove();
+        });
+    }
+
+    // Attach listeners to existing remove buttons
+    document.querySelectorAll('.remove-resource-btn').forEach(btn => {
+        attachRemoveListener(btn);
     });
 });
 

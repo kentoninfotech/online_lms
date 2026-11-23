@@ -22,6 +22,8 @@ class AuthServiceProvider extends ServiceProvider
         \App\Models\RescheduleRequest::class => \App\Policies\ReschedulePolicy::class,
         \App\Models\Course::class            => \App\Policies\CoursePolicy::class,
         \App\Models\CourseContent::class     => \App\Policies\CourseContentPolicy::class,
+        \App\Models\CourseLesson::class      => \App\Policies\CourseLessonPolicy::class,
+        \App\Models\CourseContentResource::class => \App\Policies\CourseContentResourcePolicy::class,
     ];
 
     /**

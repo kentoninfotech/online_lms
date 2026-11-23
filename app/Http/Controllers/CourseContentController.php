@@ -190,6 +190,11 @@ class CourseContentController extends Controller
             'embed_type' => 'required|in:default,iframe,popup,fullscreen,modal',
             'allow_download' => 'boolean',
             'track_viewing' => 'boolean',
+            // Resources
+            'resource_titles' => 'nullable|array',
+            'resource_descriptions' => 'nullable|array',
+            'resource_files' => 'nullable|array',
+            'resource_files.*' => 'nullable|file|max:102400', // 100MB max per file
         ]);
 
         if ($request->hasFile('file')) {
@@ -200,6 +205,9 @@ class CourseContentController extends Controller
 
         $validated['course_id'] = $course->id;
         $content = CourseContent::create($validated);
+
+        // Handle resource uploads
+        $this->storeResources($request, $content);
 
         return redirect()->route(
                 auth()->user()->user_type === 'instructor' ? 'tutor.courses.show' : 'admin.courses.show',
@@ -246,6 +254,11 @@ class CourseContentController extends Controller
             'embed_type' => 'required|in:default,iframe,popup,fullscreen,modal',
             'allow_download' => 'boolean',
             'track_viewing' => 'boolean',
+            // Resources
+            'resource_titles' => 'nullable|array',
+            'resource_descriptions' => 'nullable|array',
+            'resource_files' => 'nullable|array',
+            'resource_files.*' => 'nullable|file|max:102400', // 100MB max per file
         ]);
 
         if ($request->hasFile('file')) {
@@ -258,6 +271,9 @@ class CourseContentController extends Controller
         }
 
         $content->update($validated);
+
+        // Handle resource uploads
+        $this->storeResources($request, $content);
 
         return redirect()->route(
                 auth()->user()->user_type === 'instructor' ? 'tutor.courses.show' : 'admin.courses.show',
@@ -454,5 +470,43 @@ class CourseContentController extends Controller
         return redirect()->route('instructor.courses.show', $course)
             ->with('success', 'Content deleted successfully.');
     }
+
+    /**
+     * Store course content resources
+     */
+    private function storeResources(Request $request, CourseContent $content): void
+    {
+        $titles = $request->input('resource_titles', []);
+        $descriptions = $request->input('resource_descriptions', []);
+        $files = $request->file('resource_files', []);
+
+        foreach ($files as $key => $file) {
+            if ($file && $file->isValid()) {
+                $title = $titles[$key] ?? $file->getClientOriginalName();
+                $description = $descriptions[$key] ?? '';
+
+                // Store the file
+                $filename = time() . '-' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $filePath = $file->storeAs(
+                    'uploads/courses/' . $content->course_id . '/resources',
+                    $filename,
+                    'public'
+                );
+
+                // Create resource record
+                $content->resources()->create([
+                    'title' => $title,
+                    'description' => $description,
+                    'file_path' => 'storage/' . $filePath,
+                    'file_type' => $file->getClientOriginalExtension(),
+                    'file_size' => $file->getSize(),
+                    'mime_type' => $file->getMimeType(),
+                    'sequence' => 0,
+                    'is_published' => true,
+                ]);
+            }
+        }
+    }
 }
+
 

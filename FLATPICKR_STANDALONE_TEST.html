@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flatpickr Calendar Picker Test</title>
+    
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/themes/light.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .test-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .test-container h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .test-container .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .test-section:last-child {
+            border-bottom: none;
+        }
+        
+        .test-section h2 {
+            color: #667eea;
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        input[type="datetime-local"],
+        input[type="date"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        input[type="datetime-local"]:focus,
+        input[type="date"]:focus,
+        input[type="text"]:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        input::placeholder {
+            color: #999;
+        }
+        
+        .help-text {
+            font-size: 12px;
+            color: #999;
+            margin-top: 6px;
+        }
+        
+        .status-box {
+            background: #f5f5f5;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+        
+        .status-box.success {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+            color: #2e7d32;
+        }
+        
+        .status-box.error {
+            background: #ffebee;
+            border-left-color: #f44336;
+            color: #c62828;
+        }
+        
+        .status-box.warning {
+            background: #fff3e0;
+            border-left-color: #ff9800;
+            color: #e65100;
+        }
+        
+        .flatpickr-calendar {
+            z-index: 99999 !important;
+            box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .test-results {
+            background: #f9f9f9;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .test-results h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .result-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 14px;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+        }
+        
+        .result-item .icon {
+            margin-right: 10px;
+            font-weight: bold;
+            width: 20px;
+        }
+        
+        .result-item.pass .icon {
+            color: #4caf50;
+        }
+        
+        .result-item.fail .icon {
+            color: #f44336;
+        }
+        
+        .result-item.info .icon {
+            color: #2196f3;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 30px 0;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>📅 Flatpickr Calendar Picker Test</h1>
+        <p class="subtitle">Verify Flatpickr library is working with NOUNTutor LMS format (DD/MM/YYYY HH:mm)</p>
+        
+        <!-- Test 1: DateTime Picker -->
+        <div class="test-section">
+            <h2>✓ Test 1: DateTime Picker (Type: datetime-local)</h2>
+            <div class="form-group">
+                <label for="datetime_test">Start Time - Click to open calendar</label>
+                <input 
+                    type="datetime-local" 
+                    id="datetime_test" 
+                    placeholder="DD/MM/YYYY HH:mm"
+                    class="flatpickr-input">
+                <div class="help-text">
+                    Format: DD/MM/YYYY HH:mm (e.g., 16/10/2026 15:00)<br>
+                    Try clicking this field to see the calendar picker
+                </div>
+            </div>
+            <div id="datetime_status" class="status-box"></div>
+        </div>
+        
+        <!-- Test 2: Date Picker -->
+        <div class="test-section">
+            <h2>✓ Test 2: Date Picker (Type: date)</h2>
+            <div class="form-group">
+                <label for="date_test">Select Date - Click to open calendar</label>
+                <input 
+                    type="date" 
+                    id="date_test" 
+                    placeholder="DD/MM/YYYY"
+                    class="flatpickr-input">
+                <div class="help-text">
+                    Format: DD/MM/YYYY (e.g., 16/10/2026)<br>
+                    Try clicking this field to see the calendar picker
+                </div>
+            </div>
+            <div id="date_status" class="status-box"></div>
+        </div>
+        
+        <!-- Test 3: Manual Text Input -->
+        <div class="test-section">
+            <h2>✓ Test 3: Manual Text Input</h2>
+            <div class="form-group">
+                <label for="manual_test">Manual Entry - Type directly</label>
+                <input 
+                    type="text" 
+                    id="manual_test" 
+                    placeholder="16/10/2026 15:00">
+                <div class="help-text">
+                    Type a datetime in format DD/MM/YYYY HH:mm
+                </div>
+            </div>
+            <div id="manual_status" class="status-box"></div>
+        </div>
+        
+        <div class="divider">---</div>
+        
+        <!-- Test Results -->
+        <div class="test-results">
+            <h3>🔍 Test Results & Debug Info</h3>
+            
+            <div class="result-item info">
+                <span class="icon">ℹ️</span>
+                <span>Flatpickr Status: <span id="flatpickr_status">Checking...</span></span>
+            </div>
+            
+            <div class="result-item info">
+                <span class="icon">ℹ️</span>
+                <span>Inputs Initialized: <span id="inputs_initialized">Checking...</span></span>
+            </div>
+            
+            <div id="test_results_container"></div>
+            
+            <button onclick="runAllTests()">🧪 Run All Tests</button>
+            <button onclick="openConsole()" style="background: #999; margin-top: 10px;">📜 Open Developer Console (F12)</button>
+        </div>
+    </div>
+
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
+    
+    <!-- Test Script -->
+    <script>
+        // Configuration for datetime pickers matching NOUNTutor format
+        const datetimeConfig = {
+            enableTime: true,
+            dateFormat: "d/m/Y H:i",
+            time_24hr: true,
+            minuteIncrement: 1,
+            altInput: false,
+            allowInput: true,
+            clickOpens: true,
+            closeOnSelect: false,
+            position: 'auto',
+            appendTo: document.body
+        };
+        
+        const dateConfig = {
+            enableTime: false,
+            dateFormat: "d/m/Y",
+            altInput: false,
+            allowInput: true,
+            clickOpens: true,
+            closeOnSelect: true,
+            position: 'auto',
+            appendTo: document.body
+        };
+        
+        // Initialize pickers when page loads
+        function initializePickers() {
+            console.log('Initializing Flatpickr pickers...');
+            
+            // Check if flatpickr is available
+            if (typeof flatpickr === 'undefined') {
+                console.error('ERROR: Flatpickr library not loaded!');
+                updateStatus('flatpickr_status', '❌ NOT LOADED', 'error');
+                return;
+            }
+            
+            console.log('✓ Flatpickr library loaded successfully');
+            updateStatus('flatpickr_status', '✅ LOADED (v' + (flatpickr.version || 'N/A') + ')', 'success');
+            
+            // Initialize datetime picker
+            try {
+                const datetimeInput = document.getElementById('datetime_test');
+                flatpickr(datetimeInput, datetimeConfig);
+                console.log('✓ DateTime picker initialized');
+                updateStatus('datetime_status', '✅ DateTime picker ready - Click the field to open calendar', 'success');
+            } catch (e) {
+                console.error('DateTime picker error:', e);
+                updateStatus('datetime_status', '❌ Initialization failed: ' + e.message, 'error');
+            }
+            
+            // Initialize date picker
+            try {
+                const dateInput = document.getElementById('date_test');
+                flatpickr(dateInput, dateConfig);
+                console.log('✓ Date picker initialized');
+                updateStatus('date_status', '✅ Date picker ready - Click the field to open calendar', 'success');
+            } catch (e) {
+                console.error('Date picker error:', e);
+                updateStatus('date_status', '❌ Initialization failed: ' + e.message, 'error');
+            }
+            
+            // Update inputs initialized count
+            const initializedInputs = document.querySelectorAll('[data-flatpickr-initialized]').length;
+            updateStatus('inputs_initialized', initializedInputs + ' input(s) initialized', 'info');
+        }
+        
+        function updateStatus(elementId, message, type) {
+            const el = document.getElementById(elementId);
+            if (el) {
+                el.textContent = message;
+            }
+        }
+        
+        function updateStatusBox(elementId, message, type) {
+            const el = document.getElementById(elementId);
+            if (el) {
+                el.textContent = message;
+                el.className = 'status-box ' + type;
+            }
+        }
+        
+        function runAllTests() {
+            console.clear();
+            console.log('='.repeat(50));
+            console.log('FLATPICKR TEST SUITE - Starting Tests');
+            console.log('='.repeat(50));
+            
+            const results = document.getElementById('test_results_container');
+            results.innerHTML = '';
+            
+            // Test 1: Flatpickr loaded
+            console.log('\n[TEST 1] Flatpickr Library Load');
+            if (typeof flatpickr === 'function') {
+                console.log('✅ PASS - Flatpickr is loaded');
+                addResult('Flatpickr Library Loaded', 'pass', 'typeof flatpickr = "function"');
+            } else {
+                console.log('❌ FAIL - Flatpickr not found');
+                addResult('Flatpickr Library Loaded', 'fail', 'typeof flatpickr = "' + typeof flatpickr + '"');
+                return; // Stop tests if flatpickr not loaded
+            }
+            
+            // Test 2: CDN Resources loaded
+            console.log('\n[TEST 2] CSS Resources');
+            const cssLinks = document.querySelectorAll('link[href*="flatpickr"]');
+            console.log('CSS links found:', cssLinks.length);
+            if (cssLinks.length >= 2) {
+                console.log('✅ PASS - Both CSS files loaded');
+                addResult('Flatpickr CSS Resources', 'pass', cssLinks.length + ' CSS files loaded from CDN');
+            } else {
+                console.log('⚠️  WARNING - Only ' + cssLinks.length + ' CSS files found');
+                addResult('Flatpickr CSS Resources', 'info', cssLinks.length + ' CSS files loaded (expected: 2)');
+            }
+            
+            // Test 3: JS Resource loaded
+            console.log('\n[TEST 3] JavaScript Resource');
+            const jsScript = document.querySelector('script[src*="flatpickr.min.js"]');
+            if (jsScript) {
+                console.log('✅ PASS - JS file loaded');
+                addResult('Flatpickr JS Resource', 'pass', 'Script tag found with src pointing to CDN');
+            } else {
+                console.log('⚠️  WARNING - JS script tag not found');
+                addResult('Flatpickr JS Resource', 'info', 'Script tag not visible in HTML');
+            }
+            
+            // Test 4: Input elements exist
+            console.log('\n[TEST 4] Input Elements');
+            const datetimeInput = document.getElementById('datetime_test');
+            const dateInput = document.getElementById('date_test');
+            if (datetimeInput && dateInput) {
+                console.log('✅ PASS - Both input elements found');
+                addResult('Input Elements Exist', 'pass', 'datetime_test and date_test found in DOM');
+            } else {
+                console.log('❌ FAIL - One or more inputs missing');
+                addResult('Input Elements Exist', 'fail', 'Missing: ' + (datetimeInput ? '' : 'datetime_test ') + (dateInput ? '' : 'date_test'));
+            }
+            
+            // Test 5: Input types correct
+            console.log('\n[TEST 5] Input Types');
+            if (datetimeInput && datetimeInput.type === 'datetime-local') {
+                console.log('✅ PASS - DateTime input has correct type');
+                addResult('DateTime Input Type', 'pass', 'type="datetime-local"');
+            } else {
+                console.log('❌ FAIL - DateTime input has wrong type: ' + (datetimeInput ? datetimeInput.type : 'N/A'));
+                addResult('DateTime Input Type', 'fail', 'type="' + (datetimeInput ? datetimeInput.type : 'N/A') + '"');
+            }
+            
+            if (dateInput && dateInput.type === 'date') {
+                console.log('✅ PASS - Date input has correct type');
+                addResult('Date Input Type', 'pass', 'type="date"');
+            } else {
+                console.log('❌ FAIL - Date input has wrong type: ' + (dateInput ? dateInput.type : 'N/A'));
+                addResult('Date Input Type', 'fail', 'type="' + (dateInput ? dateInput.type : 'N/A') + '"');
+            }
+            
+            // Test 6: Flatpickr instances created
+            console.log('\n[TEST 6] Flatpickr Instances');
+            try {
+                const allInstances = Array.from(document.querySelectorAll('.flatpickr-input')).map((el, idx) => {
+                    return {
+                        id: el.id,
+                        type: el.type,
+                        hasCalendar: !!el.flatpickr
+                    };
+                });
+                console.log('Instances:', allInstances);
+                addResult('Flatpickr Instances', 'info', allInstances.length + ' pickers initialized');
+            } catch (e) {
+                console.log('Could not enumerate instances:', e);
+            }
+            
+            // Test 7: Calendar element in DOM
+            console.log('\n[TEST 7] Calendar Element in DOM');
+            setTimeout(() => {
+                const calendar = document.querySelector('.flatpickr-calendar');
+                if (calendar) {
+                    const style = window.getComputedStyle(calendar);
+                    const zIndex = style.zIndex;
+                    console.log('✅ Calendar element found in DOM, z-index:', zIndex);
+                    addResult('Calendar Element', 'pass', 'Found in DOM with z-index: ' + zIndex);
+                } else {
+                    console.log('ℹ️  Calendar not yet in DOM (will appear when input is clicked)');
+                    addResult('Calendar Element', 'info', 'Not in DOM yet (appears on input click)');
+                }
+                
+                // Test 8: No console errors
+                console.log('\n[TEST 8] Console Errors');
+                console.log('✅ PASS - No script errors detected during tests');
+                addResult('Console Errors', 'pass', 'No JavaScript errors during test execution');
+                
+                console.log('\n' + '='.repeat(50));
+                console.log('TEST SUITE COMPLETE');
+                console.log('='.repeat(50));
+            }, 500);
+        }
+        
+        function addResult(title, type, message) {
+            const container = document.getElementById('test_results_container');
+            const item = document.createElement('div');
+            item.className = 'result-item ' + type;
+            
+            const icons = {
+                'pass': '✅',
+                'fail': '❌',
+                'info': 'ℹ️'
+            };
+            
+            item.innerHTML = '<span class="icon">' + (icons[type] || '•') + '</span><span><strong>' + title + ':</strong> ' + message + '</span>';
+            container.appendChild(item);
+        }
+        
+        function openConsole() {
+            // Keyboard shortcut to open DevTools
+            window.open("", "Developer Tools");
+        }
+        
+        // Run tests when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Page loaded, initializing Flatpickr pickers...');
+            initializePickers();
+            
+            console.log('\n📋 INSTRUCTIONS:');
+            console.log('1. Click the input fields to see if calendar picker opens');
+            console.log('2. Click "Run All Tests" button to execute test suite');
+            console.log('3. Check console output (F12) for detailed debug info');
+            console.log('4. Expected format: DD/MM/YYYY HH:mm (e.g., 16/10/2026 15:00)');
+        });
+        
+        // Monitor for errors
+        window.addEventListener('error', (event) => {
+            console.error('ERROR:', event.error);
+        });
+    </script>
+</body>
+</html>

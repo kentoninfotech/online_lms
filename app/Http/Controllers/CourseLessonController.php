@@ -100,7 +100,6 @@ class CourseLessonController extends Controller
     public function show(Course $course, CourseLesson $lesson)
     {
         $this->authorize('view', $course);
-        $this->authorize('view', $lesson);
 
         $attendees = $lesson->attendees()
             ->with('enrollee.user')

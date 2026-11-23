@@ -1,60 +1,83 @@
 @extends('layouts.app')
 
-@section('title', 'Learning - ' . $course->title)
+@section('title', 'Learning - ' . $course->title . ' - ' . $content->title)
 
 @section('content')
 <div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{{ route('courses.show', $course) }}">{{ $course->title }}</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">{{ $content->title }}</li>
+        </ol>
+    </nav>
+
     <div class="row">
+        <!-- Collapsible Sidebar -->
         <div class="col-lg-3">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Course Content</h5>
-                </div>
-                <div class="list-group list-group-flush">
-                    @if($courseContents && $courseContents->count() > 0)
-                        @foreach($courseContents as $c)
-                            <a href="{{ route('courses.learn.content', [$course, $c]) }}" 
-                               class="list-group-item list-group-item-action {{ $c->id === $content->id ? 'active' : '' }}">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi {{ $c->content_type === 'video' ? 'bi-play-circle' : 'bi-file-text' }} me-2"></i>
-                                    <div class="flex-grow-1">
-                                        <small>{{ Str::limit($c->title, 40) }}</small>
-                                    </div>
-                                    @if($c->is_published)
-                                        <i class="bi bi-check-circle text-success"></i>
-                                    @endif
-                                </div>
-                            </a>
-                        @endforeach
-                    @endif
-                </div>
+            <!-- Sidebar Toggle Button (visible only on mobile) -->
+            <div class="d-lg-none mb-3">
+                <button class="btn btn-primary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#courseContentSidebar" aria-expanded="false" aria-controls="courseContentSidebar">
+                    <i class="bi bi-list me-2"></i>Course Content
+                </button>
             </div>
 
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    <h5 class="mb-0">Progress</h5>
-                </div>
-                <div class="card-body">
-                    <div class="progress mb-3" style="height: 30px;">
-                        @php
-                            $progress = $enrollment->progress_percentage ?? 0;
-                        @endphp
-                        <div class="progress-bar bg-{{ $progress >= 75 ? 'success' : ($progress >= 50 ? 'info' : ($progress >= 25 ? 'warning' : 'danger')) }}" 
-                             role="progressbar" 
-                             style="width: {{ $progress }}%" 
-                             aria-valuenow="{{ $progress }}" 
-                             aria-valuemin="0" 
-                             aria-valuemax="100">
-                            {{ $progress }}%
-                        </div>
+            <!-- Sidebar Content -->
+            <div class="collapse d-lg-block" id="courseContentSidebar">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Course Content</h5>
+                        <button type="button" class="btn-close btn-close-white d-lg-none" data-bs-toggle="collapse" data-bs-target="#courseContentSidebar" aria-label="Close"></button>
                     </div>
-                    <small class="text-muted">Keep learning to progress through the course!</small>
+                    <div class="list-group list-group-flush">
+                        @if($courseContents && $courseContents->count() > 0)
+                            @foreach($courseContents as $c)
+                                <a href="{{ route('courses.learn.content', [$course, $c]) }}" 
+                                   class="list-group-item list-group-item-action {{ $c->id === $content->id ? 'active' : '' }}">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi {{ $c->content_type === 'video' ? 'bi-play-circle' : 'bi-file-text' }} me-2"></i>
+                                        <div class="flex-grow-1">
+                                            <small>{{ Str::limit($c->title, 40) }}</small>
+                                        </div>
+                                        @if($c->is_published)
+                                            <i class="bi bi-check-circle text-success"></i>
+                                        @endif
+                                    </div>
+                                </a>
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5 class="mb-0">Progress</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="progress mb-3" style="height: 30px;">
+                            @php
+                                $progress = $enrollment->progress_percentage ?? 0;
+                            @endphp
+                            <div class="progress-bar bg-{{ $progress >= 75 ? 'success' : ($progress >= 50 ? 'info' : ($progress >= 25 ? 'warning' : 'danger')) }}" 
+                                 role="progressbar" 
+                                 style="width: {{ $progress }}%" 
+                                 aria-valuenow="{{ $progress }}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                                {{ $progress }}%
+                            </div>
+                        </div>
+                        <small class="text-muted">Keep learning to progress through the course!</small>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- Main Content -->
         <div class="col-lg-9">
-            <div class="card shadow-sm">
+            <div class="card shadow-sm mb-4">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
                         <h4 class="mb-0">{{ $content->title }}</h4>
@@ -148,7 +171,6 @@
                                 <!-- No minimum time requirement -->
                                 <form action="{{ route('courses.learn.content.complete', [$course, $content]) }}" method="POST">
                                     @csrf
-                                    <input type="hidden" name="time_spent_minutes" value="0">
                                     <button type="submit" class="btn btn-success btn-lg">
                                         <i class="bi bi-check-circle me-2"></i>Mark as Complete
                                     </button>
@@ -158,145 +180,109 @@
                     @endif
                 </div>
             </div>
+
+            <!-- Resources Section -->
+            @if($content->publishedResources()->count() > 0)
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-paperclip me-2"></i>Course Resources
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Resource</th>
+                                        <th class="text-end">Size</th>
+                                        <th class="text-end">Downloads</th>
+                                        <th class="text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($content->publishedResources()->get() as $resource)
+                                        <tr>
+                                            <td>
+                                                <div>
+                                                    <i class="bi {{ $resource->getIconClass() }} me-2"></i>
+                                                    <strong>{{ $resource->title }}</strong>
+                                                    @if($resource->description)
+                                                        <br>
+                                                        <small class="text-muted">{{ $resource->description }}</small>
+                                                    @endif
+                                                </div>
+                                            </td>
+                                            <td class="text-end">
+                                                <small class="text-muted">{{ $resource->getHumanReadableSize() }}</small>
+                                            </td>
+                                            <td class="text-end">
+                                                <small class="text-muted">{{ $resource->download_count }}</small>
+                                            </td>
+                                            <td class="text-end">
+                                                <a href="{{ route('course-content-resources.download', $resource) }}" class="btn btn-sm btn-primary" title="Download {{ $resource->title }}">
+                                                    <i class="bi bi-download me-1"></i>Download
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </div>
 
-<style>
-    .content-body {
-        line-height: 1.8;
-        font-size: 1.1rem;
-    }
-
-    .content-body h3 {
-        margin-top: 1.5rem;
-        margin-bottom: 1rem;
-        border-bottom: 2px solid #007bff;
-        padding-bottom: 0.5rem;
-    }
-
-    .content-body img {
-        max-width: 100%;
-        height: auto;
-        margin: 1rem 0;
-    }
-
-    #minTimeProgress {
-        font-weight: bold;
-        font-size: 0.9rem;
-    }
-</style>
-
 <script>
-    // Track time spent on the page
-    let startTime = Date.now();
-    let minReadingTime = {{ $minReadingTime ?? 0 }};
-    let contentId = {{ $content->id }};
-    let isFocused = true;
+document.addEventListener('DOMContentLoaded', function() {
+    const minTimeMinutes = {{ $minReadingTime ?? 0 }};
+    let timeSpentSeconds = 0;
 
-    // Track page visibility
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden) {
-            isFocused = false;
-        } else {
-            isFocused = true;
-        }
-    });
+    if (minTimeMinutes > 0) {
+        const markCompleteBtn = document.getElementById('markCompleteBtn');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const timeSpentInput = document.getElementById('timeSpentInput');
+        const minTimeProgress = document.getElementById('minTimeProgress');
 
-    // Track focus changes
-    window.addEventListener('focus', function() {
-        isFocused = true;
-    });
+        // Update timer every second
+        const timer = setInterval(function() {
+            timeSpentSeconds++;
+            const timeSpentMinutes = Math.floor(timeSpentSeconds / 60);
 
-    window.addEventListener('blur', function() {
-        isFocused = false;
-    });
+            // Update progress bar
+            const percentage = Math.min((timeSpentMinutes / minTimeMinutes) * 100, 100);
+            minTimeProgress.style.width = percentage + '%';
+            minTimeProgress.setAttribute('aria-valuenow', timeSpentMinutes);
 
-    // Update time tracking every second
-    if (minReadingTime > 0) {
-        setInterval(function() {
-            if (isFocused) {
-                let elapsedTime = Math.floor((Date.now() - startTime) / 1000 / 60); // Convert to minutes
-                let timeSpent = Math.min(elapsedTime, minReadingTime + 5); // Cap at 5 minutes over
-                
-                // Update hidden input
-                document.getElementById('timeSpentInput').value = elapsedTime;
-                
-                // Update display
-                document.getElementById('timeDisplay').textContent = elapsedTime + ' / ' + minReadingTime + ' min';
-                
-                // Update progress bar
-                let progressPercent = Math.min((elapsedTime / minReadingTime) * 100, 100);
-                let progressBar = document.getElementById('minTimeProgress');
-                progressBar.style.width = progressPercent + '%';
-                progressBar.setAttribute('aria-valuenow', elapsedTime);
-                
-                // Enable button when minimum time is reached
-                if (elapsedTime >= minReadingTime) {
-                    document.getElementById('markCompleteBtn').disabled = false;
-                    document.getElementById('minTimeAlert').classList.remove('alert-info');
-                    document.getElementById('minTimeAlert').classList.add('alert-success');
-                    document.getElementById('minTimeAlert').innerHTML = `
-                        <i class="bi bi-check-circle me-2"></i>
-                        <strong>Great! You've met the minimum viewing time.</strong>
-                        <br>
-                        <small>You can now mark this content as complete.</small>
-                    `;
-                }
+            // Update time display
+            timeDisplay.textContent = timeSpentMinutes + ' / ' + minTimeMinutes + ' min';
+
+            // Enable button if minimum time reached
+            if (timeSpentMinutes >= minTimeMinutes) {
+                markCompleteBtn.disabled = false;
+                clearInterval(timer);
             }
+
+            // Update hidden input
+            timeSpentInput.value = timeSpentMinutes;
         }, 1000);
     }
+});
 
-    // Submit form with time spent
-    function submitCompleteForm() {
-        let timeSpent = parseInt(document.getElementById('timeSpentInput').value) || 0;
-        
-        if (minReadingTime > 0 && timeSpent < minReadingTime) {
-            alert('You must spend at least ' + minReadingTime + ' minute(s) on this content. Please wait.');
-            return;
-        }
+function submitCompleteForm() {
+    const timeSpentInput = document.getElementById('timeSpentInput');
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = 'time_spent_minutes';
+    hiddenInput.value = timeSpentInput.value;
 
-        // Disable button and show loading state
-        let btn = document.getElementById('markCompleteBtn');
-        let disabledBtn = document.getElementById('disabledMessageBtn');
-        btn.style.display = 'none';
-        disabledBtn.style.display = 'inline-block';
-
-        // Submit the form via AJAX
-        let form = document.getElementById('markCompleteForm');
-        let formData = new FormData(form);
-        formData.append('time_spent_minutes', timeSpent);
-
-        fetch(form.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json',
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Show success message
-                alert(data.message);
-                // Reload the page to show completion status
-                window.location.reload();
-            } else {
-                // Show error message
-                alert(data.message || 'Error marking content as complete');
-                // Re-enable button
-                btn.style.display = 'inline-block';
-                disabledBtn.style.display = 'none';
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again.');
-            // Re-enable button
-            btn.style.display = 'inline-block';
-            disabledBtn.style.display = 'none';
-        });
-    }
+    const form = document.getElementById('markCompleteForm');
+    form.appendChild(hiddenInput);
+    form.submit();
+}
 </script>
+
 @endsection

@@ -36,6 +36,7 @@ use App\Http\Controllers\CourseEnrollmentController;
 use App\Http\Controllers\CoursePaymentController;
 use App\Http\Controllers\CourseBulkMessageController;
 use App\Http\Controllers\CourseContentController;
+use App\Http\Controllers\CourseContentResourceController;
 use App\Http\Controllers\CourseQuizController;
 use App\Http\Controllers\QuizQuestionController;
 use App\Http\Controllers\StudentQuizController;
@@ -330,6 +331,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/course/{course}/learn', [CourseContentController::class, 'index'])->name('courses.learn');
     Route::get('/course/{course}/content/{content}', [CourseContentController::class, 'show'])->name('courses.learn.content');
     Route::post('/course/{course}/content/{content}/complete', [CourseContentController::class, 'markComplete'])->name('courses.learn.content.complete');
+
+    // Course Content Resources
+    Route::get('/course-content-resources/{resource}/download', [\App\Http\Controllers\CourseContentResourceController::class, 'download'])->name('course-content-resources.download');
+    Route::delete('/course-content-resources/{resource}', [\App\Http\Controllers\CourseContentResourceController::class, 'destroy'])->name('course-content-resources.destroy');
 
     // Quizzes
     Route::get('/course/{course}/quiz/{quiz}', [CourseQuizController::class, 'show'])->name('courses.learn.quiz');

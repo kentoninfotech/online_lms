@@ -61,6 +61,22 @@ class CourseContent extends Model
     }
 
     /**
+     * Get all resources for this content
+     */
+    public function resources(): HasMany
+    {
+        return $this->hasMany(CourseContentResource::class, 'course_content_id');
+    }
+
+    /**
+     * Get published resources for this content
+     */
+    public function publishedResources(): HasMany
+    {
+        return $this->resources()->where('is_published', true)->orderBy('sequence');
+    }
+
+    /**
      * Get completion count
      */
     public function getCompletionCount(): int
