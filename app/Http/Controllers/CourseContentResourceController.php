@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CourseContentResource;
+use App\Models\CourseEnrollee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +18,7 @@ class CourseContentResourceController extends Controller
     {
         // Check if user is enrolled in the course
         $course = $resource->getCourse();
-        $enrollment = auth()->user()->enrollments()
+        $enrollment = CourseEnrollee::where('user_id', auth()->id())
             ->where('course_id', $course->id)
             ->where('status', 'active')
             ->first();

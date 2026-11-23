@@ -14,22 +14,22 @@
         </ol>
     </nav>
 
-    <div class="row">
-        <!-- Collapsible Sidebar -->
-        <div class="col-lg-3">
-            <!-- Sidebar Toggle Button (visible only on mobile) -->
-            <div class="d-lg-none mb-3">
-                <button class="btn btn-primary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#courseContentSidebar" aria-expanded="false" aria-controls="courseContentSidebar">
-                    <i class="bi bi-list me-2"></i>Course Content
-                </button>
-            </div>
+    <!-- Sidebar Toggle Button (visible on all sizes) -->
+    <div class="mb-3">
+        <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#courseContentSidebar" aria-expanded="false" aria-controls="courseContentSidebar">
+            <i class="bi bi-list me-2"></i><span id="toggleText">View Course Content</span>
+        </button>
+    </div>
 
+    <div class="row">
+        <!-- Collapsible Sidebar (Collapsed by default) -->
+        <div class="col-lg-3">
             <!-- Sidebar Content -->
-            <div class="collapse d-lg-block" id="courseContentSidebar">
+            <div class="collapse" id="courseContentSidebar">
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Course Content</h5>
-                        <button type="button" class="btn-close btn-close-white d-lg-none" data-bs-toggle="collapse" data-bs-target="#courseContentSidebar" aria-label="Close"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-toggle="collapse" data-bs-target="#courseContentSidebar" aria-label="Close"></button>
                     </div>
                     <div class="list-group list-group-flush">
                         @if($courseContents && $courseContents->count() > 0)
@@ -75,8 +75,8 @@
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="col-lg-9">
+        <!-- Main Content (Full width when sidebar is collapsed) -->
+        <div class="col-lg-9" id="mainContentCol">
             <div class="card shadow-sm mb-4">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
@@ -95,9 +95,29 @@
                         </div>
                     @endif
 
-                    <div class="content-body">
-                        {!! $content->description !!}
-                    </div>
+                    <!-- Main Content Section -->
+                    @if($content->content_type === 'text' && $content->content)
+                        <div class="mb-4">
+                            <h5 class="mb-3">Content & Files</h5>
+                            <div class="content-body">
+                                {!! nl2br(e($content->content)) !!}
+                            </div>
+                        </div>
+                    @elseif($content->content_type === 'html' || ($content->content_type === 'text' && !$content->content))
+                        <div class="mb-4">
+                            <h5 class="mb-3">Content & Files</h5>
+                            <div class="content-body">
+                                {!! $content->content !!}
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Description (if not shown above) -->
+                    @if(!empty($content->description) && !($content->content_type === 'text' && $content->content))
+                        <div class="content-description">
+                            {!! $content->description !!}
+                        </div>
+                    @endif
 
                     @if($content->content_type === 'document' && $content->content_url)
                         <div class="mt-4">
@@ -269,6 +289,21 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update hidden input
             timeSpentInput.value = timeSpentMinutes;
         }, 1000);
+    }
+
+    // Handle sidebar toggle button text
+    const sidebarToggle = document.getElementById('courseContentSidebar');
+    const toggleBtn = document.querySelector('[data-bs-target="#courseContentSidebar"]');
+    const toggleText = document.getElementById('toggleText');
+
+    if (sidebarToggle && toggleBtn && toggleText) {
+        sidebarToggle.addEventListener('show.bs.collapse', function() {
+            toggleText.textContent = 'Hide Course Content';
+        });
+
+        sidebarToggle.addEventListener('hide.bs.collapse', function() {
+            toggleText.textContent = 'View Course Content';
+        });
     }
 });
 
