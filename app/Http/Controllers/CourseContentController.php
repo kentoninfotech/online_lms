@@ -9,6 +9,7 @@ use App\Models\CourseEnrollee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class CourseContentController extends Controller
 {
@@ -172,6 +173,12 @@ class CourseContentController extends Controller
     {
         $this->authorize('createContent', $course);
 
+        // Format dates before validation
+        $requestData = $request->all();
+        $requestData['available_from'] = $this->formatDateForStorage($request->input('available_from'));
+        $requestData['available_until'] = $this->formatDateForStorage($request->input('available_until'));
+        $request->replace($requestData);
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -240,6 +247,12 @@ class CourseContentController extends Controller
     public function adminUpdate(Request $request, Course $course, CourseContent $content)
     {
         $this->authorize('update', $content);
+
+        // Format dates before validation
+        $requestData = $request->all();
+        $requestData['available_from'] = $this->formatDateForStorage($request->input('available_from'));
+        $requestData['available_until'] = $this->formatDateForStorage($request->input('available_until'));
+        $request->replace($requestData);
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -512,6 +525,62 @@ class CourseContentController extends Controller
             }
         }
     }
+
+    /**
+     * Parse and format date to required format Y-m-d\TH:i
+     * Accepts multiple formats and converts to the required format
+     */
+    private function formatDateForStorage(?string $dateString): ?string
+    {
+        if (empty($dateString)) {
+            return null;
+        }
+
+        try {
+            // Try to parse the date using common formats
+            $date = null;
+            
+            // Try parsing with common separators and formats
+            $formats = [
+                'Y-m-d\TH:i',      // 2026-01-11T12:00
+                'd/m/Y H:i',       // 01/11/2026 12:00
+                'm/d/Y H:i',       // 11/01/2026 12:00
+                'd-m-Y H:i',       // 01-11-2026 12:00
+                'm-d-Y H:i',       // 11-01-2026 12:00
+                'Y/m/d H:i',       // 2026/01/11 12:00
+                'd.m.Y H:i',       // 01.11.2026 12:00
+                'Y-m-d H:i',       // 2026-01-11 12:00
+                'd/m/Y',           // 01/11/2026
+                'm/d/Y',           // 11/01/2026
+                'Y-m-d',           // 2026-01-11
+                'd-m-Y',           // 01-11-2026
+                'm-d-Y',           // 11-01-2026
+                'Y/m/d',           // 2026/01/11
+                'd.m.Y',           // 01.11.2026
+            ];
+
+            foreach ($formats as $format) {
+                try {
+                    $date = Carbon::createFromFormat($format, $dateString);
+                    break;
+                } catch (\Exception $e) {
+                    continue;
+                }
+            }
+
+            // If no format matched, try to parse as natural date
+            if (!$date) {
+                $date = Carbon::parse($dateString);
+            }
+
+            // Return in required format with time defaulting to 00:00 if not provided
+            return $date->format('Y-m-d\TH:i');
+        } catch (\Exception $e) {
+            // If all parsing fails, return null to let validation handle it
+            return $dateString;
+        }
+    }
 }
+
 
 
