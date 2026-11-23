@@ -34,6 +34,38 @@
         padding-left: 1rem;
         font-size: 0.95rem;
     }
+
+    /* Expandable content card styles */
+    .content-card {
+        height: 500px;
+        overflow: hidden;
+        transition: height 0.3s ease, max-height 0.3s ease;
+        cursor: pointer;
+    }
+
+    .content-card.expanded {
+        height: auto;
+        max-height: none;
+    }
+
+    .content-card .card-title {
+        color: var(--bs-primary);
+        font-weight: 600;
+    }
+
+    .content-card .card-body {
+        position: relative;
+    }
+
+    .content-card.collapsed .description-preview {
+        -webkit-line-clamp: 10;
+        overflow: hidden;
+    }
+
+    .content-card.expanded .description-preview {
+        -webkit-line-clamp: unset;
+        overflow: visible;
+    }
 </style>
 
 <div class="container-fluid py-4">
@@ -175,7 +207,7 @@
                         <div class="row">
                             @foreach($courseContents as $content)
                                 <div class="col-md-6 mb-3">
-                                    <div class="card h-100 d-flex flex-column">
+                                    <div class="card h-100 d-flex flex-column content-card collapsed" data-content-id="{{ $content->id }}" onclick="toggleCardExpand(this, event)">
                                         <div class="card-body d-flex flex-column">
                                             <h6 class="card-title">
                                                 <i class="bi {{ $content->content_type === 'video' ? 'bi-play-circle' : 'bi-file-text' }} me-2"></i>
@@ -184,7 +216,7 @@
                                             <div class="card-text small text-muted flex-grow-1 description-preview">
                                                 {!! $content->description ?? '<em>No description</em>' !!}
                                             </div>
-                                            <a href="{{ route('courses.learn.content', [$course, $content]) }}" class="btn btn-sm btn-primary mt-auto">
+                                            <a href="{{ route('courses.learn.content', [$course, $content]) }}" class="btn btn-sm btn-primary mt-auto" onclick="event.stopPropagation()">
                                                 Start Learning
                                             </a>
                                         </div>
@@ -202,4 +234,36 @@
         </div>
     </div>
 </div>
+
+<script>
+function toggleCardExpand(cardElement, event) {
+    event.stopPropagation();
+    
+    const isExpanded = cardElement.classList.contains('expanded');
+    
+    // If clicking on the button, don't toggle
+    if (event.target.closest('.btn-primary')) {
+        return;
+    }
+    
+    if (isExpanded) {
+        cardElement.classList.remove('expanded');
+        cardElement.classList.add('collapsed');
+    } else {
+        cardElement.classList.remove('collapsed');
+        cardElement.classList.add('expanded');
+    }
+}
+
+// Close expanded cards when clicking outside
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.content-card')) {
+        const expandedCards = document.querySelectorAll('.content-card.expanded');
+        expandedCards.forEach(card => {
+            card.classList.remove('expanded');
+            card.classList.add('collapsed');
+        });
+    }
+});
+</script>
 @endsection
