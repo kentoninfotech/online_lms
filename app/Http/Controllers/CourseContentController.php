@@ -226,7 +226,12 @@ class CourseContentController extends Controller
         // Get available prerequisites (other content in this course, excluding this one)
         $courseContents = $course->contents()->where('id', '!=', $content->id)->get();
 
-        return view('admin.course-contents.edit', compact('course', 'content', 'courseContents'));
+        // Determine the resource destroy route based on current route prefix
+        $resourceDestroyRoute = request()->routeIs('tutor.*') 
+            ? 'tutor.course-content-resources.destroy' 
+            : 'admin.course-content-resources.destroy';
+
+        return view('admin.course-contents.edit', compact('course', 'content', 'courseContents', 'resourceDestroyRoute'));
     }
 
     /**

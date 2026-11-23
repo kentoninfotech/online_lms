@@ -418,6 +418,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::get('/courses/{course}/content/{content}/edit', [CourseContentController::class, 'adminEdit'])->name('course-contents.edit');
     Route::put('/courses/{course}/content/{content}', [CourseContentController::class, 'adminUpdate'])->name('course-contents.update');
     Route::delete('/courses/{course}/content/{content}', [CourseContentController::class, 'adminDestroy'])->name('course-contents.destroy');
+    Route::delete('/course-content-resources/{resource}', [CourseContentResourceController::class, 'destroy'])->name('course-content-resources.destroy');
 
     // Course Quizzes
     Route::get('/courses/{course}/quiz', [CourseQuizController::class, 'adminIndex'])->name('course-quizzes.index');
@@ -582,6 +583,7 @@ Route::middleware(['auth', 'verified', 'role:instructor'])->prefix('tutor')->nam
     Route::get('/courses/{course}/content/{content}/edit', [CourseContentController::class, 'adminEdit'])->name('course-contents.edit');
     Route::put('/courses/{course}/content/{content}', [CourseContentController::class, 'adminUpdate'])->name('course-contents.update');
     Route::delete('/courses/{course}/content/{content}', [CourseContentController::class, 'adminDestroy'])->name('course-contents.destroy');
+    Route::delete('/course-content-resources/{resource}', [CourseContentResourceController::class, 'destroy'])->name('course-content-resources.destroy');
 
     // Course Quizzes
     Route::get('/courses/{course}/quiz', [CourseQuizController::class, 'adminIndex'])->name('course-quizzes.index');
