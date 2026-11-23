@@ -3,6 +3,40 @@
 @section('title', 'Learning - ' . $course->title)
 
 @section('content')
+<style>
+    .description-preview {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.4;
+    }
+    
+    .description-preview h1,
+    .description-preview h2,
+    .description-preview h3,
+    .description-preview h4,
+    .description-preview h5,
+    .description-preview h6 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0.25rem 0;
+        line-height: 1.4;
+    }
+    
+    .description-preview p {
+        margin: 0.25rem 0;
+        font-size: 0.95rem;
+    }
+    
+    .description-preview ul,
+    .description-preview ol {
+        margin: 0.25rem 0;
+        padding-left: 1rem;
+        font-size: 0.95rem;
+    }
+</style>
+
 <div class="container-fluid py-4">
     <div class="row mb-4">
         <div class="col">
@@ -148,7 +182,9 @@
                                                 <i class="bi {{ $content->content_type === 'video' ? 'bi-play-circle' : 'bi-file-text' }} me-2"></i>
                                                 {{ $content->title }}
                                             </h6>
-                                            <p class="card-text small text-muted flex-grow-1">{{ strip_tags($content->description) ?? 'No description' }}</p>
+                                            <div class="card-text small text-muted flex-grow-1 description-preview">
+                                                {!! $content->description ?? '<em>No description</em>' !!}
+                                            </div>
                                             <a href="{{ route('courses.learn.content', [$course, $content]) }}" class="btn btn-sm btn-primary mt-auto">
                                                 Start Learning
                                             </a>
