@@ -58,7 +58,7 @@
     </nav>
 
     <!-- Sidebar Toggle Button (visible on all sizes) -->
-    <div class="mb-3">
+    <div class="mb-3 d-flex justify-content-end">
         <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#courseContentSidebar" aria-expanded="false" aria-controls="courseContentSidebar">
             <i class="bi bi-list me-2"></i><span id="toggleText">View Course Content</span>
         </button>
@@ -253,6 +253,27 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-toggle="collapse" data-bs-target="#courseContentSidebar" aria-label="Close"></button>
                 </div>
                 <div class="list-group list-group-flush">
+                    <!-- Progress Item at the top of the list -->
+                    <div class="list-group-item" style="border-bottom: 1px solid rgba(0,0,0,.125);">
+                        <div class="mb-2">
+                            <h6 class="mb-2">Progress</h6>
+                            <div class="progress" style="height: 30px;">
+                                @php
+                                    $progress = $enrollment->progress_percentage ?? 0;
+                                @endphp
+                                <div class="progress-bar bg-{{ $progress >= 75 ? 'success' : ($progress >= 50 ? 'info' : ($progress >= 25 ? 'warning' : 'danger')) }}" 
+                                     role="progressbar" 
+                                     style="width: {{ $progress }}%" 
+                                     aria-valuenow="{{ $progress }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">
+                                    {{ $progress }}%
+                                </div>
+                            </div>
+                            <small class="text-muted">Keep learning to progress through the course!</small>
+                        </div>
+                    </div>
+                    
                     @if($courseContents && $courseContents->count() > 0)
                         @foreach($courseContents as $c)
                             <a href="{{ route('courses.learn.content', [$course, $c]) }}" 
@@ -269,28 +290,6 @@
                             </a>
                         @endforeach
                     @endif
-                </div>
-            </div>
-
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    <h5 class="mb-0">Progress</h5>
-                </div>
-                <div class="card-body">
-                    <div class="progress mb-3" style="height: 30px;">
-                        @php
-                            $progress = $enrollment->progress_percentage ?? 0;
-                        @endphp
-                        <div class="progress-bar bg-{{ $progress >= 75 ? 'success' : ($progress >= 50 ? 'info' : ($progress >= 25 ? 'warning' : 'danger')) }}" 
-                             role="progressbar" 
-                             style="width: {{ $progress }}%" 
-                             aria-valuenow="{{ $progress }}" 
-                             aria-valuemin="0" 
-                             aria-valuemax="100">
-                            {{ $progress }}%
-                        </div>
-                    </div>
-                    <small class="text-muted">Keep learning to progress through the course!</small>
                 </div>
             </div>
         </div>
